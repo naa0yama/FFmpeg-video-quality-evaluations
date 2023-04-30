@@ -1,13 +1,16 @@
 ARG NVIDIA_CODECSDK_VER=n12.0.16.0
 ARG NVIDIA_CUDA_VER=12.1.0-devel-ubuntu22.04
 
+ARG DEBIAN_FRONTEND noninteractive
+ARG DEBCONF_NOWARNINGS yes
+
 #- -------------------------------------------------------------------------------------------------
 #- Builder
 #-
 FROM nvidia/cuda:${NVIDIA_CUDA_VER} as builder
 
-ENV DEBIAN_FRONTEND noninteractive
-ENV DEBCONF_NOWARNINGS yes
+ARG DEBIAN_FRONTEND
+ARG DEBCONF_NOWARNINGS
 
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES},video
@@ -27,8 +30,8 @@ ARG WGET_OPTS="--retry-on-host-error --retry-on-http-error=429,500,502,503"
 
 # Build Dependencies
 RUN set -eux && \
-    apt-get update -qq && \
-    apt-get -y install \
+    apt update -qq && \
+    apt -y install \
     autoconf \
     automake \
     build-essential \
@@ -52,29 +55,32 @@ RUN set -eux && \
 # working directory
 RUN mkdir -p ~/ffmpeg_sources ~/bin
 
+# vmaf
+RUN apt -y install doxygen xxd
+
 # NASM
-RUN apt-get -y install nasm
+RUN apt -y install nasm
 
 # libx264
-RUN apt-get -y install libx264-dev
+RUN apt -y install libx264-dev
 
 # libx265
-RUN apt-get -y install libx265-dev libnuma-dev
+RUN apt -y install libx265-dev libnuma-dev
 
 # libvpx
-RUN apt-get -y install libvpx-dev
+RUN apt -y install libvpx-dev
 
 # libfdk-aac
-RUN apt-get -y install libfdk-aac-dev
+RUN apt -y install libfdk-aac-dev
 
 # libopus
-RUN apt-get -y install libopus-dev
+RUN apt -y install libopus-dev
 
 # libaom
-RUN apt-get -y install libaom-dev libdav1d-dev
+RUN apt -y install libaom-dev libdav1d-dev
 
 # Intel Media SDK
-RUN apt-get -y install libmfx-dev libva-dev
+RUN apt -y install libmfx-dev libva-dev
 
 # libvmaf
 RUN set -eux && \
@@ -160,35 +166,52 @@ RUN set -eux && \
 #-
 FROM ubuntu:jammy
 
+ARG DEBIAN_FRONTEND
+ARG DEBCONF_NOWARNINGS
+
 RUN set -eux && \
-    apt-get update -qq && \
-    apt-get -y install \
+    apt update -qq && \
+    apt -y install \
     binutils \
-    libc6 \
-    libass9 \
-    libfreetype6 \
-    zlib1g \
-    libva2 \
-    libmfx1 \
-    libstdc++6 \
-    libvpx7 \
-    libdav1d5 \
+    jq \
     libaom3 \
+    libass9 \
+    libc6 \
+    libc6 \
+    libdav1d5 \
     libfdk-aac2 \
+    libfreetype6 \
+    libgcc-s1 \
+    libmfx1 \
     libmp3lame0 \
     libopus0 \
+    libstdc++6 \
+    libva-drm2 \
+    libva2 \
     libvorbis0a \
     libvorbisenc2 \
+    libvpx7 \
     libx264-163 \
     libx265-199 \
-    libgcc-s1 \
-    libva-drm2 \
-    libc6 && \
-    apt-get clean && \
+    python3 \
+    python3-pip \
+    zlib1g && \
+    apt clean && \
     rm -rf /var/lib/apt/lists/*
+
+RUN set -eux && \
+    pip3 install -U pip && \
+    pip3 install \
+    ffmpeg-progress-yield \
+    tqdm
 
 COPY --from=builder /usr/local/bin/ffmpeg       /usr/local/bin/ffmpeg
 COPY --from=builder /usr/local/bin/ffprobe      /usr/local/bin/ffprobe
+COPY                entrypoint.sh               /app/entrypoint.sh
+COPY                encode.sh                   /app/encode.sh
 
 RUN set -eux && \
     readelf -d /usr/local/bin/ffmpeg
+
+ENTRYPOINT ["bash", "/app/entrypoint.sh"]
+CMD [""]
