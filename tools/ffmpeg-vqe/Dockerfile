@@ -14,6 +14,11 @@ ARG DEBCONF_NOWARNINGS
 
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES},video
+ENV LD_LIBRARY_PATH "/usr/local/cuda/compat:/usr/local/cuda/lib64:$LD_LIBRARY_PATH"
+ENV PATH "/usr/local/cuda/bin:$PATH"
+# https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/index.html#virtual-architecture-feature-list
+ENV CUDA_CC="70 72 75 80 86 87 89 90 90a"
+
 ARG NVIDIA_CODECSDK_VER
 ARG NVIDIA_CUDA_VER
 
@@ -30,8 +35,8 @@ ARG WGET_OPTS="--retry-on-host-error --retry-on-http-error=429,500,502,503"
 
 # Build Dependencies
 RUN set -eux && \
-    apt update -qq && \
-    apt -y install \
+    apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
     autoconf \
     automake \
     build-essential \
@@ -56,31 +61,40 @@ RUN set -eux && \
 RUN mkdir -p ~/ffmpeg_sources ~/bin
 
 # vmaf
-RUN apt -y install doxygen xxd
+RUN apt-get -y install --no-install-recommends doxygen xxd
 
 # NASM
-RUN apt -y install nasm
+RUN apt-get -y install --no-install-recommends nasm
 
 # libx264
-RUN apt -y install libx264-dev
+RUN apt-get -y install --no-install-recommends libx264-dev
 
 # libx265
-RUN apt -y install libx265-dev libnuma-dev
+RUN apt-get -y install --no-install-recommends libx265-dev libnuma-dev
 
 # libvpx
-RUN apt -y install libvpx-dev
+RUN apt-get -y install --no-install-recommends libvpx-dev
 
 # libfdk-aac
-RUN apt -y install libfdk-aac-dev
+RUN apt-get -y install --no-install-recommends libfdk-aac-dev
 
 # libopus
-RUN apt -y install libopus-dev
+RUN apt-get -y install --no-install-recommends libopus-dev
 
 # libaom
-RUN apt -y install libaom-dev libdav1d-dev
+RUN apt-get -y install --no-install-recommends libaom-dev libdav1d-dev
+
+# libaribb24
+RUN apt-get -y install --no-install-recommends libaribb24-dev
 
 # Intel Media SDK
-RUN apt -y install libmfx-dev libva-dev
+RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list && \
+    set -eux && \
+    apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+    libmfx-dev \
+    libva-dev \
+    intel-media-va-driver-non-free
 
 # libvmaf
 RUN set -eux && \
@@ -104,15 +118,22 @@ RUN set -eux && \
 
 # FFmpeg
 SHELL ["/bin/bash", "-c"]
-RUN set -ex && \
-    PATH=$PATH:/usr/local/cuda/bin && \
-    cd ~/ffmpeg_sources && \
+RUN set -eux && \
     type nvcc && \
-    nvcc --version && \
+    nvcc --version
+
+RUN set -ex && \
+    cd ~/ffmpeg_sources && \
     wget ${WGET_OPTS} -O ffmpeg.tar.bz2 "${FFMPEG_URL}" && \
     echo "${FFMPEG_SHA256}  ffmpeg.tar.bz2" | sha256sum --status -c - && \
     tar xf ffmpeg.tar.bz2 && \
     cd ffmpeg-* && \
+    set +x && \
+    ary=($(echo ${CUDA_CC})) && \
+    for i in $(seq 1 ${#ary[@]}); do gencode="-gencode arch=compute_${ary[$i-1]},code=sm_${ary[$i-1]} $gencode"; done && \
+    set -x && \
+    CUDA_OPTION="${gencode} -O2" && \
+    sed -i -e 's/$nvccflags -ptx/$nvccflags/g' ./configure && \
     ./configure \
     --disable-debug \
     --disable-doc \
@@ -129,27 +150,39 @@ RUN set -ex && \
     --disable-shared \
     \
     --enable-cuda-nvcc \
-    --extra-cflags="-I/usr/local/cuda/include" \
-    --extra-ldflags="-L/usr/local/cuda/lib64" \
+    --extra-cflags="-I /usr/local/cuda/include" \
+    --extra-ldflags="-L /usr/local/cuda/compat -L /usr/local/cuda/lib64" \
+    # CC指定フラグ追加 (https://github.com/NVIDIA/cuda-samples/issues/46#issuecomment-863835984)
+    --nvccflags="${CUDA_OPTION}" \
     \
     --enable-gpl \
     --enable-libaom \
-    --enable-libdav1d \
+    --enable-libaribb24 \
     --enable-libass \
+    --enable-libdav1d \
     --enable-libfdk-aac \
     --enable-libfreetype \
+    --enable-libmfx \
     --enable-libmp3lame \
     --enable-libopus \
+    --enable-libvmaf \
     --enable-libvorbis \
     --enable-libvpx \
     --enable-libx264 \
     --enable-libx265 \
-    --enable-libvmaf \
+    --enable-nonfree \
     --enable-vaapi \
-    --enable-libmfx \
-    --enable-nonfree && \
+    --enable-version3 && \
     make -j$(nproc) install && \
     hash -r
+
+# FFmpeg runtime package list saved
+RUN set -eux && \
+    ldd /usr/local/bin/ffmpeg /usr/local/bin/ffprobe | \
+    awk -F ' => ' '{print $1}' | \
+    grep -v -E '(ld-linux-x86-64.so.2|linux-vdso.so.1|ffmpeg:|ffprobe:)' | \
+    tr -d '\t' | sort | uniq | xargs -I'{}' dpkg -S {} | \
+    awk -F':' '{print $1}' | sort | uniq > /ffmpeg_runtime.txt
 
 RUN set -eux && \
     ls -lah /usr/local/bin && \
@@ -160,7 +193,6 @@ RUN set -eux && \
     ffmpeg -hide_banner -buildconf && \
     for i in decoders encoders; do echo ${i}:; ffmpeg -hide_banner -${i} | egrep -i "av1|[x|h]264|[x|h]265|hevc|vp9|qsv|vaapi|nvenc|libmfx"; done
 
-
 #- -------------------------------------------------------------------------------------------------
 #- Runner
 #-
@@ -169,34 +201,53 @@ FROM ubuntu:jammy
 ARG DEBIAN_FRONTEND
 ARG DEBCONF_NOWARNINGS
 
+SHELL ["/bin/bash", "-c"]
+
+# Intel Media SDK
 RUN set -eux && \
-    apt update -qq && \
-    apt -y install \
+    apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+    intel-media-va-driver-non-free &&\
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# NVENC Video Encoding runtime library
+RUN set -eux && \
+    apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+    ca-certificates \
+    wget && \
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb && \
+    dpkg -i cuda-keyring_1.0-1_all.deb && \
+    apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+    libnvidia-encode-530 \
+    libnvidia-decode-530 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -f cuda-keyring_1.0-1_all.deb
+
+# FFmpeg runtime
+COPY --from=builder /usr/local/bin/ffmpeg                   /usr/local/bin/ffmpeg
+COPY --from=builder /usr/local/bin/ffprobe                  /usr/local/bin/ffprobe
+COPY --from=builder /ffmpeg_runtime.txt                     /ffmpeg_runtime.txt
+RUN set -eux && \
+    apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+    $(cat /ffmpeg_runtime.txt) && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Script dep
+RUN set -eux && \
+    apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
     binutils \
     jq \
-    libaom3 \
-    libass9 \
-    libc6 \
-    libc6 \
-    libdav1d5 \
-    libfdk-aac2 \
-    libfreetype6 \
-    libgcc-s1 \
-    libmfx1 \
-    libmp3lame0 \
-    libopus0 \
-    libstdc++6 \
-    libva-drm2 \
-    libva2 \
-    libvorbis0a \
-    libvorbisenc2 \
-    libvpx7 \
-    libx264-163 \
-    libx265-199 \
     python3 \
     python3-pip \
-    zlib1g && \
-    apt clean && \
+    vainfo && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 RUN set -eux && \
@@ -205,10 +256,9 @@ RUN set -eux && \
     ffmpeg-progress-yield \
     tqdm
 
-COPY --from=builder /usr/local/bin/ffmpeg       /usr/local/bin/ffmpeg
-COPY --from=builder /usr/local/bin/ffprobe      /usr/local/bin/ffprobe
-COPY                entrypoint.sh               /app/entrypoint.sh
-COPY                encode.sh                   /app/encode.sh
+### Scripts
+#COPY                entrypoint.sh                           /app/entrypoint.sh
+#COPY                encode.sh                               /app/encode.sh
 
 RUN set -eux && \
     readelf -d /usr/local/bin/ffmpeg

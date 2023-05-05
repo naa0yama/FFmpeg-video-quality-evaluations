@@ -6,7 +6,10 @@
 # Standard Library
 import argparse
 import copy
+import glob
+import hashlib
 import json
+import os
 import time
 from time import gmtime
 from time import strftime
@@ -250,8 +253,9 @@ def main() -> None:
 
                 __results_list.append(__result_template)
 
-        with open("{}/settings.json".format(args.dist), "w") as file:
-            json.dump({"configs": __config, "encodes": __results_list}, file, indent=2)
+        if not os.path.exists("{}/settings.json".format(args.dist)):
+            with open("{}/settings.json".format(args.dist), "w") as file:
+                json.dump({"configs": __config, "encodes": __results_list}, file, indent=2)
 
     if args.encode is True:
         __ffmpege_time: list = [
@@ -285,37 +289,59 @@ def main() -> None:
         with open("{}/settings.json".format(args.dist), "rb") as fin:
             __encode_cfg = json.load(fin)
 
+        hasher = hashlib.sha256()
+
+        files = glob.glob("{}/*.mp4".format(args.dist))
+        print("files: {}".format(files))
+        __dist_files: list = []
+        for __dist_file in files:
+            with open(__dist_file, "rb") as hash_file:
+                hasher.update(hash_file.read())
+                __dist_files.append("{}".format(hasher.hexdigest()))
+
         __length: int = len(__encode_cfg["encodes"])
         for __index, __encode in enumerate(__encode_cfg["encodes"]):
             print(
                 "=" * 80
                 + "\n{:0>4}/{:0>4} ({:>7.2%})\n".format(__index, __length, __index / __length)
             )
-            __encode_time = encoding(basefile=__basefile, encode_cfg=__encode)
+            print(__dist_files)
+            print(__encode["filename_hash"])
+            print(__encode["filename_hash"] not in __dist_files)
+            if __encode["filename_hash"] not in __dist_files:
+                __encode_time = encoding(basefile=__basefile, encode_cfg=__encode)
 
-            __results_list[__index]["elapsed"]["encode"]["second"] = __encode_time
-            __results_list[__index]["elapsed"]["encode"]["time"] = strftime(
-                "%H:%M:%S", gmtime(__encode_time)
-            )
+                with open("{}.mp4".format(__encode["filename"]), "rb") as file_hash_cncode:
+                    hasher.update(file_hash_cncode.read())
+                    __encode_cfg["encodes"][__index]["filename_hash"] = "{}".format(
+                        hasher.hexdigest()
+                    )
 
-            __vmaf_time = getvmaf(basefile=__basefile, encode_cfg=__encode)
-            __results_list[__index]["elapsed"]["vmaf"]["second"] = __vmaf_time
-            __results_list[__index]["elapsed"]["vmaf"]["time"] = strftime(
-                "%H:%M:%S", gmtime(__vmaf_time)
-            )
+                __encode_cfg["encodes"][__index]["elapsed"]["encode"]["second"] = __encode_time
+                __encode_cfg["encodes"][__index]["elapsed"]["encode"]["time"] = strftime(
+                    "%H:%M:%S", gmtime(__encode_time)
+                )
 
-            with open("{}_vmaf.json".format(__encode["filename"]), "rb") as file:
-                __vmaf_log = json.load(file)
-                __results_list[__index]["vmaf"] = {
-                    "version": __vmaf_log["version"],
-                    "pooled_metrics": {
-                        "float_ssim": __vmaf_log["pooled_metrics"]["float_ssim"],
-                        "vmaf": __vmaf_log["pooled_metrics"]["vmaf"],
-                    },
-                }
+                __vmaf_time = getvmaf(basefile=__basefile, encode_cfg=__encode)
+                __encode_cfg["encodes"][__index]["elapsed"]["vmaf"]["second"] = __vmaf_time
+                __encode_cfg["encodes"][__index]["elapsed"]["vmaf"]["time"] = strftime(
+                    "%H:%M:%S", gmtime(__vmaf_time)
+                )
+
+                with open("{}_vmaf.json".format(__encode["filename"]), "rb") as file:
+                    __vmaf_log = json.load(file)
+                    __encode_cfg["encodes"][__index]["vmaf"] = {
+                        "version": __vmaf_log["version"],
+                        "pooled_metrics": {
+                            "float_ssim": __vmaf_log["pooled_metrics"]["float_ssim"],
+                            "vmaf": __vmaf_log["pooled_metrics"]["vmaf"],
+                        },
+                    }
 
             with open("{}/settings.json".format(args.dist), "w") as file:
-                json.dump({"configs": __config, "encodes": __results_list}, file, indent=2)
+                json.dump(
+                    {"configs": __config, "encodes": __encode_cfg["encodes"]}, file, indent=2
+                )
 
 
 if __name__ == "__main__":

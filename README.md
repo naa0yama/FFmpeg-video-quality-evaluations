@@ -199,7 +199,7 @@ $ sha256sum bbb_original.mp4
     * h264_vaapi
   * x265
     * libx265
-    * h265_nvenc
+    * hevc_nvenc
     * h265_qsv
     * h265_vaapi
 
@@ -211,38 +211,109 @@ docker run --rm -it -v $PWD/videos/source:/source -v $PWD/videos/dist:/dist plot
 
 # ffmpeg
 cd ~/FFmpeg-video-quality-evaluations/tools/ffmpeg-vqe/ && docker build -t ffmpeg-vqe . && cd ../../
-docker run --rm -it -v $PWD/videos/source:/source -v $PWD/videos/dist:/dist --device "/dev/dri:/dev/dri" ffmpeg-vqe
+docker run --rm -it --gpus all -v $PWD/videos/source:/source -v $PWD/videos/dist:/dist -v $PWD/tools/ffmpeg-vqe:/opt --device "/dev/dri:/dev/dri" --entrypoint=/bin/bash ffmpeg-vqe
 
 ```
 
+* crf(constant quality mode)
+* qp(Constant quantization parameter)
+* cq(constant quality mode in VBR)
+
+| codec      |  crf  |  qp   |  cq   | preset             |
+| :--------- | :---: | :---: | :---: | :----------------- |
+| libx264    |   O   |   O   |       | medium             |
+| h264_nvenc |       |   O   |   O   | p4                 |
+| h264_qsv   |       |       |       | medium (default 0) |
+| h264_vaapi |       |   O   |       |                    |
+| libx265    |   O   |   O   |       | medium             |
+| hevc_nvenc |       |   O   |   O   | p4                 |
+| hevc_qsv   |       |       |       | 0                  |
+| hevc_vaapi |       |   O   |       |                    |
+
+|                    |      |      |                      |
+| :----------------- | :--- | :--- | :------------------- |
+| **Global options** |      |      |                      |
+|                    |      | `-y` | 出力ファイルの上書き |
+
+
+* [Hardware/QuickSync – FFmpeg](https://trac.ffmpeg.org/wiki/Hardware/QuickSync)
+* [Hardware/VAAPI – FFmpeg](https://trac.ffmpeg.org/wiki/Hardware/VAAPI)
+
 ```bash
+ffmpeg -h encoder=libx264    > libx264.txt
+ffmpeg -h encoder=h264_nvenc > h264_nvenc.txt
+ffmpeg -h encoder=h264_qsv   > .txt
+ffmpeg -h encoder=h264_qsv   > h264_qsv.txt
+ffmpeg -h encoder=h264_vaapi > h264_vaapi.txt
+ffmpeg -h encoder=libx265    > libx265.txt
+ffmpeg -h encoder=hevc_nvenc > hevc_nvenc.txt
+ffmpeg -h encoder=hevc_qsv   > hevc_qsv.txt
+ffmpeg -h encoder=hevc_vaapi > hevc_vaapi.txt
+
+ffmpeg [options] [[infile options] -i infile]... {[outfile options] outfile}...
+
+
 # base
-ffmpeg -t 300 -i /source/bbb_original.mp4 -vcodec copy -an -y /dist/base.mp4
+ffmpeg -t 15 -i /source/bbb_original.mp4 -vcodec copy -an -y /dist/base.mp4
 
 # x264
-ffmpeg -i /dist/base.mp4 -y /dist/x264_x264_crf23_medium.mp4 -crf 23 -preset medium -c:v libx264
+ffmpeg -y \
+  -i /dist/base.mp4 \
+  -c:v libx264 -preset medium \
+  /dist/x264_x264_default_medium.mp4
 
 # h264_nvenc
-ffmpeg -i /dist/base.mp4 -y /dist/x264_nvenc_crf23_medium.mp4 -crf 23 -preset medium -c:v h264_nvenc -hwaccel cuda -hwaccel_output_format cuda
+ffmpeg -y \
+  -hwaccel cuda -hwaccel_output_format cuda \
+  -i /dist/base.mp4 \
+  -c:v h264_nvenc -preset p4 \
+  /dist/x264_nvenc_default_p4.mp4
 
 # h264_qsv
-ffmpeg -i /dist/base.mp4 -y /dist/x264_qsv_crf23_medium.mp4 -crf 23 -preset medium -c:v h264_qsv -hwaccel qsv -hwaccel_output_format qsv
+ffmpeg -y \
+  -hwaccel qsv -hwaccel_output_format qsv \
+  -i /dist/base.mp4 \
+  -c:v h264_qsv -preset medium \
+  /dist/x264_qsv_default_medium.mp4
 
 # h264_vaapi
-ffmpeg -i /dist/base.mp4 -y /dist/x264_vaapi_crf23_medium.mp4 -crf 23 -preset medium -c:v h264_vaapi -hwaccel vaapi -hwaccel_output_format vaapi
+ffmpeg -y \
+  -hwaccel vaapi -hwaccel_output_format vaapi \
+  -i /dist/base.mp4 \
+  -c:v h264_vaapi \
+   /dist/x264_vaapi_default_none.mp4
 
 
 # x265
-ffmpeg -i /dist/base.mp4 -y /dist/x265_x265_crf28_medium.mp4 -crf 28 -preset medium -c:v libx265 -tag:v hvc1
+ffmpeg -y \
+  -i /dist/base.mp4 \
+  -c:v libx265 -preset medium \
+  -tag:v hvc1 \
+  /dist/x265_x265_default_medium.mp4
 
-# h265_nvenc
-ffmpeg -i /dist/base.mp4 -y /dist/x265_nvenc_crf23_medium.mp4 -crf 23 -preset medium -c:v h265_nvenc -hwaccel cuda -hwaccel_output_format cuda
+# hevc_nvenc
+ffmpeg -y \
+  -hwaccel cuda -hwaccel_output_format cuda \
+  -i /dist/base.mp4 \
+  -c:v hevc_nvenc -preset p4 \
+  -tag:v hvc1 \
+  /dist/x265_nvenc_default_p4.mp4
 
-# h265_qsv
-ffmpeg -i /dist/base.mp4 -y /dist/x265_qsv_crf23_medium.mp4 -crf 23 -preset medium -c:v h265_qsv -hwaccel qsv -hwaccel_output_format qsv
+# hevc_qsv
+ffmpeg -y \
+  -hwaccel qsv -hwaccel_output_format qsv \
+  -i /dist/base.mp4 \
+  -c:v hevc_qsv -preset medium \
+  -tag:v hvc1 \
+  /dist/x265_qsv_default_medium.mp4
 
-# h265_vaapi
-ffmpeg -i /dist/base.mp4 -y /dist/x265_vaapi_crf23_medium.mp4 -crf 23 -preset medium -c:v h265_vaapi -hwaccel vaapi -hwaccel_output_format vaapi
+# hevc_vaapi
+ffmpeg -y \
+  -hwaccel vaapi -hwaccel_output_format vaapi \
+  -i /dist/base.mp4 \
+  -c:v hevc_vaapi \
+  -tag:v hvc1 \
+   /dist/x265_vaapi_default_none.mp4
 
 ```
 
