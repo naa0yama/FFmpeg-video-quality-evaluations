@@ -5,7 +5,6 @@
 """entrypoint."""
 # Standard Library
 import argparse
-import copy
 import glob
 import hashlib
 import json
@@ -13,7 +12,8 @@ import os
 import time
 from time import gmtime
 from time import strftime
-from typing import Optional
+import os
+import subprocess
 
 # Third Party Library
 from ffmpeg_progress_yield import FfmpegProgress
@@ -34,6 +34,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "-cy",
+    "--conf-yes",
+    help="Overwrite settings.json. (default: False)",
+    action="store_true",
+)
+
+parser.add_argument(
     "--encode",
     help="encode mode. (default: False)",
     action="store_true",
@@ -42,157 +49,167 @@ parser.add_argument(
 parser.add_argument("--ffmpeg-cattime")
 args = parser.parse_args()
 
-
-__config: dict = {
+__configs: dict = {
     "origfile": "/source/bbb_original.mp4",
     "basefile": "/dist/base.mp4",
-    "crfs": [18],
-    # "crfs": [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34],
-    "hwaccel": [],
-    "options": [],
-    "presets": ["medium"],
-    "codecs": [
-        "libx264",
-        "h264_nvenc",
-        "h264_qsv",
-        "h264_vaapi",
-        "libx265",
-        "h265_nvenc",
-        "h265_qsv",
-        "h265_vaapi",
+    "patterns": [
+        {
+            "codec": "libx264",
+            "type": "x264",
+            "presets": ["veryfast", "medium", "veryslow"],
+            "infile": {"options": []},
+            "outfile": {"options": []},
+            "hwaccels": [],
+        },
+        # {
+        #     "codec": "h264_nvenc",
+        #     "type": "x264",
+        #     "presets": ["12", "15", "18"],
+        #     "infile": {"options": []},
+        #     "outfile": {"options": []},
+        #     "hwaccels": ["-hwaccel", "cuda", "-hwaccel_output_format", "cuda"],
+        # },
+        # {
+        #     "codec": "h264_qsv",
+        #     "type": "x264",
+        #     "presets": ["7", "4", "1"],
+        #     "infile": {"options": []},
+        #     "outfile": {"options": []},
+        #     "hwaccels": ["-hwaccel", "qsv", "-hwaccel_output_format", "qsv"],
+        # },
+        # {
+        #     "codec": "h264_vaapi",
+        #     "type": "x264",
+        #     "presets": [],
+        #     "infile": {"options": []},
+        #     "outfile": {"options": []},
+        #     "hwaccels": ["-hwaccel", "vaapi", "-hwaccel_output_format", "vaapi"],
+        # },
+        # {
+        #     "codec": "libx265",
+        #     "type": "x265",
+        #     "presets": ["veryfast", "medium", "veryslow"],
+        #     "infile": {"options": []},
+        #     "outfile": {"options": ["-tag:v", "hvc1"]},
+        #     "hwaccels": "",
+        # },
+        # {
+        #     "codec": "hevc_nvenc",
+        #     "type": "x265",
+        #     "presets": ["12", "15", "18"],
+        #     "infile": {"options": []},
+        #     "outfile": {"options": ["-tag:v", "hvc1"]},
+        #     "hwaccels": ["-hwaccel", "cuda", "-hwaccel_output_format", "cuda"],
+        # },
+        # {
+        #     "codec": "hevc_qsv",
+        #     "type": "x265",
+        #     "presets": ["7", "4", "1"],
+        #     "infile": {"options": []},
+        #     "outfile": {"options": ["-tag:v", "hvc1"]},
+        #     "hwaccels": ["-hwaccel", "qsv", "-hwaccel_output_format", "qsv"],
+        # },
+        # {
+        #     "codec": "hevc_vaapi",
+        #     "type": "x265",
+        #     "presets": [],
+        #     "infile": {"options": []},
+        #     "outfile": {"options": ["-tag:v", "hvc1"]},
+        #     "hwaccels": ["-hwaccel", "vaapi", "-hwaccel_output_format", "vaapi"],
+        # },
     ],
 }
 
 
-def __getEncodeName(dist: str, codec: str, crf: int, preset: str, options: list) -> Optional[dict]:
-    """Get encode name."""
-    __options: list = copy.deepcopy(options)
-    """x264"""
-    if codec == "libx264":
-        return {
-            "filename": "{}/x264_x264_crf{}_{}".format(dist, crf, preset),
-            "type": "x264",
-            "hwaccel": [],
-            "options": __options,
-        }
-
-    if codec == "h264_nvenc":
-        return {
-            "filename": "{}/x264_nvenc_crf{}_{}".format(dist, crf, preset),
-            "type": "x264",
-            "hwaccel": ["-hwaccel", "cuda", "-hwaccel_output_format", "cuda"],
-            "options": __options,
-        }
-
-    if codec == "h264_qsv":
-        return {
-            "filename": "{}/x264_qsv_crf{}_{}".format(dist, crf, preset),
-            "type": "x264",
-            "hwaccel": ["-hwaccel", "qsv", "-hwaccel_output_format", "qsv"],
-            "options": __options,
-        }
-
-    if codec == "h264_vaapi":
-        return {
-            "filename": "{}/x264_vaapi_crf{}_{}".format(dist, crf, preset),
-            "type": "x264",
-            "hwaccel": ["-hwaccel", "vaapi", "-hwaccel_output_format", "vaapi"],
-            "options": __options,
-        }
-
-    """x265"""
-    if codec in ["libx265", "h265_nvenc", "h265_qsv", "h265_vaapi"]:
-        __options.extend(["-tag:v", "hvc1"])
-
-    if codec == "libx265":
-        return {
-            "filename": "{}/x265_x265_crf{}_{}".format(dist, crf, preset),
-            "type": "x264",
-            "hwaccel": [],
-            "options": __options,
-        }
-
-    if codec == "h265_nvenc":
-        return {
-            "filename": "{}/x265_nvenc_crf{}_{}".format(dist, crf, preset),
-            "type": "x264",
-            "hwaccel": ["-hwaccel", "cuda", "-hwaccel_output_format", "cuda"],
-            "options": __options,
-        }
-
-    if codec == "h265_qsv":
-        return {
-            "filename": "{}/x265_qsv_crf{}_{}".format(dist, crf, preset),
-            "type": "x264",
-            "hwaccel": ["-hwaccel", "qsv", "-hwaccel_output_format", "qsv"],
-            "options": __options,
-        }
-
-    if codec == "h265_vaapi":
-        return {
-            "filename": "{}/x265_vaapi_crf{}_{}".format(dist, crf, preset),
-            "type": "x264",
-            "hwaccel": ["-hwaccel", "vaapi", "-hwaccel_output_format", "vaapi"],
-            "options": __options,
-        }
-
-    return None
-
-
-def encoding(basefile: str, encode_cfg: dict) -> float:
+def encoding(encode_cfg: dict, outputext: str) -> dict:
     """Encode."""
 
-    __ffmpege_time: list = [
+    __ffmpege_cmd: list = [
         "ffmpeg",
-        "-i",
-        "{}".format(basefile),
         "-y",
-        "{}.mp4".format(encode_cfg["filename"]),
-        "-crf",
-        "{}".format(encode_cfg["crf"]),
-        "-preset",
-        "{}".format(encode_cfg["preset"]),
-        "-c:v",
-        "{}".format(encode_cfg["codec"]),
-        "-an",
     ]
 
-    if encode_cfg["hwaccel"] != []:
-        __ffmpege_time.extend(encode_cfg["hwaccel"])
+    if encode_cfg["hwaccels"] != []:
+        __ffmpege_cmd.extend(encode_cfg["hwaccels"])
 
-    if encode_cfg["options"] != []:
-        __ffmpege_time.extend(encode_cfg["options"])
+    if "infile" in encode_cfg:
+        if encode_cfg["infile"]["options"] != []:
+            __ffmpege_cmd.extend(encode_cfg["infile"]["options"])
+        __ffmpege_cmd.append("-i")
+        __ffmpege_cmd.append("{}".format(encode_cfg["infile"]["filename"]))
 
+    if "outfile" in encode_cfg != []:
+        if encode_cfg["outfile"]["options"] != []:
+            __ffmpege_cmd.extend(encode_cfg["outfile"]["options"])
+        __ffmpege_cmd.append("-c:v")
+        __ffmpege_cmd.append("{}".format(encode_cfg["codec"]))
+
+        if encode_cfg["preset"] != "none":
+            __ffmpege_cmd.append("-preset")
+            __ffmpege_cmd.append("{}".format(encode_cfg["preset"]))
+
+        __ffmpege_cmd.append("{}{}".format(encode_cfg["outfile"]["filename"], outputext))
+
+    print("__ffmpege_cmd: {}".format(__ffmpege_cmd))
+    os.environ["FFREPORT"] = "file={}.log:level=32".format(encode_cfg["outfile"]["filename"])
     __start = time.time()
-    __ff_encode = FfmpegProgress(__ffmpege_time)
+    __ff_encode = FfmpegProgress(__ffmpege_cmd)
     with tqdm(
-        desc="[ENCODE] {}".format(encode_cfg["filename"]),
+        desc="[ENCODE] {}".format(encode_cfg["outfile"]["filename"]),
         total=100,
         position=1,
     ) as pbar:
         for progress in __ff_encode.run_command_with_progress():
             pbar.update(progress - pbar.n)
+    os.environ.pop("FFREPORT", None)
     elapsed_time = time.time() - __start
 
+    print("[PROBE ] {}".format(encode_cfg["outfile"]["filename"]))
+    subprocess.run(
+        args=[
+            "ffprobe",
+            "-v",
+            "error",
+            "-hide_banner",
+            "-show_chapters",
+            "-show_format",
+            "-show_library_versions",
+            "-show_program_version",
+            "-show_programs",
+            "-show_streams",
+            "-print_format",
+            "json",
+            "-i",
+            "{}{}".format(encode_cfg["outfile"]["filename"], outputext),
+            "-o",
+            "{}_ffprobe.json".format(encode_cfg["outfile"]["filename"]),
+        ],
+        timeout=10,
+        check=True,
+    )
+
     print("\nelapsed_time: {}".format(strftime("%H:%M:%S", gmtime(elapsed_time))))
-    return elapsed_time
+    return {
+        "commandline": __ffmpege_cmd,
+        "elapsed_time": elapsed_time,
+    }
 
 
-def getvmaf(basefile: str, encode_cfg: dict) -> float:
+def getvmaf(encode_cfg: dict, outputext: str) -> dict:
     """Get VMAF."""
 
-    __ffmpege_time: list = [
+    __ffmpege_cmd: list = [
         "ffmpeg",
         "-i",
-        "{}".format(basefile),
+        "{}".format(encode_cfg["infile"]["filename"]),
         "-i",
-        "{}.mp4".format(encode_cfg["filename"]),
+        "{}{}".format(encode_cfg["outfile"]["filename"], outputext),
         "-lavfi",
         "libvmaf='model="
         + "version=vmaf_v0.6.1\\:name=vmaf:"
         + "feature=name=float_ssim:"
-        + "n_threads=12:"
-        + "log_fmt=json:log_path={}_vmaf.json".format(encode_cfg["filename"]),
+        + "n_threads={}:".format(os.cpu_count())
+        + "log_fmt=json:log_path={}_vmaf.json".format(encode_cfg["outfile"]["filename"]),
         "-an",
         "-f",
         "null",
@@ -200,81 +217,95 @@ def getvmaf(basefile: str, encode_cfg: dict) -> float:
     ]
 
     __start = time.time()
-    __ff_vmaf = FfmpegProgress(__ffmpege_time)
+    __ff_vmaf = FfmpegProgress(__ffmpege_cmd)
     with tqdm(
-        desc="[VMAF   ] {}".format(encode_cfg["filename"]),
+        desc="[VMAF   ] {}".format(encode_cfg["outfile"]["filename"]),
     ) as pbar:
         for progress in __ff_vmaf.run_command_with_progress():
             pbar.update(progress - pbar.n)
     elapsed_time = time.time() - __start
 
     print("elapsed_time: {}".format(strftime("%H:%M:%S", gmtime(elapsed_time))))
-    return elapsed_time
+    return {
+        "commandline": __ffmpege_cmd,
+        "elapsed_time": elapsed_time,
+    }
 
 
 def main() -> None:
     """Main."""
-    __origfile: str = __config["origfile"]
-    __basefile: str = __config["basefile"]
+    __origfile: str = __configs["origfile"]
+    __basefile: str = __configs["basefile"]
+    __baseext: str = os.path.splitext(__configs["basefile"])[-1]
 
     __results_list: list = []
 
-    for __preset in __config["presets"]:
-        for __crf in __config["crfs"]:
-            for __codec in __config["codecs"]:
-                __filename: Optional[dict] = __getEncodeName(
-                    dist=args.dist,
-                    codec=__codec,
-                    crf=__crf,
-                    preset=__preset,
-                    options=__config["options"],
-                )
-                if __filename is None:
-                    raise Exception("_filename error.")
-
-                __result_template: dict = {
-                    "type": __filename["type"],
-                    "crf": __crf,
-                    "preset": __preset,
-                    "codec": __codec,
-                    "elapsed": {
-                        "encode": {
-                            "second": 0,
-                            "time": "",
-                        },
-                        "vmaf": {
-                            "second": 0,
-                            "time": "",
-                        },
+    for __pattern in __configs["patterns"]:
+        __presets: list = __pattern["presets"]
+        if __presets == []:
+            __presets.append("none")
+        for __preset in __presets:
+            __result_template: dict = {
+                "codec": __pattern["codec"],
+                "type": __pattern["type"],
+                "preset": __preset,
+                "infile": {
+                    "filename": __basefile,
+                    "options": __pattern["infile"]["options"],
+                },
+                "outfile": {
+                    "filename": "{}/{}_{}_{}".format(
+                        args.dist, __pattern["type"], __pattern["codec"], __preset
+                    ),
+                    "hash": "",
+                    "size": 0,
+                    "options": __pattern["outfile"]["options"],
+                },
+                "commandline": [],
+                "hwaccels": __pattern["hwaccels"],
+                "elapsed": {
+                    "encode": {
+                        "second": 0,
+                        "time": "",
+                    },
+                    "vmaf": {
+                        "second": 0,
+                        "time": "",
+                    },
+                },
+                "results": {
+                    "compression": {
+                        "ratio_persent": 0,
+                        "speed": 0,
                     },
                     "vmaf": {},
-                }
-                __result_template.update(__filename)
+                },
+            }
+            __results_list.append(__result_template)
 
-                __results_list.append(__result_template)
-
-        if not os.path.exists("{}/settings.json".format(args.dist)):
+        if not os.path.exists("{}/settings.json".format(args.dist)) or args.conf_yes is True:
             with open("{}/settings.json".format(args.dist), "w") as file:
-                json.dump({"configs": __config, "encodes": __results_list}, file, indent=2)
+                json.dump({"configs": __configs, "encodes": __results_list}, file, indent=2)
 
     if args.encode is True:
-        __ffmpege_time: list = [
+        __ffmpege_cmd: list = [
             "ffmpeg",
+            "-y",
             "-i",
             "{}".format(__origfile),
-            "-y",
-            "{}".format(__basefile),
             "-c:v",
             "copy",
             "-an",
+            "{}".format(__basefile),
         ]
 
         if args.ffmpeg_cattime is not None:
-            __ffmpege_time.insert(1, "-t")
-            __ffmpege_time.insert(2, "{}".format(args.ffmpeg_cattime))
+            __ffmpege_cmd.insert(1, "-t")
+            __ffmpege_cmd.insert(2, "{}".format(args.ffmpeg_cattime))
 
         __start = time.time()
-        __ff = FfmpegProgress(__ffmpege_time)
+        __ff = FfmpegProgress(__ffmpege_cmd)
+        elapsed_time: float = 0
         with tqdm(
             desc="Create {} to {}".format(__origfile, __basefile),
             total=100,
@@ -285,53 +316,129 @@ def main() -> None:
                 pbar.update(progress - pbar.n)
 
         print("\nelapsed_time:{:>10.2f} sec".format(elapsed_time))
+        print("[PROBE ] {}".format(__basefile))
+        subprocess.run(
+            args=[
+                "ffprobe",
+                "-v",
+                "error",
+                "-hide_banner",
+                "-show_chapters",
+                "-show_format",
+                "-show_library_versions",
+                "-show_program_version",
+                "-show_programs",
+                "-show_streams",
+                "-print_format",
+                "json",
+                "-i",
+                "{}".format(__basefile),
+                "-o",
+                "{}".format(__basefile.replace(__baseext, "_ffprobe.json", 1)),
+            ],
+            timeout=10,
+            check=True,
+        )
+
+        with open("{}".format(__basefile.replace(__baseext, "_ffprobe.json", 1)), "rb") as file:
+            __base_probe_log = json.load(file)
 
         with open("{}/settings.json".format(args.dist), "rb") as fin:
             __encode_cfg = json.load(fin)
 
-        hasher = hashlib.sha256()
-
-        files = glob.glob("{}/*.mp4".format(args.dist))
-        print("files: {}".format(files))
+        files = glob.glob("{}/*{}".format(args.dist, __baseext))
         __dist_files: list = []
         for __dist_file in files:
             with open(__dist_file, "rb") as hash_file:
-                hasher.update(hash_file.read())
-                __dist_files.append("{}".format(hasher.hexdigest()))
+                __hasher = hashlib.sha256()
+                __hasher.update(hash_file.read())
+                __dist_files.append("{}".format(__hasher.hexdigest()))
 
         __length: int = len(__encode_cfg["encodes"])
         for __index, __encode in enumerate(__encode_cfg["encodes"]):
             print(
                 "=" * 80
-                + "\n{:0>4}/{:0>4} ({:>7.2%})\n".format(__index, __length, __index / __length)
+                + "\n{:0>4}/{:0>4} ({:>7.2%})\n".format(
+                    (__index + 1), __length, (__index + 1) / __length
+                )
             )
-            print(__dist_files)
-            print(__encode["filename_hash"])
-            print(__encode["filename_hash"] not in __dist_files)
-            if __encode["filename_hash"] not in __dist_files:
-                __encode_time = encoding(basefile=__basefile, encode_cfg=__encode)
 
-                with open("{}.mp4".format(__encode["filename"]), "rb") as file_hash_cncode:
-                    hasher.update(file_hash_cncode.read())
-                    __encode_cfg["encodes"][__index]["filename_hash"] = "{}".format(
-                        hasher.hexdigest()
+            __encode_exec_flg: bool = (
+                __encode["outfile"]["hash"] == ""
+                or __encode["outfile"]["hash"] not in __dist_files
+            )
+            print("outfile hash:  {}".format(__encode["outfile"]["hash"]))
+            print("outfile cache: {}".format(not __encode_exec_flg))
+            if __encode_exec_flg:
+                __encode_rep = encoding(encode_cfg=__encode, outputext=__baseext)
+                __encode_cfg["encodes"][__index]["commandline"] = __encode_rep["commandline"]
+
+                with open(
+                    "{}{}".format(__encode["outfile"]["filename"], __baseext), "rb"
+                ) as file_hash_cncode:
+                    __hasher = hashlib.sha256()
+                    __hasher.update(file_hash_cncode.read())
+                    __encode_cfg["encodes"][__index]["outfile"]["hash"] = "{}".format(
+                        __hasher.hexdigest()
                     )
 
-                __encode_cfg["encodes"][__index]["elapsed"]["encode"]["second"] = __encode_time
+                __encode_cfg["encodes"][__index]["elapsed"]["encode"]["second"] = __encode_rep[
+                    "elapsed_time"
+                ]
                 __encode_cfg["encodes"][__index]["elapsed"]["encode"]["time"] = strftime(
-                    "%H:%M:%S", gmtime(__encode_time)
+                    "%H:%M:%S", gmtime(__encode_rep["elapsed_time"])
                 )
 
-                __vmaf_time = getvmaf(basefile=__basefile, encode_cfg=__encode)
-                __encode_cfg["encodes"][__index]["elapsed"]["vmaf"]["second"] = __vmaf_time
+                """compression"""
+                with open("{}_ffprobe.json".format(__encode["outfile"]["filename"]), "rb") as file:
+                    __probe_log = json.load(file)
+
+                    """infile"""
+                    __encode_cfg["encodes"][__index]["infile"]["duration"] = float(
+                        __base_probe_log["format"]["duration"]
+                    )
+                    __encode_cfg["encodes"][__index]["infile"]["size"] = int(
+                        __base_probe_log["format"]["size"]
+                    )
+
+                    """outfile"""
+                    __encode_cfg["encodes"][__index]["outfile"]["duration"] = float(
+                        __probe_log["format"]["duration"]
+                    )
+                    __encode_cfg["encodes"][__index]["outfile"]["size"] = int(
+                        __probe_log["format"]["size"]
+                    )
+
+                    """results"""
+                    __encode_cfg["encodes"][__index]["results"]["compression"][
+                        "ratio_persent"
+                    ] = 1 - (
+                        float(__probe_log["format"]["size"])
+                        / float(__base_probe_log["format"]["size"])
+                    )
+                    __encode_cfg["encodes"][__index]["results"]["compression"]["speed"] = (
+                        float(__probe_log["format"]["duration"]) / __encode_rep["elapsed_time"]
+                    )
+
+                with open("{}/settings.json".format(args.dist), "w") as file:
+                    json.dump(
+                        {"configs": __configs, "encodes": __encode_cfg["encodes"]}, file, indent=2
+                    )
+
+                """VMAF"""
+                __vmaf_rsp = getvmaf(encode_cfg=__encode, outputext=__baseext)
+                __encode_cfg["encodes"][__index]["elapsed"]["vmaf"]["second"] = __vmaf_rsp[
+                    "elapsed_time"
+                ]
                 __encode_cfg["encodes"][__index]["elapsed"]["vmaf"]["time"] = strftime(
-                    "%H:%M:%S", gmtime(__vmaf_time)
+                    "%H:%M:%S", gmtime(__vmaf_rsp["elapsed_time"])
                 )
 
-                with open("{}_vmaf.json".format(__encode["filename"]), "rb") as file:
+                with open("{}_vmaf.json".format(__encode["outfile"]["filename"]), "rb") as file:
                     __vmaf_log = json.load(file)
-                    __encode_cfg["encodes"][__index]["vmaf"] = {
+                    __encode_cfg["encodes"][__index]["results"]["vmaf"] = {
                         "version": __vmaf_log["version"],
+                        "commandline": __vmaf_rsp["commandline"],
                         "pooled_metrics": {
                             "float_ssim": __vmaf_log["pooled_metrics"]["float_ssim"],
                             "vmaf": __vmaf_log["pooled_metrics"]["vmaf"],
@@ -340,9 +447,12 @@ def main() -> None:
 
             with open("{}/settings.json".format(args.dist), "w") as file:
                 json.dump(
-                    {"configs": __config, "encodes": __encode_cfg["encodes"]}, file, indent=2
+                    {"configs": __configs, "encodes": __encode_cfg["encodes"]}, file, indent=2
                 )
 
 
 if __name__ == "__main__":
     main()
+
+# %%
+""
