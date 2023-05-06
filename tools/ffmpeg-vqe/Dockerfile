@@ -257,7 +257,7 @@ RUN set -eux && \
     tqdm
 
 ### Scripts
-COPY                entrypoint.py                           /app/entrypoint.py
+COPY                src/ffmpegvqe/entrypoint.py     /app/entrypoint.py
 
 RUN set -eux && \
     readelf -d /usr/local/bin/ffmpeg

@@ -228,13 +228,33 @@ $ sha256sum bbb_original.mp4
 
 
 ```bash
+# FFmpeg
+cd ~/FFmpeg-video-quality-evaluations/tools/ffmpeg-vqe/ && docker build -t ffmpeg-vqe . && cd ../../
+docker run --rm -it --gpus all \
+  -v $PWD/videos/source:/source \
+  -v $PWD/videos/dist:/dist \
+  -v $PWD/tools/ffmpeg-vqe:/opt \
+  --device "/dev/dri:/dev/dri" \
+  ffmpeg-vqe --encode --ffmpeg-cattime 300 -cy
+
 # plotbitrate
 cd ~/FFmpeg-video-quality-evaluations/tools/plotbitrate/ && docker build -t plotbitrate . && cd ../../
-docker run --rm -it -v $PWD/videos/source:/source -v $PWD/videos/dist:/dist plotbitrate
+docker run --rm -it \
+  -v $PWD/videos/source:/source \
+  -v $PWD/videos/dist:/dist \
+  plotbitrate
 
-# ffmpeg
-cd ~/FFmpeg-video-quality-evaluations/tools/ffmpeg-vqe/ && docker build -t ffmpeg-vqe . && cd ../../
-docker run --rm -it --gpus all -v $PWD/videos/source:/source -v $PWD/videos/dist:/dist -v $PWD/tools/ffmpeg-vqe:/opt --device "/dev/dri:/dev/dri" --entrypoint=/bin/bash ffmpeg-vqe
+# runner
+docker run --rm -it --gpus all \
+  -v $PWD/videos/source:/source \
+  -v $PWD/videos/dist:/dist \
+  -v $PWD/tools/ffmpeg-vqe:/opt \
+  --device "/dev/dri:/dev/dri" \
+  ffmpeg-vqe --encode --ffmpeg-cattime 300 -cy && \
+docker run --rm -it \
+  -v $PWD/videos/source:/source \
+  -v $PWD/videos/dist:/dist \
+  plotbitrate
 
 ```
 
