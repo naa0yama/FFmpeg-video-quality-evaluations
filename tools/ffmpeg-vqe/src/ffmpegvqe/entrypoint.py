@@ -378,6 +378,18 @@ def main() -> None:
         with open("{}/settings.json".format(args.dist), "rb") as fin:
             __encode_cfg = json.load(fin)
 
+        __encode_cfg["configs"]["ffmpege"] = {
+            "program_version": __base_probe_log["program_version"],
+            "library_versions": __base_probe_log["library_versions"],
+        }
+
+        with open("{}/settings.json".format(args.dist), "w") as file:
+            json.dump(
+                {"configs": __encode_cfg["configs"], "encodes": __encode_cfg["encodes"]},
+                file,
+                indent=2,
+            )
+
         files = glob.glob("{}/*{}".format(args.dist, __baseext))
         __dist_files: list = []
         for __dist_file in files:
@@ -454,7 +466,9 @@ def main() -> None:
 
                 with open("{}/settings.json".format(args.dist), "w") as file:
                     json.dump(
-                        {"configs": __configs, "encodes": __encode_cfg["encodes"]}, file, indent=2
+                        {"configs": __encode_cfg["configs"], "encodes": __encode_cfg["encodes"]},
+                        file,
+                        indent=2,
                     )
 
                 """VMAF"""
@@ -479,7 +493,9 @@ def main() -> None:
 
             with open("{}/settings.json".format(args.dist), "w") as file:
                 json.dump(
-                    {"configs": __configs, "encodes": __encode_cfg["encodes"]}, file, indent=2
+                    {"configs": __encode_cfg["configs"], "encodes": __encode_cfg["encodes"]},
+                    file,
+                    indent=2,
                 )
 
 
