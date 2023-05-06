@@ -250,7 +250,7 @@ docker run --rm -it --gpus all \
   -v $PWD/videos/dist:/dist \
   -v $PWD/tools/ffmpeg-vqe:/opt \
   --device "/dev/dri:/dev/dri" \
-  ffmpeg-vqe --encode --ffmpeg-cattime 300 -cy && \
+  ffmpeg-vqe --encode --ffmpeg-cattime 300 && \
 docker run --rm -it \
   -v $PWD/videos/source:/source \
   -v $PWD/videos/dist:/dist \
