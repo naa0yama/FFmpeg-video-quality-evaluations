@@ -8,20 +8,6 @@ FILENAME="$(basename "${FILE}" "${SUFFIX}")"
 
 cd "${PLOTBITRATE_DIR}"
 
-set -x +e
-ffprobe -v error \
-  -hide_banner \
-  -show_chapters \
-  -show_format \
-  -show_library_versions \
-  -show_program_version \
-  -show_programs \
-  -show_streams \
-  -print_format json \
-  -i "${FILE}" \
-  -o "${OUTPUTDIR}/${FILENAME}_ffprobe.json"
-set +x
-
 if [ "$(ffprobe -v error -hide_banner -show_streams ${FILE} | grep -c -e 'codec_type=video')" != 0 ]; then
   set -x
   python plotbitrate.py --show-frame-types --stream video --format "csv_raw" --output "${OUTPUTDIR}/${FILENAME}_video.csv" "${FILE}"
