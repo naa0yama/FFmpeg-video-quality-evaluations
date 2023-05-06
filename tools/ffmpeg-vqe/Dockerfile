@@ -257,11 +257,10 @@ RUN set -eux && \
     tqdm
 
 ### Scripts
-#COPY                entrypoint.sh                           /app/entrypoint.sh
-#COPY                encode.sh                               /app/encode.sh
+COPY                entrypoint.py                           /app/entrypoint.py
 
 RUN set -eux && \
     readelf -d /usr/local/bin/ffmpeg
 
-ENTRYPOINT ["bash", "/app/entrypoint.sh"]
-CMD [""]
+ENTRYPOINT ["python3", "/app/entrypoint.py"]
+CMD ["-h"]

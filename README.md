@@ -55,13 +55,15 @@ vainfo: Supported profile and entrypoints
 
 Ref: [CUDA Toolkit 12.1 Update 1 Downloads | NVIDIA Developer](https://developer.nvidia.com/cuda-downloads)
 
+`sudo apt-get -y install cuda` の箇所はドライバーのみインストールされれば問題ないため変更しています
+
 ```bash
 # Download Installer for Linux Debian 11 x86_64
 wget https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/cuda-keyring_1.0-1_all.deb
 sudo dpkg -i cuda-keyring_1.0-1_all.deb
 sudo add-apt-repository contrib
 sudo apt-get update
-sudo apt-get -y install cuda
+sudo apt-get -y install cuda-drivers
 
 ```
 
@@ -158,6 +160,30 @@ $ sudo systemctl set-default multi-user.target
 
 Ref: [Install Docker Engine | Docker Documentation](https://docs.docker.com/engine/install/)
 
+```bash
+curl https://get.docker.com | sh \
+  && sudo systemctl --now enable docker
+
+```
+
+### Container Toolkit
+
+詳しくは記事を参考にして欲しいが、ホストマシーンにインストールされたDriver類を自動でmountしてくるためこれを使わないとうまく動かなかった。
+
+[NVIDIA Container Toolkit (NVIDIA Docker) は何をしてくれるか - Qiita](https://qiita.com/tkusumi/items/f275f0737fb5b261a868)
+[NVIDIA Docker って今どうなってるの？ (20.09 版) | by Kuninobu Sasaki | NVIDIA Japan | Medium](https://medium.com/nvidiajapan/nvidia-docker-%E3%81%A3%E3%81%A6%E4%BB%8A%E3%81%A9%E3%81%86%E3%81%AA%E3%81%A3%E3%81%A6%E3%82%8B%E3%81%AE-20-09-%E7%89%88-558fae883f44)
+
+インストール自体は [Installation Guide — NVIDIA Cloud Native Technologies documentation](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker) の Docker の箇所をすれば問題ない
+
+```bash
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
+      && curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+      && curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | \
+            sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+            sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
+```
+
 ## Sample move
 
 Internet archive host download
@@ -177,9 +203,6 @@ $ sha256sum bbb_original.mp4
 
 ```
 
-|      | CRF |
-| :--- ||
-|      |
 
 * crf
   * 18-34
@@ -219,16 +242,19 @@ docker run --rm -it --gpus all -v $PWD/videos/source:/source -v $PWD/videos/dist
 * qp(Constant quantization parameter)
 * cq(constant quality mode in VBR)
 
-| codec      |  crf  |  qp   |  cq   | preset             |
-| :--------- | :---: | :---: | :---: | :----------------- |
-| libx264    |   O   |   O   |       | medium             |
-| h264_nvenc |       |   O   |   O   | p4                 |
-| h264_qsv   |       |       |       | medium (default 0) |
-| h264_vaapi |       |   O   |       |                    |
-| libx265    |   O   |   O   |       | medium             |
-| hevc_nvenc |       |   O   |   O   | p4                 |
-| hevc_qsv   |       |       |       | 0                  |
-| hevc_vaapi |       |   O   |       |                    |
+* preset は標準, 標準から -3, +3 を試す
+
+| codec       |  crf  |  qp   |      cq       | preset default        | 試す preset                         |
+| :---------- | :---: | :---: | :-----------: | :-------------------- | :---------------------------------- |
+| **libx264** |   O   |   O   |               | medium                | veryfast ,medium, veryslow          |
+| h264_nvenc  |       |   O   |       O       | 15(p4)                | 12(p2), 15(p4), 18(p7)              |
+| h264_qsv    |       |       |               | 4(medium) (default 0) | 7(veryfast), 4(medium), 1(veryslow) |
+| h264_vaapi  |       |   O   | O (rc_mode 1) | `-`                   |
+|             |       |       |               |                       |
+| **libx265** |   O   |   O   |               | medium                | veryfast ,medium, veryslow          |
+| hevc_nvenc  |       |   O   |       O       | 15(p4)                | 12(p2), 15(p4), 18(p7)              |
+| hevc_qsv    |       |       |               | 4(medium) (default 0) | 7(veryfast), 4(medium), 1(veryslow) |
+| hevc_vaapi  |       |   O   | O (rc_mode 1) | `-`                   |
 
 |                    |      |      |                      |
 | :----------------- | :--- | :--- | :------------------- |
@@ -240,15 +266,15 @@ docker run --rm -it --gpus all -v $PWD/videos/source:/source -v $PWD/videos/dist
 * [Hardware/VAAPI – FFmpeg](https://trac.ffmpeg.org/wiki/Hardware/VAAPI)
 
 ```bash
-ffmpeg -h encoder=libx264    > libx264.txt
-ffmpeg -h encoder=h264_nvenc > h264_nvenc.txt
-ffmpeg -h encoder=h264_qsv   > .txt
-ffmpeg -h encoder=h264_qsv   > h264_qsv.txt
-ffmpeg -h encoder=h264_vaapi > h264_vaapi.txt
-ffmpeg -h encoder=libx265    > libx265.txt
-ffmpeg -h encoder=hevc_nvenc > hevc_nvenc.txt
-ffmpeg -h encoder=hevc_qsv   > hevc_qsv.txt
-ffmpeg -h encoder=hevc_vaapi > hevc_vaapi.txt
+ffmpeg -hide_banner -h encoder=libx264    > libx264.txt
+ffmpeg -hide_banner -h encoder=h264_nvenc > h264_nvenc.txt
+ffmpeg -hide_banner -h encoder=h264_qsv   > .txt
+ffmpeg -hide_banner -h encoder=h264_qsv   > h264_qsv.txt
+ffmpeg -hide_banner -h encoder=h264_vaapi > h264_vaapi.txt
+ffmpeg -hide_banner -h encoder=libx265    > libx265.txt
+ffmpeg -hide_banner -h encoder=hevc_nvenc > hevc_nvenc.txt
+ffmpeg -hide_banner -h encoder=hevc_qsv   > hevc_qsv.txt
+ffmpeg -hide_banner -h encoder=hevc_vaapi > hevc_vaapi.txt
 
 ffmpeg [options] [[infile options] -i infile]... {[outfile options] outfile}...
 
@@ -266,14 +292,14 @@ ffmpeg -y \
 ffmpeg -y \
   -hwaccel cuda -hwaccel_output_format cuda \
   -i /dist/base.mp4 \
-  -c:v h264_nvenc -preset p4 \
+  -c:v h264_nvenc -preset 15 \
   /dist/x264_nvenc_default_p4.mp4
 
 # h264_qsv
 ffmpeg -y \
   -hwaccel qsv -hwaccel_output_format qsv \
   -i /dist/base.mp4 \
-  -c:v h264_qsv -preset medium \
+  -c:v h264_qsv -preset 4 \
   /dist/x264_qsv_default_medium.mp4
 
 # h264_vaapi
@@ -295,7 +321,7 @@ ffmpeg -y \
 ffmpeg -y \
   -hwaccel cuda -hwaccel_output_format cuda \
   -i /dist/base.mp4 \
-  -c:v hevc_nvenc -preset p4 \
+  -c:v hevc_nvenc -preset 15 \
   -tag:v hvc1 \
   /dist/x265_nvenc_default_p4.mp4
 
@@ -303,7 +329,7 @@ ffmpeg -y \
 ffmpeg -y \
   -hwaccel qsv -hwaccel_output_format qsv \
   -i /dist/base.mp4 \
-  -c:v hevc_qsv -preset medium \
+  -c:v hevc_qsv -preset 4 \
   -tag:v hvc1 \
   /dist/x265_qsv_default_medium.mp4
 

@@ -75,7 +75,7 @@
     "editor.codeActionsOnSave": {
       "source.organizeImports": true
     },
-    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.defaultFormatter": "ms-python.python",
     "editor.formatOnPaste": false,
     "editor.tabSize": 4
   },
@@ -154,7 +154,7 @@
     * Formatting */
   "python.formatting.blackArgs": [],
   "python.formatting.blackPath": "${workspaceFolder}/.venv/bin/black",
-  "python.formatting.provider": "none",
+  "python.formatting.provider": "black",
   /* ---------------------------------------------------------------------------
     * Python の設定 linting */
   "python.linting.enabled": true,
@@ -191,7 +191,7 @@
   "python.analysis.completeFunctionParens": true,
   "python.analysis.extraPaths": [
     "${workspaceFolder}/.venv/lib/**/site-packages/",
-    "${workspaceFolder}/src/pythonboilerplate/",
+    "${workspaceFolder}/src/ffmpegvqe/",
   ],
   "python.analysis.importFormat": "absolute",
   "python.analysis.typeCheckingMode": "off",
