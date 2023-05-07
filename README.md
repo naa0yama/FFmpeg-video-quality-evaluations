@@ -239,6 +239,11 @@ docker run --rm -it --gpus all \
   python3 /app/entrypoint.py --encode && \
   bash /app/plotbitrate.sh
 
+mkdir -p assets/BigBuckBunny
+cp -ar videos/dist assets/BigBuckBunny
+cd assets/BigBuckBunny
+tar -Jcvf BigBuckBunny_vmaf.tar.xz *_vmaf.json
+
 ```
 
 * crf(constant quality mode)
