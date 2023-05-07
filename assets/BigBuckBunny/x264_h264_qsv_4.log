@@ -1,0 +1,47 @@
+ffmpeg started on 2023-05-06 at 18:24:26
+Report written to "/dist/x264_h264_qsv_4.log"
+Log level: 32
+Command line:
+ffmpeg -progress - -nostats -y -hwaccel qsv -hwaccel_output_format qsv -i /dist/base.mp4 -c:v h264_qsv -preset 4 /dist/x264_h264_qsv_4.mp4
+ffmpeg version 6.0 Copyright (c) 2000-2023 the FFmpeg developers
+  built with gcc 11 (Ubuntu 11.3.0-1ubuntu1~22.04)
+  configuration: --disable-debug --disable-doc --disable-ffplay --extra-libs='-lpthread -lm' --ld=g++ --enable-small --pkg-config-flags=--static --extra-cflags=-fopenmp --extra-ldflags='-fopenmp -Wl,-z,stack-size=2097152' --toolchain=hardened --enable-static --disable-shared --enable-cuda-nvcc --extra-cflags='-I /usr/local/cuda/include' --extra-ldflags='-L /usr/local/cuda/compat -L /usr/local/cuda/lib64' --nvccflags='-gencode arch=compute_90a,code=sm_90a -gencode arch=compute_90,code=sm_90 -gencode arch=compute_89,code=sm_89 -gencode arch=compute_87,code=sm_87 -gencode arch=compute_86,code=sm_86 -gencode arch=compute_80,code=sm_80 -gencode arch=compute_75,code=sm_75 -gencode arch=compute_72,code=sm_72 -gencode arch=compute_70,code=sm_70 -O2' --enable-gpl --enable-libaom --enable-libaribb24 --enable-libass --enable-libdav1d --enable-libfdk-aac --enable-libfreetype --enable-libmfx --enable-libmp3lame --enable-libopus --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable  libavutil      58.  2.100 / 58.  2.100
+  libavcodec     60.  3.100 / 60.  3.100
+  libavformat    60.  3.100 / 60.  3.100
+  libavdevice    60.  1.100 / 60.  1.100
+  libavfilter     9.  3.100 /  9.  3.100
+  libswscale      7.  1.100 /  7.  1.100
+  libswresample   4. 10.100 /  4. 10.100
+  libpostproc    57.  1.100 / 57.  1.100
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/dist/base.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf60.3.100
+  Duration: 00:05:00.02, start: 0.000000, bitrate: 3992 kb/s
+  Stream #0:0[0x1](und): Video: h264 (avc1 / 0x31637661), yuv420p(progressive), 1920x1080 [SAR 1:1 DAR 16:9], 3987 kb/s, 60 fps, 60 tbr, 90k tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      vendor_id       : [0][0][0][0]
+Stream mapping:
+  Stream #0:0 -> #0:0 (h264 (h264_qsv) -> h264 (h264_qsv))
+Press [q] to stop, [?] for help
+Output #0, mp4, to '/dist/x264_h264_qsv_4.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf60.3.100
+  Stream #0:0(und): Video: h264 (avc1 / 0x31637661), qsv(tv, progressive), 1920x1080 [SAR 1:1 DAR 16:9], q=2-31, 1000 kb/s, 60 fps, 15360 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      vendor_id       : [0][0][0][0]
+      encoder         : Lavc60.3.100 h264_qsv
+    Side data:
+      cpb: bitrate max/min/avg: 0/0/1000000 buffer size: 0 vbv_delay: N/A
+[h264_qsv @ 0x5634fa1eae80] A decode call did not consume any data: expect more data at input (-10)
+[h264_qsv @ 0x5634fa1eae80] A decode call did not consume any data: expect more data at input (-10)
+[h264_qsv @ 0x5634fa1eae80] A decode call did not consume any data: expect more data at input (-10)
+frame=18001 fps=309 q=26.0 Lsize=   58796kB time=00:04:59.98 bitrate=1605.6kbits/s speed=5.16x    
+video:58612kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.313663%

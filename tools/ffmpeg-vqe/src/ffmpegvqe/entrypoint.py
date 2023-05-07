@@ -50,7 +50,7 @@ parser.add_argument("--ffmpeg-cattime")
 args = parser.parse_args()
 
 __configs: dict = {
-    "origfile": "/source/bbb_original.mp4",
+    "origfile": "/source/sample-ed-1080p.mp4",
     "basefile": "/dist/base.mp4",
     "patterns": [
         {
@@ -315,9 +315,9 @@ def main() -> None:
             }
             __results_list.append(__result_template)
 
-        if not os.path.exists("{}/settings.json".format(args.dist)) or args.conf_yes is True:
-            with open("{}/settings.json".format(args.dist), "w") as file:
-                json.dump({"configs": __configs, "encodes": __results_list}, file, indent=2)
+    if not os.path.exists("{}/settings.json".format(args.dist)) or args.conf_yes is True:
+        with open("{}/settings.json".format(args.dist), "w") as file:
+            json.dump({"configs": __configs, "encodes": __results_list}, file, indent=2)
 
     if args.encode is True:
         __ffmpege_cmd: list = [

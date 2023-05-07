@@ -22,6 +22,7 @@ name                       = "Naoki Aoyama"
 python                     = "~3.10"
 ffmpeg-progress-yield      = "~0.7.2"
 tqdm                       = "~4.65.0"
+plotbitrate                = "~1.0.8.0"
 
 [tool.poetry.group.dev.dependencies]
 taskipy                    = "~1.10.3"
