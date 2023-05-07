@@ -3,29 +3,34 @@ ARG NVIDIA_CUDA_VER=12.1.0-devel-ubuntu22.04
 
 ARG DEBIAN_FRONTEND noninteractive
 ARG DEBCONF_NOWARNINGS yes
-
+ARG PYTHONUNBUFFERED=1
+ARG TZ "Asia/Tokyo"
 #- -------------------------------------------------------------------------------------------------
 #- Builder
 #-
 FROM nvidia/cuda:${NVIDIA_CUDA_VER} as builder
 
-ARG DEBIAN_FRONTEND
-ARG DEBCONF_NOWARNINGS
+ENV DEBIAN_FRONTEND=${DEBIAN_FRONTEND}
+ENV DEBCONF_NOWARNINGS=${DEBCONF_NOWARNINGS}
+ENV PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
+ENV TZ=${TZ}
 
+## NVIDIA
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES},video
 ENV LD_LIBRARY_PATH "/usr/local/cuda/compat:/usr/local/cuda/lib64:$LD_LIBRARY_PATH"
 ENV PATH "/usr/local/cuda/bin:$PATH"
 # https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/index.html#virtual-architecture-feature-list
 ENV CUDA_CC="70 72 75 80 86 87 89 90 90a"
-
 ARG NVIDIA_CODECSDK_VER
 ARG NVIDIA_CUDA_VER
 
+## VMAF
 ARG VMAF_VERSION=2.3.1
 ARG VMAF_URL="https://github.com/Netflix/vmaf/archive/refs/tags/v${VMAF_VERSION}.tar.gz"
 ARG VMAF_SHA256=8d60b1ddab043ada25ff11ced821da6e0c37fd7730dd81c24f1fc12be7293ef2
 
+## FFmpeg
 ARG FFMPEG_VERSION=6.0
 ARG FFMPEG_URL="https://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.bz2"
 ARG FFMPEG_SHA256=47d062731c9f66a78380e35a19aac77cebceccd1c7cc309b9c82343ffc430c3d
@@ -193,13 +198,31 @@ RUN set -eux && \
     ffmpeg -hide_banner -buildconf && \
     for i in decoders encoders; do echo ${i}:; ffmpeg -hide_banner -${i} | egrep -i "av1|[x|h]264|[x|h]265|hevc|vp9|qsv|vaapi|nvenc|libmfx"; done
 
+# Scripts
+RUN mkdir -p         /app
+COPY pyproject.toml  /app
+COPY poetry.lock     /app
+WORKDIR              /app
+
+RUN set -eux && \
+    apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip && \
+    pip3 install --upgrade pip setuptools wheel && \
+    pip install poetry && \
+    poetry config virtualenvs.create false && \
+    poetry install --only main
+
 #- -------------------------------------------------------------------------------------------------
 #- Runner
 #-
 FROM ubuntu:jammy
 
-ARG DEBIAN_FRONTEND
-ARG DEBCONF_NOWARNINGS
+ENV DEBIAN_FRONTEND=${DEBIAN_FRONTEND}
+ENV DEBCONF_NOWARNINGS=${DEBCONF_NOWARNINGS}
+ENV PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
+ENV TZ=${TZ}
 
 SHELL ["/bin/bash", "-c"]
 
@@ -242,6 +265,7 @@ RUN set -eux && \
 RUN set -eux && \
     apt-get update -qq && \
     apt-get install -y --no-install-recommends \
+    tzdata \
     binutils \
     jq \
     python3 \
@@ -251,16 +275,16 @@ RUN set -eux && \
     rm -rf /var/lib/apt/lists/*
 
 RUN set -eux && \
-    pip3 install -U pip && \
-    pip3 install \
-    ffmpeg-progress-yield \
-    tqdm
+    pip3 install -U pip setuptools wheel
 
 ### Scripts
-COPY                src/ffmpegvqe/entrypoint.py     /app/entrypoint.py
+COPY --from=builder /usr/local/lib/python3.10/dist-packages     /usr/local/lib/python3.10/dist-packages
+COPY --from=builder /usr/local/bin/plotbitrate                  /usr/local/bin/plotbitrate
+COPY                src/ffmpegvqe/entrypoint.py                 /app/entrypoint.py
+COPY                plotbitrate.sh                              /app/plotbitrate.sh
 
 RUN set -eux && \
     readelf -d /usr/local/bin/ffmpeg
 
-ENTRYPOINT ["python3", "/app/entrypoint.py"]
-CMD ["-h"]
+# ENTRYPOINT ["bash"]
+# CMD [""]
