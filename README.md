@@ -1,4 +1,5 @@
 # FFmpeg-video-quality-evaluations
+
 Video encoding quality evaluation project using VMAF and SSIM
 
 ## tools
@@ -117,7 +118,7 @@ KERNEL=="render*" GROUP="render", MODE="0666"
 
 ```
 
-**please restart**
+#### please restart
 
 ### Device recognition confirmation
 
@@ -203,28 +204,7 @@ $ sha256sum bbb_original.mp4
 
 ```
 
-
-* crf
-  * 18-34
-  * 23(libx264 default)
-  * 28(libx265 default)
-
-* hwaccel
-  * cuda(nvenv)
-  * vaapi
-  * qsv
-
-* encoders
-  * x264
-    * libx264
-    * h264_nvenc
-    * h264_qsv
-    * h264_vaapi
-  * x265
-    * libx265
-    * hevc_nvenc
-    * h265_qsv
-    * h265_vaapi
+## エンコードとテスト
 
 ```bash
 # FFmpeg
@@ -243,6 +223,7 @@ mkdir -p assets/BigBuckBunny
 cp -ar videos/dist assets/BigBuckBunny
 cd assets/BigBuckBunny
 tar -Jcvf BigBuckBunny_vmaf.tar.xz *_vmaf.json
+rm -rf *_vmaf.json
 
 ```
 
@@ -269,7 +250,7 @@ tar -Jcvf BigBuckBunny_vmaf.tar.xz *_vmaf.json
 | **Global options** |      |      |                      |
 |                    |      | `-y` | 出力ファイルの上書き |
 
-
+* [HWAccelIntro – FFmpeg](https://trac.ffmpeg.org/wiki/HWAccelIntro)
 * [Hardware/QuickSync – FFmpeg](https://trac.ffmpeg.org/wiki/Hardware/QuickSync)
 * [Hardware/VAAPI – FFmpeg](https://trac.ffmpeg.org/wiki/Hardware/VAAPI)
 
