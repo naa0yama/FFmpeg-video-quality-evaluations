@@ -1,0 +1,3050 @@
+{
+  "configs": {
+    "origfile": "/source/sample-ed-1080p.mp4",
+    "basefile": "/dist/base.mp4",
+    "patterns": [
+      {
+        "codec": "libx264",
+        "type": "x264_crf21",
+        "presets": [
+          "veryfast",
+          "medium",
+          "veryslow"
+        ],
+        "infile": {
+          "options": []
+        },
+        "outfile": {
+          "options": [
+            "-crf",
+            "21"
+          ]
+        },
+        "hwaccels": []
+      },
+      {
+        "codec": "libx264",
+        "type": "x264_crf23",
+        "presets": [
+          "veryfast",
+          "medium",
+          "veryslow"
+        ],
+        "infile": {
+          "options": []
+        },
+        "outfile": {
+          "options": [
+            "-crf",
+            "23"
+          ]
+        },
+        "hwaccels": []
+      },
+      {
+        "codec": "libx264",
+        "type": "x264_crf25",
+        "presets": [
+          "veryfast",
+          "medium",
+          "veryslow"
+        ],
+        "infile": {
+          "options": []
+        },
+        "outfile": {
+          "options": [
+            "-crf",
+            "25"
+          ]
+        },
+        "hwaccels": []
+      },
+      {
+        "codec": "h264_nvenc",
+        "type": "x264",
+        "presets": [
+          "12",
+          "15",
+          "18"
+        ],
+        "infile": {
+          "options": []
+        },
+        "outfile": {
+          "options": []
+        },
+        "hwaccels": [
+          "-hwaccel",
+          "cuda",
+          "-hwaccel_output_format",
+          "cuda"
+        ]
+      },
+      {
+        "codec": "h264_qsv",
+        "type": "x264",
+        "presets": [
+          "7",
+          "4",
+          "1"
+        ],
+        "infile": {
+          "options": []
+        },
+        "outfile": {
+          "options": []
+        },
+        "hwaccels": [
+          "-hwaccel",
+          "qsv",
+          "-hwaccel_output_format",
+          "qsv"
+        ]
+      },
+      {
+        "codec": "h264_vaapi",
+        "type": "x264",
+        "presets": [
+          "none"
+        ],
+        "infile": {
+          "options": []
+        },
+        "outfile": {
+          "options": []
+        },
+        "hwaccels": [
+          "-hwaccel",
+          "vaapi",
+          "-hwaccel_output_format",
+          "vaapi"
+        ]
+      },
+      {
+        "codec": "libx265",
+        "type": "x265_crf26",
+        "presets": [
+          "veryfast",
+          "medium",
+          "veryslow"
+        ],
+        "infile": {
+          "options": []
+        },
+        "outfile": {
+          "options": [
+            "-crf",
+            "26",
+            "-tag:v",
+            "hvc1"
+          ]
+        },
+        "hwaccels": ""
+      },
+      {
+        "codec": "libx265",
+        "type": "x265_crf28",
+        "presets": [
+          "veryfast",
+          "medium",
+          "veryslow"
+        ],
+        "infile": {
+          "options": []
+        },
+        "outfile": {
+          "options": [
+            "-crf",
+            "28",
+            "-tag:v",
+            "hvc1"
+          ]
+        },
+        "hwaccels": ""
+      },
+      {
+        "codec": "libx265",
+        "type": "x265_crf30",
+        "presets": [
+          "veryfast",
+          "medium",
+          "veryslow"
+        ],
+        "infile": {
+          "options": []
+        },
+        "outfile": {
+          "options": [
+            "-crf",
+            "30",
+            "-tag:v",
+            "hvc1"
+          ]
+        },
+        "hwaccels": ""
+      },
+      {
+        "codec": "hevc_nvenc",
+        "type": "x265",
+        "presets": [
+          "12",
+          "15",
+          "18"
+        ],
+        "infile": {
+          "options": []
+        },
+        "outfile": {
+          "options": [
+            "-tag:v",
+            "hvc1"
+          ]
+        },
+        "hwaccels": [
+          "-hwaccel",
+          "cuda",
+          "-hwaccel_output_format",
+          "cuda"
+        ]
+      },
+      {
+        "codec": "hevc_qsv",
+        "type": "x265",
+        "presets": [
+          "7",
+          "4",
+          "1"
+        ],
+        "infile": {
+          "options": []
+        },
+        "outfile": {
+          "options": [
+            "-tag:v",
+            "hvc1"
+          ]
+        },
+        "hwaccels": [
+          "-hwaccel",
+          "qsv",
+          "-hwaccel_output_format",
+          "qsv"
+        ]
+      },
+      {
+        "codec": "hevc_vaapi",
+        "type": "x265",
+        "presets": [
+          "none"
+        ],
+        "infile": {
+          "options": []
+        },
+        "outfile": {
+          "options": [
+            "-tag:v",
+            "hvc1"
+          ]
+        },
+        "hwaccels": [
+          "-hwaccel",
+          "vaapi",
+          "-hwaccel_output_format",
+          "vaapi"
+        ]
+      }
+    ],
+    "ffmpege": {
+      "program_version": {
+        "version": "6.0",
+        "copyright": "Copyright (c) 2007-2023 the FFmpeg developers",
+        "compiler_ident": "gcc 11 (Ubuntu 11.3.0-1ubuntu1~22.04)",
+        "configuration": "--disable-debug --disable-doc --disable-ffplay --extra-libs='-lpthread -lm' --ld=g++ --enable-small --pkg-config-flags=--static --extra-cflags=-fopenmp --extra-ldflags='-fopenmp -Wl,-z,stack-size=2097152' --toolchain=hardened --enable-static --disable-shared --enable-cuda-nvcc --extra-cflags='-I /usr/local/cuda/include' --extra-ldflags='-L /usr/local/cuda/compat -L /usr/local/cuda/lib64' --nvccflags='-gencode arch=compute_90a,code=sm_90a -gencode arch=compute_90,code=sm_90 -gencode arch=compute_89,code=sm_89 -gencode arch=compute_87,code=sm_87 -gencode arch=compute_86,code=sm_86 -gencode arch=compute_80,code=sm_80 -gencode arch=compute_75,code=sm_75 -gencode arch=compute_72,code=sm_72 -gencode arch=compute_70,code=sm_70 -O2' --enable-gpl --enable-libaom --enable-libaribb24 --enable-libass --enable-libdav1d --enable-libfdk-aac --enable-libfreetype --enable-libmfx --enable-libmp3lame --enable-libopus --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-nonfree --enable-vaapi --enable-version3"
+      },
+      "library_versions": [
+        {
+          "name": "libavutil",
+          "major": 58,
+          "minor": 2,
+          "micro": 100,
+          "version": 3801700,
+          "ident": "Lavu58.2.100"
+        },
+        {
+          "name": "libavcodec",
+          "major": 60,
+          "minor": 3,
+          "micro": 100,
+          "version": 3933028,
+          "ident": "Lavc60.3.100"
+        },
+        {
+          "name": "libavformat",
+          "major": 60,
+          "minor": 3,
+          "micro": 100,
+          "version": 3933028,
+          "ident": "Lavf60.3.100"
+        },
+        {
+          "name": "libavdevice",
+          "major": 60,
+          "minor": 1,
+          "micro": 100,
+          "version": 3932516,
+          "ident": "Lavd60.1.100"
+        },
+        {
+          "name": "libavfilter",
+          "major": 9,
+          "minor": 3,
+          "micro": 100,
+          "version": 590692,
+          "ident": "Lavfi9.3.100"
+        },
+        {
+          "name": "libswscale",
+          "major": 7,
+          "minor": 1,
+          "micro": 100,
+          "version": 459108,
+          "ident": "SwS7.1.100"
+        },
+        {
+          "name": "libswresample",
+          "major": 4,
+          "minor": 10,
+          "micro": 100,
+          "version": 264804,
+          "ident": "SwR4.10.100"
+        },
+        {
+          "name": "libpostproc",
+          "major": 57,
+          "minor": 1,
+          "micro": 100,
+          "version": 3735908,
+          "ident": "postproc57.1.100"
+        }
+      ]
+    }
+  },
+  "encodes": [
+    {
+      "codec": "libx264",
+      "type": "x264_crf21",
+      "preset": "veryfast",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x264_crf21_libx264_veryfast",
+        "hash": "fa841ff41746615c22adca7b7d5220ab95ff50b6c985cd4bdb6b549cc640ba77",
+        "size": 115025749,
+        "options": [
+          "-crf",
+          "21"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "21",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "/dist/x264_crf21_libx264_veryfast.mp4"
+      ],
+      "hwaccels": [],
+      "elapsed": {
+        "encode": {
+          "second": 56.56336998939514,
+          "time": "00:00:56"
+        },
+        "vmaf": {
+          "second": 174.26549577713013,
+          "time": "00:02:54"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.47837266900820674,
+          "speed": 5.622843901620952
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x264_crf21_libx264_veryfast.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x264_crf21_libx264_veryfast_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.995484,
+              "max": 1.0,
+              "mean": 0.998702,
+              "harmonic_mean": 0.998701
+            },
+            "vmaf": {
+              "min": 88.57358,
+              "max": 100.0,
+              "mean": 95.35803,
+              "harmonic_mean": 95.299143
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx264",
+      "type": "x264_crf21",
+      "preset": "medium",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x264_crf21_libx264_medium",
+        "hash": "05d8d4c3daf4a51d9f3865d1332008108f78084c2b3765355d7cc76f7d5e5ce3",
+        "size": 133999342,
+        "options": [
+          "-crf",
+          "21"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "21",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "medium",
+        "/dist/x264_crf21_libx264_medium.mp4"
+      ],
+      "hwaccels": [],
+      "elapsed": {
+        "encode": {
+          "second": 140.76441860198975,
+          "time": "00:02:20"
+        },
+        "vmaf": {
+          "second": 176.79703521728516,
+          "time": "00:02:56"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.3923298067625145,
+          "speed": 2.25942751128945
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x264_crf21_libx264_medium.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x264_crf21_libx264_medium_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.997081,
+              "max": 1.0,
+              "mean": 0.999238,
+              "harmonic_mean": 0.999238
+            },
+            "vmaf": {
+              "min": 91.173,
+              "max": 100.0,
+              "mean": 96.267001,
+              "harmonic_mean": 96.226912
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx264",
+      "type": "x264_crf21",
+      "preset": "veryslow",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x264_crf21_libx264_veryslow",
+        "hash": "dee76dff7546d670b5e0634bf020160711cb00400cce502918cd7703856325b5",
+        "size": 113779703,
+        "options": [
+          "-crf",
+          "21"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "21",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "veryslow",
+        "/dist/x264_crf21_libx264_veryslow.mp4"
+      ],
+      "hwaccels": [],
+      "elapsed": {
+        "encode": {
+          "second": 682.7808082103729,
+          "time": "00:11:22"
+        },
+        "vmaf": {
+          "second": 172.56902241706848,
+          "time": "00:02:52"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.4840233311853598,
+          "speed": 0.46581127673114964
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x264_crf21_libx264_veryslow.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x264_crf21_libx264_veryslow_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.996647,
+              "max": 1.0,
+              "mean": 0.999225,
+              "harmonic_mean": 0.999225
+            },
+            "vmaf": {
+              "min": 88.886978,
+              "max": 100.0,
+              "mean": 96.096178,
+              "harmonic_mean": 96.052818
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx264",
+      "type": "x264_crf23",
+      "preset": "veryfast",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x264_crf23_libx264_veryfast",
+        "hash": "bcbe1a0a6fa78ddb8df70ad3a76622185ad70817803b997a4ffa0ccd88ff1866",
+        "size": 88720288,
+        "options": [
+          "-crf",
+          "23"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "23",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "/dist/x264_crf23_libx264_veryfast.mp4"
+      ],
+      "hwaccels": [],
+      "elapsed": {
+        "encode": {
+          "second": 56.62137293815613,
+          "time": "00:00:56"
+        },
+        "vmaf": {
+          "second": 170.59342455863953,
+          "time": "00:02:50"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.5976646321662881,
+          "speed": 5.617083858905757
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x264_crf23_libx264_veryfast.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x264_crf23_libx264_veryfast_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.993572,
+              "max": 1.0,
+              "mean": 0.998163,
+              "harmonic_mean": 0.998162
+            },
+            "vmaf": {
+              "min": 86.042066,
+              "max": 100.0,
+              "mean": 94.465091,
+              "harmonic_mean": 94.392257
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx264",
+      "type": "x264_crf23",
+      "preset": "medium",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x264_crf23_libx264_medium",
+        "hash": "afc942c9b0fa89f224527caedc7f9ebb5380daa5f4a95773cebc4e6d0e7f50a3",
+        "size": 104979676,
+        "options": [
+          "-crf",
+          "23"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "23",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "medium",
+        "/dist/x264_crf23_libx264_medium.mp4"
+      ],
+      "hwaccels": [],
+      "elapsed": {
+        "encode": {
+          "second": 130.3483531475067,
+          "time": "00:02:10"
+        },
+        "vmaf": {
+          "second": 170.84825372695923,
+          "time": "00:02:50"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.5239303488450815,
+          "speed": 2.4399771252966045
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x264_crf23_libx264_medium.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x264_crf23_libx264_medium_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.995924,
+              "max": 1.0,
+              "mean": 0.998909,
+              "harmonic_mean": 0.998909
+            },
+            "vmaf": {
+              "min": 89.552455,
+              "max": 100.0,
+              "mean": 95.659806,
+              "harmonic_mean": 95.610642
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx264",
+      "type": "x264_crf23",
+      "preset": "veryslow",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x264_crf23_libx264_veryslow",
+        "hash": "e1948df8f11a7ae691abf8f4a3e2ff54b3e2091855244134ae44500ea8830096",
+        "size": 88051511,
+        "options": [
+          "-crf",
+          "23"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "23",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "veryslow",
+        "/dist/x264_crf23_libx264_veryslow.mp4"
+      ],
+      "hwaccels": [],
+      "elapsed": {
+        "encode": {
+          "second": 631.698557138443,
+          "time": "00:10:31"
+        },
+        "vmaf": {
+          "second": 171.1356542110443,
+          "time": "00:02:51"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.600697451900752,
+          "speed": 0.5034790667256454
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x264_crf23_libx264_veryslow.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x264_crf23_libx264_veryslow_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.995319,
+              "max": 1.0,
+              "mean": 0.998872,
+              "harmonic_mean": 0.998872
+            },
+            "vmaf": {
+              "min": 86.829933,
+              "max": 100.0,
+              "mean": 95.353464,
+              "harmonic_mean": 95.297981
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx264",
+      "type": "x264_crf25",
+      "preset": "veryfast",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x264_crf25_libx264_veryfast",
+        "hash": "f4d26247258a522bd20a09b003a2929b92ef5214713f8c12b058d7a1e9cf8338",
+        "size": 70336319,
+        "options": [
+          "-crf",
+          "25"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "25",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "/dist/x264_crf25_libx264_veryfast.mp4"
+      ],
+      "hwaccels": [],
+      "elapsed": {
+        "encode": {
+          "second": 55.29558873176575,
+          "time": "00:00:55"
+        },
+        "vmaf": {
+          "second": 169.96147847175598,
+          "time": "00:02:49"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.6810336235953799,
+          "speed": 5.751760805781801
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x264_crf25_libx264_veryfast.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x264_crf25_libx264_veryfast_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.991137,
+              "max": 1.0,
+              "mean": 0.997409,
+              "harmonic_mean": 0.997408
+            },
+            "vmaf": {
+              "min": 83.164035,
+              "max": 100.0,
+              "mean": 93.304706,
+              "harmonic_mean": 93.214939
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx264",
+      "type": "x264_crf25",
+      "preset": "medium",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x264_crf25_libx264_medium",
+        "hash": "230a025c76edeae41e352c7eeb1535397dd3e743b15c515e0d3fe6afe65004f7",
+        "size": 82888897,
+        "options": [
+          "-crf",
+          "25"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "25",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "medium",
+        "/dist/x264_crf25_libx264_medium.mp4"
+      ],
+      "hwaccels": [],
+      "elapsed": {
+        "encode": {
+          "second": 120.9148645401001,
+          "time": "00:02:00"
+        },
+        "vmaf": {
+          "second": 170.50048971176147,
+          "time": "00:02:50"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.624109258258656,
+          "speed": 2.63033830629255
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x264_crf25_libx264_medium.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x264_crf25_libx264_medium_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.994449,
+              "max": 1.0,
+              "mean": 0.998481,
+              "harmonic_mean": 0.99848
+            },
+            "vmaf": {
+              "min": 87.388194,
+              "max": 100.0,
+              "mean": 94.887717,
+              "harmonic_mean": 94.827362
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx264",
+      "type": "x264_crf25",
+      "preset": "veryslow",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x264_crf25_libx264_veryslow",
+        "hash": "2bf32a09fc5536d9838d32a2ce0ba7e6bba818f294f7b376e85da482727c6e33",
+        "size": 69511062,
+        "options": [
+          "-crf",
+          "25"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "25",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "veryslow",
+        "/dist/x264_crf25_libx264_veryslow.mp4"
+      ],
+      "hwaccels": [],
+      "elapsed": {
+        "encode": {
+          "second": 590.1566665172577,
+          "time": "00:09:50"
+        },
+        "vmaf": {
+          "second": 171.54575157165527,
+          "time": "00:02:51"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.6847760604848132,
+          "speed": 0.5389196090538435
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x264_crf25_libx264_veryslow.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x264_crf25_libx264_veryslow_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.993649,
+              "max": 1.0,
+              "mean": 0.998423,
+              "harmonic_mean": 0.998422
+            },
+            "vmaf": {
+              "min": 83.920327,
+              "max": 100.0,
+              "mean": 94.454648,
+              "harmonic_mean": 94.384265
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "h264_nvenc",
+      "type": "x264",
+      "preset": "12",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x264_h264_nvenc_12",
+        "hash": "7df3e372cc8d151b471bbc12b14ba8cb91a2d3cabc459fffae960a6d3e6e2ef5",
+        "size": 78022193,
+        "options": [],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-hwaccel",
+        "cuda",
+        "-hwaccel_output_format",
+        "cuda",
+        "-i",
+        "/dist/base.mp4",
+        "-c:v",
+        "h264_nvenc",
+        "-preset",
+        "12",
+        "/dist/x264_h264_nvenc_12.mp4"
+      ],
+      "hwaccels": [
+        "-hwaccel",
+        "cuda",
+        "-hwaccel_output_format",
+        "cuda"
+      ],
+      "elapsed": {
+        "encode": {
+          "second": 16.9512140750885,
+          "time": "00:00:16"
+        },
+        "vmaf": {
+          "second": 167.11050939559937,
+          "time": "00:02:47"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.6461791499161065,
+          "speed": 18.762490910158572
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x264_h264_nvenc_12.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x264_h264_nvenc_12_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.934314,
+              "max": 1.0,
+              "mean": 0.996814,
+              "harmonic_mean": 0.996805
+            },
+            "vmaf": {
+              "min": 66.108268,
+              "max": 100.0,
+              "mean": 94.92613,
+              "harmonic_mean": 94.850785
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "h264_nvenc",
+      "type": "x264",
+      "preset": "15",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x264_h264_nvenc_15",
+        "hash": "e18b99ffd445acfc9d3e963c9ccf036c9f2cbe58370e60df4d4525ec7e79f41e",
+        "size": 80694166,
+        "options": [],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-hwaccel",
+        "cuda",
+        "-hwaccel_output_format",
+        "cuda",
+        "-i",
+        "/dist/base.mp4",
+        "-c:v",
+        "h264_nvenc",
+        "-preset",
+        "15",
+        "/dist/x264_h264_nvenc_15.mp4"
+      ],
+      "hwaccels": [
+        "-hwaccel",
+        "cuda",
+        "-hwaccel_output_format",
+        "cuda"
+      ],
+      "elapsed": {
+        "encode": {
+          "second": 33.6426260471344,
+          "time": "00:00:33"
+        },
+        "vmaf": {
+          "second": 168.2781434059143,
+          "time": "00:02:48"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.634062087809672,
+          "speed": 9.453691265194518
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x264_h264_nvenc_15.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x264_h264_nvenc_15_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.970217,
+              "max": 1.0,
+              "mean": 0.997738,
+              "harmonic_mean": 0.997734
+            },
+            "vmaf": {
+              "min": 81.516599,
+              "max": 100.0,
+              "mean": 95.768786,
+              "harmonic_mean": 95.72055
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "h264_nvenc",
+      "type": "x264",
+      "preset": "18",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x264_h264_nvenc_18",
+        "hash": "74f084c8bbee932a4922be35c1f4bb2301b5dd39952b2a7dedfef5eb491b3a04",
+        "size": 81239118,
+        "options": [],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-hwaccel",
+        "cuda",
+        "-hwaccel_output_format",
+        "cuda",
+        "-i",
+        "/dist/base.mp4",
+        "-c:v",
+        "h264_nvenc",
+        "-preset",
+        "18",
+        "/dist/x264_h264_nvenc_18.mp4"
+      ],
+      "hwaccels": [
+        "-hwaccel",
+        "cuda",
+        "-hwaccel_output_format",
+        "cuda"
+      ],
+      "elapsed": {
+        "encode": {
+          "second": 62.23303151130676,
+          "time": "00:01:02"
+        },
+        "vmaf": {
+          "second": 168.2813696861267,
+          "time": "00:02:48"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.631590798904797,
+          "speed": 5.110581828915339
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x264_h264_nvenc_18.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x264_h264_nvenc_18_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.985637,
+              "max": 1.0,
+              "mean": 0.998116,
+              "harmonic_mean": 0.998114
+            },
+            "vmaf": {
+              "min": 87.004638,
+              "max": 100.0,
+              "mean": 96.109387,
+              "harmonic_mean": 96.068076
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "h264_qsv",
+      "type": "x264",
+      "preset": "7",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x264_h264_qsv_7",
+        "hash": "9ca6507a1de48814b9a80953d31ca9c606402a471e5f4ef369687fb4324fa493",
+        "size": 44950473,
+        "options": [],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-hwaccel",
+        "qsv",
+        "-hwaccel_output_format",
+        "qsv",
+        "-i",
+        "/dist/base.mp4",
+        "-c:v",
+        "h264_qsv",
+        "-preset",
+        "7",
+        "/dist/x264_h264_qsv_7.mp4"
+      ],
+      "hwaccels": [
+        "-hwaccel",
+        "qsv",
+        "-hwaccel_output_format",
+        "qsv"
+      ],
+      "elapsed": {
+        "encode": {
+          "second": 43.295666217803955,
+          "time": "00:00:43"
+        },
+        "vmaf": {
+          "second": 169.0240182876587,
+          "time": "00:02:49"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.7961552481800517,
+          "speed": 7.3459315396609695
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x264_h264_qsv_7.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x264_h264_qsv_7_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.155243,
+              "max": 1.0,
+              "mean": 0.97396,
+              "harmonic_mean": 0.970874
+            },
+            "vmaf": {
+              "min": 0.0,
+              "max": 100.0,
+              "mean": 85.300235,
+              "harmonic_mean": 71.692081
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "h264_qsv",
+      "type": "x264",
+      "preset": "4",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x264_h264_qsv_4",
+        "hash": "cacda66c54b96d6afc5c54fb0f38e8a47563c0b069f3b7342818a2bdf5be6b90",
+        "size": 43291418,
+        "options": [],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-hwaccel",
+        "qsv",
+        "-hwaccel_output_format",
+        "qsv",
+        "-i",
+        "/dist/base.mp4",
+        "-c:v",
+        "h264_qsv",
+        "-preset",
+        "4",
+        "/dist/x264_h264_qsv_4.mp4"
+      ],
+      "hwaccels": [
+        "-hwaccel",
+        "qsv",
+        "-hwaccel_output_format",
+        "qsv"
+      ],
+      "elapsed": {
+        "encode": {
+          "second": 46.558401584625244,
+          "time": "00:00:46"
+        },
+        "vmaf": {
+          "second": 168.84204196929932,
+          "time": "00:02:48"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.8036788543216522,
+          "speed": 6.831140872005949
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x264_h264_qsv_4.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x264_h264_qsv_4_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.177907,
+              "max": 1.0,
+              "mean": 0.984364,
+              "harmonic_mean": 0.983124
+            },
+            "vmaf": {
+              "min": 0.0,
+              "max": 100.0,
+              "mean": 88.054088,
+              "harmonic_mean": 78.870142
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "h264_qsv",
+      "type": "x264",
+      "preset": "1",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x264_h264_qsv_1",
+        "hash": "c24b03ffcc18f24d3635f149d32c0fd8fc5260259f955904d3dc95d8cbbcc5e2",
+        "size": 41729567,
+        "options": [],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-hwaccel",
+        "qsv",
+        "-hwaccel_output_format",
+        "qsv",
+        "-i",
+        "/dist/base.mp4",
+        "-c:v",
+        "h264_qsv",
+        "-preset",
+        "1",
+        "/dist/x264_h264_qsv_1.mp4"
+      ],
+      "hwaccels": [
+        "-hwaccel",
+        "qsv",
+        "-hwaccel_output_format",
+        "qsv"
+      ],
+      "elapsed": {
+        "encode": {
+          "second": 59.7093620300293,
+          "time": "00:00:59"
+        },
+        "vmaf": {
+          "second": 168.81984901428223,
+          "time": "00:02:48"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.8107616525265728,
+          "speed": 5.326585131491548
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x264_h264_qsv_1.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x264_h264_qsv_1_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.291848,
+              "max": 1.0,
+              "mean": 0.985342,
+              "harmonic_mean": 0.984335
+            },
+            "vmaf": {
+              "min": 0.0,
+              "max": 100.0,
+              "mean": 88.28677,
+              "harmonic_mean": 81.403975
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "h264_vaapi",
+      "type": "x264",
+      "preset": "none",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x264_h264_vaapi_none",
+        "hash": "4c12b9407b4a8877328de23a5417e763cc599209b482cc3cc11558d63503cf36",
+        "size": 176776037,
+        "options": [],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-hwaccel",
+        "vaapi",
+        "-hwaccel_output_format",
+        "vaapi",
+        "-i",
+        "/dist/base.mp4",
+        "-c:v",
+        "h264_vaapi",
+        "/dist/x264_h264_vaapi_none.mp4"
+      ],
+      "hwaccels": [
+        "-hwaccel",
+        "vaapi",
+        "-hwaccel_output_format",
+        "vaapi"
+      ],
+      "elapsed": {
+        "encode": {
+          "second": 48.38553237915039,
+          "time": "00:00:48"
+        },
+        "vmaf": {
+          "second": 169.46137762069702,
+          "time": "00:02:49"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.19834286526909306,
+          "speed": 6.573183849828804
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x264_h264_vaapi_none.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x264_h264_vaapi_none_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.995826,
+              "max": 1.0,
+              "mean": 0.999067,
+              "harmonic_mean": 0.999067
+            },
+            "vmaf": {
+              "min": 91.710433,
+              "max": 100.0,
+              "mean": 96.440172,
+              "harmonic_mean": 96.399207
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx265",
+      "type": "x265_crf26",
+      "preset": "veryfast",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x265_crf26_libx265_veryfast",
+        "hash": "a1756ecd19fdf8db3894b593d821fadb6f7db2f8e11223318bc0f18731741002",
+        "size": 61611591,
+        "options": [
+          "-crf",
+          "26",
+          "-tag:v",
+          "hvc1"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "26",
+        "-tag:v",
+        "hvc1",
+        "-c:v",
+        "libx265",
+        "-preset",
+        "veryfast",
+        "/dist/x265_crf26_libx265_veryfast.mp4"
+      ],
+      "hwaccels": "",
+      "elapsed": {
+        "encode": {
+          "second": 179.84531593322754,
+          "time": "00:02:59"
+        },
+        "vmaf": {
+          "second": 173.25249862670898,
+          "time": "00:02:53"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.7205991697433938,
+          "speed": 1.7684475036207428
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x265_crf26_libx265_veryfast.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x265_crf26_libx265_veryfast_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.987006,
+              "max": 0.999996,
+              "mean": 0.996949,
+              "harmonic_mean": 0.996948
+            },
+            "vmaf": {
+              "min": 82.466669,
+              "max": 100.0,
+              "mean": 94.358268,
+              "harmonic_mean": 94.289618
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx265",
+      "type": "x265_crf26",
+      "preset": "medium",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x265_crf26_libx265_medium",
+        "hash": "37ec84fd21aef28f90e46087d0d457fe1a36153da4320e5472bb972b5f79674a",
+        "size": 52455915,
+        "options": [
+          "-crf",
+          "26",
+          "-tag:v",
+          "hvc1"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "26",
+        "-tag:v",
+        "hvc1",
+        "-c:v",
+        "libx265",
+        "-preset",
+        "medium",
+        "/dist/x265_crf26_libx265_medium.mp4"
+      ],
+      "hwaccels": "",
+      "elapsed": {
+        "encode": {
+          "second": 263.8302369117737,
+          "time": "00:04:23"
+        },
+        "vmaf": {
+          "second": 173.8645830154419,
+          "time": "00:02:53"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.7621190109687321,
+          "speed": 1.2054986711259965
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x265_crf26_libx265_medium.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x265_crf26_libx265_medium_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.991232,
+              "max": 1.0,
+              "mean": 0.997495,
+              "harmonic_mean": 0.997495
+            },
+            "vmaf": {
+              "min": 84.853157,
+              "max": 100.0,
+              "mean": 94.635603,
+              "harmonic_mean": 94.559398
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx265",
+      "type": "x265_crf26",
+      "preset": "veryslow",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x265_crf26_libx265_veryslow",
+        "hash": "87ac51baa1c2326099a0f8aaf3c1fe874fa9b767f5c15e48b4f3f08a9c0c14f5",
+        "size": 51303398,
+        "options": [
+          "-crf",
+          "26",
+          "-tag:v",
+          "hvc1"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "26",
+        "-tag:v",
+        "hvc1",
+        "-c:v",
+        "libx265",
+        "-preset",
+        "veryslow",
+        "/dist/x265_crf26_libx265_veryslow.mp4"
+      ],
+      "hwaccels": "",
+      "elapsed": {
+        "encode": {
+          "second": 4623.529490947723,
+          "time": "01:17:03"
+        },
+        "vmaf": {
+          "second": 173.88524055480957,
+          "time": "00:02:53"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.7673455308728335,
+          "speed": 0.06878879017051696
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x265_crf26_libx265_veryslow.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x265_crf26_libx265_veryslow_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.99352,
+              "max": 1.0,
+              "mean": 0.99822,
+              "harmonic_mean": 0.99822
+            },
+            "vmaf": {
+              "min": 85.776849,
+              "max": 100.0,
+              "mean": 95.222195,
+              "harmonic_mean": 95.156461
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx265",
+      "type": "x265_crf28",
+      "preset": "veryfast",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x265_crf28_libx265_veryfast",
+        "hash": "084abb3d98ff881f6cb12c3f4f734b1bfbf738914d07360045f477093cff18a6",
+        "size": 49422522,
+        "options": [
+          "-crf",
+          "28",
+          "-tag:v",
+          "hvc1"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "28",
+        "-tag:v",
+        "hvc1",
+        "-c:v",
+        "libx265",
+        "-preset",
+        "veryfast",
+        "/dist/x265_crf28_libx265_veryfast.mp4"
+      ],
+      "hwaccels": "",
+      "elapsed": {
+        "encode": {
+          "second": 176.60349869728088,
+          "time": "00:02:56"
+        },
+        "vmaf": {
+          "second": 173.5103485584259,
+          "time": "00:02:53"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.7758750674012722,
+          "speed": 1.8009099612752855
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x265_crf28_libx265_veryfast.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x265_crf28_libx265_veryfast_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.981804,
+              "max": 0.999992,
+              "mean": 0.995943,
+              "harmonic_mean": 0.99594
+            },
+            "vmaf": {
+              "min": 79.005426,
+              "max": 100.0,
+              "mean": 93.035409,
+              "harmonic_mean": 92.949546
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx265",
+      "type": "x265_crf28",
+      "preset": "medium",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x265_crf28_libx265_medium",
+        "hash": "1ebdca372e30628264368a9f388745e7b03becfef485e01d3dcf6aa6f6caf73e",
+        "size": 42399906,
+        "options": [
+          "-crf",
+          "28",
+          "-tag:v",
+          "hvc1"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "28",
+        "-tag:v",
+        "hvc1",
+        "-c:v",
+        "libx265",
+        "-preset",
+        "medium",
+        "/dist/x265_crf28_libx265_medium.mp4"
+      ],
+      "hwaccels": "",
+      "elapsed": {
+        "encode": {
+          "second": 255.7151849269867,
+          "time": "00:04:15"
+        },
+        "vmaf": {
+          "second": 173.55800652503967,
+          "time": "00:02:53"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.8077217493182077,
+          "speed": 1.2437548442452124
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x265_crf28_libx265_medium.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x265_crf28_libx265_medium_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.988364,
+              "max": 1.0,
+              "mean": 0.996689,
+              "harmonic_mean": 0.996688
+            },
+            "vmaf": {
+              "min": 81.744399,
+              "max": 100.0,
+              "mean": 93.440719,
+              "harmonic_mean": 93.341924
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx265",
+      "type": "x265_crf28",
+      "preset": "veryslow",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x265_crf28_libx265_veryslow",
+        "hash": "ac265b71dd558658f8d14d8e9086e67961f708f30438870c35e07e60d9db07ea",
+        "size": 40833772,
+        "options": [
+          "-crf",
+          "28",
+          "-tag:v",
+          "hvc1"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "28",
+        "-tag:v",
+        "hvc1",
+        "-c:v",
+        "libx265",
+        "-preset",
+        "veryslow",
+        "/dist/x265_crf28_libx265_veryslow.mp4"
+      ],
+      "hwaccels": "",
+      "elapsed": {
+        "encode": {
+          "second": 4341.3187420368195,
+          "time": "01:12:21"
+        },
+        "vmaf": {
+          "second": 173.90537214279175,
+          "time": "00:02:53"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.8148239703904261,
+          "speed": 0.07326045814613043
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x265_crf28_libx265_veryslow.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x265_crf28_libx265_veryslow_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.991141,
+              "max": 1.0,
+              "mean": 0.997659,
+              "harmonic_mean": 0.997658
+            },
+            "vmaf": {
+              "min": 82.868874,
+              "max": 100.0,
+              "mean": 94.324293,
+              "harmonic_mean": 94.240036
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx265",
+      "type": "x265_crf30",
+      "preset": "veryfast",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x265_crf30_libx265_veryfast",
+        "hash": "b53e921ad7679eb6be2289cae40e3eb96bddb687e3f4eaba328dfc6c458b0411",
+        "size": 39752840,
+        "options": [
+          "-crf",
+          "30",
+          "-tag:v",
+          "hvc1"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "30",
+        "-tag:v",
+        "hvc1",
+        "-c:v",
+        "libx265",
+        "-preset",
+        "veryfast",
+        "/dist/x265_crf30_libx265_veryfast.mp4"
+      ],
+      "hwaccels": "",
+      "elapsed": {
+        "encode": {
+          "second": 172.4604365825653,
+          "time": "00:02:52"
+        },
+        "vmaf": {
+          "second": 173.07667660713196,
+          "time": "00:02:53"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.8197258613065515,
+          "speed": 1.844173691672961
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x265_crf30_libx265_veryfast.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x265_crf30_libx265_veryfast_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.977068,
+              "max": 0.999991,
+              "mean": 0.994553,
+              "harmonic_mean": 0.994547
+            },
+            "vmaf": {
+              "min": 75.727964,
+              "max": 100.0,
+              "mean": 91.241363,
+              "harmonic_mean": 91.133943
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx265",
+      "type": "x265_crf30",
+      "preset": "medium",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x265_crf30_libx265_medium",
+        "hash": "560a0265cc923bef363d27003f1b891a4630d76e72bfeadec376bd97d8ac5ed7",
+        "size": 34668374,
+        "options": [
+          "-crf",
+          "30",
+          "-tag:v",
+          "hvc1"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "30",
+        "-tag:v",
+        "hvc1",
+        "-c:v",
+        "libx265",
+        "-preset",
+        "medium",
+        "/dist/x265_crf30_libx265_medium.mp4"
+      ],
+      "hwaccels": "",
+      "elapsed": {
+        "encode": {
+          "second": 248.28495407104492,
+          "time": "00:04:08"
+        },
+        "vmaf": {
+          "second": 173.33144354820251,
+          "time": "00:02:53"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.8427832762954208,
+          "speed": 1.2809757288353172
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x265_crf30_libx265_medium.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x265_crf30_libx265_medium_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.983671,
+              "max": 0.999999,
+              "mean": 0.995551,
+              "harmonic_mean": 0.995549
+            },
+            "vmaf": {
+              "min": 78.054528,
+              "max": 100.0,
+              "mean": 91.835278,
+              "harmonic_mean": 91.706268
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "libx265",
+      "type": "x265_crf30",
+      "preset": "veryslow",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x265_crf30_libx265_veryslow",
+        "hash": "befb732a7f3efc57b60470ec5f333d7e95a47c6a25f7949960a0a7e96579aa75",
+        "size": 32967273,
+        "options": [
+          "-crf",
+          "30",
+          "-tag:v",
+          "hvc1"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-i",
+        "/dist/base.mp4",
+        "-crf",
+        "30",
+        "-tag:v",
+        "hvc1",
+        "-c:v",
+        "libx265",
+        "-preset",
+        "veryslow",
+        "/dist/x265_crf30_libx265_veryslow.mp4"
+      ],
+      "hwaccels": "",
+      "elapsed": {
+        "encode": {
+          "second": 4106.562736034393,
+          "time": "01:08:26"
+        },
+        "vmaf": {
+          "second": 174.2371973991394,
+          "time": "00:02:54"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.8504975557684236,
+          "speed": 0.07744846978939136
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x265_crf30_libx265_veryslow.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x265_crf30_libx265_veryslow_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.9881,
+              "max": 1.0,
+              "mean": 0.9969,
+              "harmonic_mean": 0.996899
+            },
+            "vmaf": {
+              "min": 78.038336,
+              "max": 100.0,
+              "mean": 93.124071,
+              "harmonic_mean": 93.01552
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "hevc_nvenc",
+      "type": "x265",
+      "preset": "12",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x265_hevc_nvenc_12",
+        "hash": "8f8ea34857cb303960870863fd2999852004c2961c6aac8c7f5294817e03427f",
+        "size": 79786553,
+        "options": [
+          "-tag:v",
+          "hvc1"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-hwaccel",
+        "cuda",
+        "-hwaccel_output_format",
+        "cuda",
+        "-i",
+        "/dist/base.mp4",
+        "-tag:v",
+        "hvc1",
+        "-c:v",
+        "hevc_nvenc",
+        "-preset",
+        "12",
+        "/dist/x265_hevc_nvenc_12.mp4"
+      ],
+      "hwaccels": [
+        "-hwaccel",
+        "cuda",
+        "-hwaccel_output_format",
+        "cuda"
+      ],
+      "elapsed": {
+        "encode": {
+          "second": 16.046615600585938,
+          "time": "00:00:16"
+        },
+        "vmaf": {
+          "second": 171.01127791404724,
+          "time": "00:02:51"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.6381779988198533,
+          "speed": 19.820191865778018
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x265_hevc_nvenc_12.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x265_hevc_nvenc_12_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.962195,
+              "max": 1.0,
+              "mean": 0.997545,
+              "harmonic_mean": 0.997541
+            },
+            "vmaf": {
+              "min": 76.937689,
+              "max": 100.0,
+              "mean": 95.747796,
+              "harmonic_mean": 95.692323
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "hevc_nvenc",
+      "type": "x265",
+      "preset": "15",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x265_hevc_nvenc_15",
+        "hash": "6234d7dd4ef70d81dce2c144d7fd3cedbdc05ee28a2fee3aa7bb20cc8acd3d0a",
+        "size": 83080793,
+        "options": [
+          "-tag:v",
+          "hvc1"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-hwaccel",
+        "cuda",
+        "-hwaccel_output_format",
+        "cuda",
+        "-i",
+        "/dist/base.mp4",
+        "-tag:v",
+        "hvc1",
+        "-c:v",
+        "hevc_nvenc",
+        "-preset",
+        "15",
+        "/dist/x265_hevc_nvenc_15.mp4"
+      ],
+      "hwaccels": [
+        "-hwaccel",
+        "cuda",
+        "-hwaccel_output_format",
+        "cuda"
+      ],
+      "elapsed": {
+        "encode": {
+          "second": 36.945905447006226,
+          "time": "00:00:36"
+        },
+        "vmaf": {
+          "second": 171.47201824188232,
+          "time": "00:02:51"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.6232390339899316,
+          "speed": 8.60845054822636
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x265_hevc_nvenc_15.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x265_hevc_nvenc_15_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.981142,
+              "max": 1.0,
+              "mean": 0.998202,
+              "harmonic_mean": 0.9982
+            },
+            "vmaf": {
+              "min": 89.343572,
+              "max": 100.0,
+              "mean": 96.497054,
+              "harmonic_mean": 96.465293
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "hevc_nvenc",
+      "type": "x265",
+      "preset": "18",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x265_hevc_nvenc_18",
+        "hash": "d7efd81ec7164d5ef96b9f32b741aa23f4bdf0ae83ea32dc7300e3be720a9eaf",
+        "size": 83055476,
+        "options": [
+          "-tag:v",
+          "hvc1"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-hwaccel",
+        "cuda",
+        "-hwaccel_output_format",
+        "cuda",
+        "-i",
+        "/dist/base.mp4",
+        "-tag:v",
+        "hvc1",
+        "-c:v",
+        "hevc_nvenc",
+        "-preset",
+        "18",
+        "/dist/x265_hevc_nvenc_18.mp4"
+      ],
+      "hwaccels": [
+        "-hwaccel",
+        "cuda",
+        "-hwaccel_output_format",
+        "cuda"
+      ],
+      "elapsed": {
+        "encode": {
+          "second": 98.91495513916016,
+          "time": "00:01:38"
+        },
+        "vmaf": {
+          "second": 173.13600635528564,
+          "time": "00:02:53"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.6233538434065494,
+          "speed": 3.215358077578363
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x265_hevc_nvenc_18.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x265_hevc_nvenc_18_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.9821,
+              "max": 1.0,
+              "mean": 0.998373,
+              "harmonic_mean": 0.998372
+            },
+            "vmaf": {
+              "min": 90.569127,
+              "max": 100.0,
+              "mean": 96.575224,
+              "harmonic_mean": 96.544172
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "hevc_qsv",
+      "type": "x265",
+      "preset": "7",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x265_hevc_qsv_7",
+        "hash": "d3685d889387e8fdf96f544bcdcea14e5fbe1685d971632e4c481b18016d9aeb",
+        "size": 35753592,
+        "options": [
+          "-tag:v",
+          "hvc1"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-hwaccel",
+        "qsv",
+        "-hwaccel_output_format",
+        "qsv",
+        "-i",
+        "/dist/base.mp4",
+        "-tag:v",
+        "hvc1",
+        "-c:v",
+        "hevc_qsv",
+        "-preset",
+        "7",
+        "/dist/x265_hevc_qsv_7.mp4"
+      ],
+      "hwaccels": [
+        "-hwaccel",
+        "qsv",
+        "-hwaccel_output_format",
+        "qsv"
+      ],
+      "elapsed": {
+        "encode": {
+          "second": 51.2630078792572,
+          "time": "00:00:51"
+        },
+        "vmaf": {
+          "second": 174.971333026886,
+          "time": "00:02:54"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.8378619489073744,
+          "speed": 6.204220414633394
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x265_hevc_qsv_7.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x265_hevc_qsv_7_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.770574,
+              "max": 1.0,
+              "mean": 0.974732,
+              "harmonic_mean": 0.973681
+            },
+            "vmaf": {
+              "min": 25.853151,
+              "max": 100.0,
+              "mean": 83.211829,
+              "harmonic_mean": 79.960522
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "hevc_qsv",
+      "type": "x265",
+      "preset": "4",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x265_hevc_qsv_4",
+        "hash": "9307f92f2b69f72a11bec4ed2bf12f46b08c3106cf2e04b67a71e5b3af2d9305",
+        "size": 34389257,
+        "options": [
+          "-tag:v",
+          "hvc1"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-hwaccel",
+        "qsv",
+        "-hwaccel_output_format",
+        "qsv",
+        "-i",
+        "/dist/base.mp4",
+        "-tag:v",
+        "hvc1",
+        "-c:v",
+        "hevc_qsv",
+        "-preset",
+        "4",
+        "/dist/x265_hevc_qsv_4.mp4"
+      ],
+      "hwaccels": [
+        "-hwaccel",
+        "qsv",
+        "-hwaccel_output_format",
+        "qsv"
+      ],
+      "elapsed": {
+        "encode": {
+          "second": 159.55882787704468,
+          "time": "00:02:39"
+        },
+        "vmaf": {
+          "second": 172.2855384349823,
+          "time": "00:02:52"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.8440490368491246,
+          "speed": 1.9932898996042114
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x265_hevc_qsv_4.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x265_hevc_qsv_4_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.820963,
+              "max": 1.0,
+              "mean": 0.980887,
+              "harmonic_mean": 0.980298
+            },
+            "vmaf": {
+              "min": 40.177036,
+              "max": 100.0,
+              "mean": 85.313123,
+              "harmonic_mean": 83.06266
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "hevc_qsv",
+      "type": "x265",
+      "preset": "1",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x265_hevc_qsv_1",
+        "hash": "ca8a03013c1c5fd353e9650917ccf455a4b69b12c149da13404ddc4ad79c7ea9",
+        "size": 36331349,
+        "options": [
+          "-tag:v",
+          "hvc1"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-hwaccel",
+        "qsv",
+        "-hwaccel_output_format",
+        "qsv",
+        "-i",
+        "/dist/base.mp4",
+        "-tag:v",
+        "hvc1",
+        "-c:v",
+        "hevc_qsv",
+        "-preset",
+        "1",
+        "/dist/x265_hevc_qsv_1.mp4"
+      ],
+      "hwaccels": [
+        "-hwaccel",
+        "qsv",
+        "-hwaccel_output_format",
+        "qsv"
+      ],
+      "elapsed": {
+        "encode": {
+          "second": 378.4173336029053,
+          "time": "00:06:18"
+        },
+        "vmaf": {
+          "second": 171.13568115234375,
+          "time": "00:02:51"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.8352418934459505,
+          "speed": 0.840466257113224
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x265_hevc_qsv_1.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x265_hevc_qsv_1_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.821859,
+              "max": 1.0,
+              "mean": 0.982079,
+              "harmonic_mean": 0.981557
+            },
+            "vmaf": {
+              "min": 42.953477,
+              "max": 100.0,
+              "mean": 85.693019,
+              "harmonic_mean": 83.498449
+            }
+          }
+        }
+      }
+    },
+    {
+      "codec": "hevc_vaapi",
+      "type": "x265",
+      "preset": "none",
+      "infile": {
+        "filename": "/dist/base.mp4",
+        "options": [],
+        "duration": 318.047,
+        "size": 220513271
+      },
+      "outfile": {
+        "filename": "/dist/x265_hevc_vaapi_none",
+        "hash": "2c584d313780c3324afb714e65c343dcce8b0b4b5a5e57831191a2aa82040e0f",
+        "size": 134910732,
+        "options": [
+          "-tag:v",
+          "hvc1"
+        ],
+        "duration": 318.047
+      },
+      "commandline": [
+        "ffmpeg",
+        "-y",
+        "-hwaccel",
+        "vaapi",
+        "-hwaccel_output_format",
+        "vaapi",
+        "-i",
+        "/dist/base.mp4",
+        "-tag:v",
+        "hvc1",
+        "-c:v",
+        "hevc_vaapi",
+        "/dist/x265_hevc_vaapi_none.mp4"
+      ],
+      "hwaccels": [
+        "-hwaccel",
+        "vaapi",
+        "-hwaccel_output_format",
+        "vaapi"
+      ],
+      "elapsed": {
+        "encode": {
+          "second": 122.64768481254578,
+          "time": "00:02:02"
+        },
+        "vmaf": {
+          "second": 174.38806247711182,
+          "time": "00:02:54"
+        }
+      },
+      "results": {
+        "compression": {
+          "ratio_persent": 0.38819676753151056,
+          "speed": 2.5931757332892325
+        },
+        "vmaf": {
+          "version": "2.3.1",
+          "commandline": [
+            "ffmpeg",
+            "-i",
+            "/dist/base.mp4",
+            "-i",
+            "/dist/x265_hevc_vaapi_none.mp4",
+            "-lavfi",
+            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:n_threads=12:log_fmt=json:log_path=/dist/x265_hevc_vaapi_none_vmaf.json",
+            "-an",
+            "-f",
+            "null",
+            "-"
+          ],
+          "pooled_metrics": {
+            "float_ssim": {
+              "min": 0.989669,
+              "max": 1.0,
+              "mean": 0.998225,
+              "harmonic_mean": 0.998224
+            },
+            "vmaf": {
+              "min": 82.511534,
+              "max": 100.0,
+              "mean": 95.198999,
+              "harmonic_mean": 95.116298
+            }
+          }
+        }
+      }
+    }
+  ]
+}

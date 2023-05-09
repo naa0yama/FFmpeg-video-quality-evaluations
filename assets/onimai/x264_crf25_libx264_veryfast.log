@@ -1,0 +1,76 @@
+ffmpeg started on 2023-05-07 at 06:18:46
+Report written to "/dist/x264_crf25_libx264_veryfast.log"
+Log level: 32
+Command line:
+ffmpeg -progress - -nostats -y -i /dist/base.mp4 -crf 25 -c:v libx264 -preset veryfast /dist/x264_crf25_libx264_veryfast.mp4
+ffmpeg version 6.0 Copyright (c) 2000-2023 the FFmpeg developers
+  built with gcc 11 (Ubuntu 11.3.0-1ubuntu1~22.04)
+  configuration: --disable-debug --disable-doc --disable-ffplay --extra-libs='-lpthread -lm' --ld=g++ --enable-small --pkg-config-flags=--static --extra-cflags=-fopenmp --extra-ldflags='-fopenmp -Wl,-z,stack-size=2097152' --toolchain=hardened --enable-static --disable-shared --enable-cuda-nvcc --extra-cflags='-I /usr/local/cuda/include' --extra-ldflags='-L /usr/local/cuda/compat -L /usr/local/cuda/lib64' --nvccflags='-gencode arch=compute_90a,code=sm_90a -gencode arch=compute_90,code=sm_90 -gencode arch=compute_89,code=sm_89 -gencode arch=compute_87,code=sm_87 -gencode arch=compute_86,code=sm_86 -gencode arch=compute_80,code=sm_80 -gencode arch=compute_75,code=sm_75 -gencode arch=compute_72,code=sm_72 -gencode arch=compute_70,code=sm_70 -O2' --enable-gpl --enable-libaom --enable-libaribb24 --enable-libass --enable-libdav1d --enable-libfdk-aac --enable-libfreetype --enable-libmfx --enable-libmp3lame --enable-libopus --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable  libavutil      58.  2.100 / 58.  2.100
+  libavcodec     60.  3.100 / 60.  3.100
+  libavformat    60.  3.100 / 60.  3.100
+  libavdevice    60.  1.100 / 60.  1.100
+  libavfilter     9.  3.100 /  9.  3.100
+  libswscale      7.  1.100 /  7.  1.100
+  libswresample   4. 10.100 /  4. 10.100
+  libpostproc    57.  1.100 / 57.  1.100
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/dist/base.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf60.3.100
+  Duration: 00:05:18.05, start: 0.000000, bitrate: 5546 kb/s
+  Chapters:
+    Chapter #0:0: start 0.000000, end 318.047000
+      Metadata:
+        title           : 01
+  Stream #0:0[0x1](und): Video: h264 (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 5544 kb/s, 24.36 fps, 47.95 tbr, 96k tbn (default)
+    Metadata:
+      handler_name    : Video Media Handler
+      vendor_id       : [0][0][0][0]
+      encoder         : AVC Coding
+  Stream #0:1[0x2](eng): Data: bin_data (text / 0x74786574)
+    Metadata:
+      handler_name    : SubtitleHandler
+Stream mapping:
+  Stream #0:0 -> #0:0 (h264 (native) -> h264 (libx264))
+Press [q] to stop, [?] for help
+[libx264 @ 0x563774aee0c0] using SAR=1/1
+[libx264 @ 0x563774aee0c0] using cpu capabilities: MMX2 SSE2Fast SSSE3 SSE4.2 AVX FMA3 BMI2 AVX2
+[libx264 @ 0x563774aee0c0] profile High, level 4.2, 4:2:0, 8-bit
+[libx264 @ 0x563774aee0c0] 264 - core 163 r3060 5db6aa6 - H.264/MPEG-4 AVC codec - Copyleft 2003-2021 - http://www.videolan.org/x264.html - options: cabac=1 ref=1 deblock=1:0:0 analyse=0x3:0x113 me=hex subme=2 psy=1 psy_rd=1.00:0.00 mixed_ref=0 me_range=16 chroma_me=1 trellis=0 8x8dct=1 cqm=0 deadzone=21,11 fast_pskip=1 chroma_qp_offset=0 threads=18 lookahead_threads=6 sliced_threads=0 nr=0 decimate=1 interlaced=0 bluray_compat=0 constrained_intra=0 bframes=3 b_pyramid=2 b_adapt=1 b_bias=0 direct=1 weightb=1 open_gop=0 weightp=1 keyint=250 keyint_min=25 scenecut=40 intra_refresh=0 rc_lookahead=10 rc=crf mbtree=1 crf=25.0 qcomp=0.60 qpmin=0 qpmax=69 qpstep=4 ip_ratio=1.40 aq=1:1.00
+Output #0, mp4, to '/dist/x264_crf25_libx264_veryfast.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    encoder         : Lavf60.3.100
+  Chapters:
+    Chapter #0:0: start 0.000000, end 318.047000
+      Metadata:
+        title           : 01
+  Stream #0:0(und): Video: h264 (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 1920x1080 [SAR 1:1 DAR 16:9], q=2-31, 47.95 fps, 48k tbn (default)
+    Metadata:
+      handler_name    : Video Media Handler
+      vendor_id       : [0][0][0][0]
+      encoder         : Lavc60.3.100 libx264
+    Side data:
+      cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+[vost#0:0/libx264 @ 0x563774afe600] More than 1000 frames duplicated
+frame=15251 fps=276 q=-1.0 Lsize=   68688kB time=00:05:17.98 bitrate=1769.6kbits/s dup=7504 drop=0 speed=5.76x    
+video:68507kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.263295%
+[libx264 @ 0x563774aee0c0] frame I:139   Avg QP:19.37  size: 61873
+[libx264 @ 0x563774aee0c0] frame P:4047  Avg QP:22.12  size: 12350
+[libx264 @ 0x563774aee0c0] frame B:11065 Avg QP:23.16  size:  1046
+[libx264 @ 0x563774aee0c0] consecutive B-frames:  1.2%  5.5%  2.3% 91.1%
+[libx264 @ 0x563774aee0c0] mb I  I16..4: 43.7% 38.3% 17.9%
+[libx264 @ 0x563774aee0c0] mb P  I16..4:  8.1%  6.9%  2.0%  P16..4:  7.7%  3.2%  1.4%  0.0%  0.0%    skip:70.7%
+[libx264 @ 0x563774aee0c0] mb B  I16..4:  0.3%  0.1%  0.0%  B16..8:  2.5%  0.5%  0.1%  direct: 1.1%  skip:95.4%  L0:42.8% L1:52.4% BI: 4.8%
+[libx264 @ 0x563774aee0c0] 8x8 transform intra:39.6% inter:14.7%
+[libx264 @ 0x563774aee0c0] coded y,uvDC,uvAC intra: 25.8% 45.3% 16.1% inter: 0.6% 2.5% 0.2%
+[libx264 @ 0x563774aee0c0] i16 v,h,dc,p: 49% 32% 12%  7%
+[libx264 @ 0x563774aee0c0] i8 v,h,dc,ddl,ddr,vr,hd,vl,hu: 22% 29% 32%  3%  3%  3%  3%  2%  3%
+[libx264 @ 0x563774aee0c0] i4 v,h,dc,ddl,ddr,vr,hd,vl,hu: 25% 18% 19%  7%  6%  7%  6%  6%  5%
+[libx264 @ 0x563774aee0c0] i8c dc,h,v,p: 49% 27% 20%  4%
+[libx264 @ 0x563774aee0c0] Weighted P-Frames: Y:2.6% UV:2.1%
+[libx264 @ 0x563774aee0c0] kb/s:1764.54
