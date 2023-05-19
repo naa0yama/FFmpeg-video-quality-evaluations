@@ -248,14 +248,14 @@ files = [
 
 [[package]]
 name = "ffmpeg-progress-yield"
-version = "0.7.2"
+version = "0.7.4"
 description = "Run an ffmpeg command with progress"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "ffmpeg-progress-yield-0.7.2.tar.gz", hash = "sha256:2f5129b4c030052c496ea2b97316f34d8cbf6d0d3d89e7a536c286f271c9b9bd"},
-    {file = "ffmpeg_progress_yield-0.7.2-py2.py3-none-any.whl", hash = "sha256:04e56baa58b86158634f8642fa769da7506e13a4608cfd48fd64d655abfc27cc"},
+    {file = "ffmpeg-progress-yield-0.7.4.tar.gz", hash = "sha256:8015a4a11d1c25d7164a15fd6880ede83a4ad5d913f5b7ef827ae05c68193d24"},
+    {file = "ffmpeg_progress_yield-0.7.4-py2.py3-none-any.whl", hash = "sha256:bf37d2d6f17eab4e87a069fb9fd763919f396991bf30a17e270d4954a3e73e75"},
 ]
 
 [[package]]
@@ -293,14 +293,14 @@ pyflakes = ">=3.0.0,<3.1.0"
 
 [[package]]
 name = "flake8-annotations"
-version = "3.0.0"
+version = "3.0.1"
 description = "Flake8 Type Annotation Checks"
 category = "dev"
 optional = false
-python-versions = ">=3.8.1,<4.0.0"
+python-versions = ">=3.8.1"
 files = [
-    {file = "flake8_annotations-3.0.0-py3-none-any.whl", hash = "sha256:ea927d31016515e9aa6e256651d74baeeee6fa4ad3f8383715ec5c0460a4c225"},
-    {file = "flake8_annotations-3.0.0.tar.gz", hash = "sha256:88c8b35a0db10b9a92be69ed3f81494509a18db1c3162551e57bc0fc35fab065"},
+    {file = "flake8_annotations-3.0.1-py3-none-any.whl", hash = "sha256:af78e3216ad800d7e144745ece6df706c81b3255290cbf870e54879d495e8ade"},
+    {file = "flake8_annotations-3.0.1.tar.gz", hash = "sha256:ff37375e71e3b83f2a5a04d443c41e2c407de557a884f3300a7fa32f3c41cb0a"},
 ]
 
 [package.dependencies]
@@ -1281,14 +1281,14 @@ testing = ["build[virtualenv] (>=0.10)", "covdefaults (>=2.3)", "devpi-process (
 
 [[package]]
 name = "tox-gh-actions"
-version = "3.1.0"
+version = "3.1.1"
 description = "Seamless integration of tox into GitHub Actions"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "tox-gh-actions-3.1.0.tar.gz", hash = "sha256:d314349eff393b5cf8978a6a90bc8ecda385bdc9611fddc38e829649324dff6f"},
-    {file = "tox_gh_actions-3.1.0-py2.py3-none-any.whl", hash = "sha256:4db4ec96e7e52b45a83c36ed4b0bec19a3e946f23eb325c3e8629fdd1e41d63c"},
+    {file = "tox-gh-actions-3.1.1.tar.gz", hash = "sha256:8092fbedef53d29ca4f5ee35e15b4324b2edcd5c9dc17db56777cddac23ac3c1"},
+    {file = "tox_gh_actions-3.1.1-py2.py3-none-any.whl", hash = "sha256:06cbe70c80eb36c560df6e437c94a1782b894b1f7cc3afdd8cf85cdf62701bde"},
 ]
 
 [package.dependencies]
