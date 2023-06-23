@@ -248,14 +248,14 @@ files = [
 
 [[package]]
 name = "ffmpeg-progress-yield"
-version = "0.7.4"
+version = "0.7.8"
 description = "Run an ffmpeg command with progress"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "ffmpeg-progress-yield-0.7.4.tar.gz", hash = "sha256:8015a4a11d1c25d7164a15fd6880ede83a4ad5d913f5b7ef827ae05c68193d24"},
-    {file = "ffmpeg_progress_yield-0.7.4-py2.py3-none-any.whl", hash = "sha256:bf37d2d6f17eab4e87a069fb9fd763919f396991bf30a17e270d4954a3e73e75"},
+    {file = "ffmpeg-progress-yield-0.7.8.tar.gz", hash = "sha256:9ae6ae5f832ae7c7b0f6518f1341fe6eee1ba8fc9d3400cba1cba38f2eaa461e"},
+    {file = "ffmpeg_progress_yield-0.7.8-py2.py3-none-any.whl", hash = "sha256:732ef90d78f8b5c0b78be289050589299d128d03063be55a9deab80d67319a21"},
 ]
 
 [[package]]
@@ -518,13 +518,13 @@ flake8 = ">=3.7"
 
 [[package]]
 name = "flake8-unused-globals"
-version = "0.1.9"
+version = "0.1.10"
 description = ""
 category = "dev"
 optional = false
-python-versions = ">=3.10,<3.11"
+python-versions = ">=3.10"
 files = [
-    {file = "flake8-unused-globals-0.1.9.tar.gz", hash = "sha256:d83874360337420238ea12b01c1feee7484929e32734ce8d72f653d041a6d5a7"},
+    {file = "flake8-unused-globals-0.1.10.tar.gz", hash = "sha256:7e799f858260d189528794f7a443053fcef043aff058b0b7b1e3ec43f00815eb"},
 ]
 
 [package.dependencies]
@@ -532,14 +532,14 @@ flake8 = "*"
 
 [[package]]
 name = "flake8-variables-names"
-version = "0.0.5"
+version = "0.0.6"
 description = "A flake8 extension that helps to make more readable variables names"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "flake8_variables_names-0.0.5-py3-none-any.whl", hash = "sha256:e3277031696bbe10b5132b49938cde1d70fcae9561533b7bd7ab8e69cb27addb"},
-    {file = "flake8_variables_names-0.0.5.tar.gz", hash = "sha256:30133e14ee2300e13a60393a00f74d98110c76070ac67d1ab91606f02824a7e1"},
+    {file = "flake8_variables_names-0.0.6-py3-none-any.whl", hash = "sha256:4aff935d54b3f7afcd026b4dae55029877bd05a7c507b294b45bc7bf577d7b47"},
+    {file = "flake8_variables_names-0.0.6.tar.gz", hash = "sha256:292c50e4813d632aa3adcd02c185e7bb583f5fc8ebe02e70f13c958bfe46ad91"},
 ]
 
 [[package]]
