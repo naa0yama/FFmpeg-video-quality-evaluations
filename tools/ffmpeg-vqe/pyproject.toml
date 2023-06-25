@@ -30,7 +30,7 @@ tox                        = "~4.6.0"
 tox-gh-actions             = "~3.1.0"
 
 [tool.poetry.group.linting.dependencies]
-autoflake                  = "~2.1.0"
+autoflake                  = "~2.2.0"
 black                      = "~23.3.0"
 flake8                     = "~6.0.0"
 flake8-annotations         = "~3.0.0"
