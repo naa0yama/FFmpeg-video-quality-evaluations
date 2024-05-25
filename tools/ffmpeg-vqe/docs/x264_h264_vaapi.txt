@@ -1,7 +1,8 @@
+> ffmpeg -hide_banner -h encoder=h264_vaapi
 Encoder h264_vaapi []:
-    General capabilities: dr1 delay hardware 
+    General capabilities: dr1 delay hardware
     Threading capabilities: none
-    Supported hardware devices: vaapi 
+    Supported hardware devices: vaapi
     Supported pixel formats: vaapi
 h264_vaapi AVOptions:
   -low_power         <boolean>    E..V....... Use low-power encoding mode (only available on some platforms; may not support all encoding features) (default false)
@@ -17,6 +18,7 @@ h264_vaapi AVOptions:
      ICQ             4            E..V....... Intelligent constant-quality
      QVBR            5            E..V....... Quality-defined variable-bitrate
      AVBR            6            E..V....... Average variable-bitrate
+  -blbrc             <boolean>    E..V....... Block level based bitrate control (default false)
   -qp                <int>        E..V....... Constant QP (for P-frames; scaled by qfactor/qoffset for I/B) (from 0 to 52) (default 0)
   -quality           <int>        E..V....... Set encode quality (trades off against speed, higher is faster) (from -1 to INT_MAX) (default -1)
   -coder             <int>        E..V....... Entropy coder type (from 0 to 1) (default cabac)
@@ -34,6 +36,7 @@ h264_vaapi AVOptions:
      constrained_baseline 578          E..V.......
      main            77           E..V.......
      high            100          E..V.......
+     high10          110          E..V.......
   -level             <int>        E..V....... Set level (level_idc) (from -99 to 255) (default -99)
      1               10           E..V.......
      1.1             11           E..V.......
@@ -54,4 +57,3 @@ h264_vaapi AVOptions:
      6               60           E..V.......
      6.1             61           E..V.......
      6.2             62           E..V.......
-
