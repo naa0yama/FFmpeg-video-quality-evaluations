@@ -1,7 +1,8 @@
+> ffmpeg -hide_banner -h encoder=hevc_vaapi
 Encoder hevc_vaapi []:
-    General capabilities: dr1 delay hardware 
+    General capabilities: dr1 delay hardware
     Threading capabilities: none
-    Supported hardware devices: vaapi 
+    Supported hardware devices: vaapi
     Supported pixel formats: vaapi
 h265_vaapi AVOptions:
   -low_power         <boolean>    E..V....... Use low-power encoding mode (only available on some platforms; may not support all encoding features) (default false)
@@ -17,6 +18,7 @@ h265_vaapi AVOptions:
      ICQ             4            E..V....... Intelligent constant-quality
      QVBR            5            E..V....... Quality-defined variable-bitrate
      AVBR            6            E..V....... Average variable-bitrate
+  -blbrc             <boolean>    E..V....... Block level based bitrate control (default false)
   -qp                <int>        E..V....... Constant QP (for P-frames; scaled by qfactor/qoffset for I/B) (from 0 to 52) (default 0)
   -aud               <boolean>    E..V....... Include AUD (default false)
   -profile           <int>        E..V....... Set profile (general_profile_idc) (from -99 to 255) (default -99)
@@ -44,4 +46,3 @@ h265_vaapi AVOptions:
      hdr                          E..V....... Include HDR metadata for mastering display colour volume and content light level information
      a53_cc                       E..V....... Include A/53 caption data
   -tiles             <image_size> E..V....... Tile columns x rows
-

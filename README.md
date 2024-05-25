@@ -255,18 +255,21 @@ rm -rf *_vmaf.json
 * [Hardware/VAAPI – FFmpeg](https://trac.ffmpeg.org/wiki/Hardware/VAAPI)
 
 ```bash
-ffmpeg -hide_banner -h encoder=libx264    > libx264.txt
-ffmpeg -hide_banner -h encoder=h264_nvenc > h264_nvenc.txt
-ffmpeg -hide_banner -h encoder=h264_qsv   > .txt
-ffmpeg -hide_banner -h encoder=h264_qsv   > h264_qsv.txt
-ffmpeg -hide_banner -h encoder=h264_vaapi > h264_vaapi.txt
-ffmpeg -hide_banner -h encoder=libx265    > libx265.txt
-ffmpeg -hide_banner -h encoder=hevc_nvenc > hevc_nvenc.txt
-ffmpeg -hide_banner -h encoder=hevc_qsv   > hevc_qsv.txt
-ffmpeg -hide_banner -h encoder=hevc_vaapi > hevc_vaapi.txt
+docker run --user $(id -u):$(id -g) --rm -it ffmpeg-vqe /bin/bash
+
+```
+
+```bash
+ffmpeg -hide_banner -h encoder=libx264    > x264_libx264.txt
+ffmpeg -hide_banner -h encoder=h264_nvenc > x264_h264_nvenc.txt
+ffmpeg -hide_banner -h encoder=h264_qsv   > x264_h264_qsv.txt
+ffmpeg -hide_banner -h encoder=h264_vaapi > x264_h264_vaapi.txt
+ffmpeg -hide_banner -h encoder=libx265    > x265_libx265.txt
+ffmpeg -hide_banner -h encoder=hevc_nvenc > x265_hevc_nvenc.txt
+ffmpeg -hide_banner -h encoder=hevc_qsv   > x265_hevc_qsv.txt
+ffmpeg -hide_banner -h encoder=hevc_vaapi > x265_hevc_vaapi.txt
 
 ffmpeg [options] [[infile options] -i infile]... {[outfile options] outfile}...
-
 
 # base
 ffmpeg -t 15 -i /source/bbb_original.mp4 -vcodec copy -an -y /dist/base.mp4

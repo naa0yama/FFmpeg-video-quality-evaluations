@@ -1,5 +1,6 @@
+> ffmpeg -hide_banner -h encoder=libx264
 Encoder libx264 []:
-    General capabilities: dr1 delay threads 
+    General capabilities: dr1 delay threads
     Threading capabilities: other
     Supported pixel formats: yuv420p yuvj420p yuv422p yuvj422p yuv444p yuvj444p nv12 nv16 nv21 yuv420p10le yuv422p10le yuv444p10le nv20le gray gray10le
 libx264 AVOptions:
@@ -82,4 +83,4 @@ libx264 AVOptions:
   -noise_reduction   <int>        E..V....... Noise reduction (from INT_MIN to INT_MAX) (default -1)
   -udu_sei           <boolean>    E..V....... Use user data unregistered SEI if available (default false)
   -x264-params       <dictionary> E..V....... Override the x264 configuration using a :-separated list of key=value parameters
-
+  -mb_info           <boolean>    E..V....... Set mb_info data through AVSideData, only useful when used from the API (default false)
