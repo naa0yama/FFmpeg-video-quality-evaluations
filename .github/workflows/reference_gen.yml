@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  ImageBuilder:
+  ReferenceGen:
     runs-on: ubuntu-latest
     timeout-minutes: 180 # default 6 hour
     env:
