@@ -57,7 +57,7 @@ jobs:
           awk '{print $2}' | \
           sed -e 's@^@https://media.xiph.org/BBB/BBB-1080-png/@g' > pnglist.txt
 
-          aria2c --dir=./src/ \
+          aria2c --dir=./src \
             --input-file=pnglist.txt \
             --max-concurrent-downloads=4 \
             --connect-timeout=5 \
