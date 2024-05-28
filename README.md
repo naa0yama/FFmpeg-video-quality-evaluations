@@ -185,24 +185,36 @@ distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
 
 ```
 
-## Sample move
+## 映像の準備
 
-Internet archive host download
+今回は、 CC-BY 4.0 で配布されている [Big Buck Bunny](http://www.bigbuckbunny.org) を利用する。  
+ミラーとして [Xiph.org :: Test Media](https://media.xiph.org/) で配布されているのでこちらから元 png 画像をダウンロードした。
 
-```bash
-cd videos/source
-wget 'https://archive.org/download/BigBuckBunnyFULLHD60FPS/Big%20Buck%20Bunny%20-%20FULL%20HD%2060FPS.mp4'
-mv Big\ Buck\ Bunny\ -\ FULL\ HD\ 60FPS.mp4 bbb_original.mp4
+```bash{name="ダウンロードの例"}
+#!/usr/bin/env bash
+set -eux
+
+curl -sfSL https://media.xiph.org/BBB/BBB-1080-png/MD5SUMS.txt | \
+awk '{print $2}' | \
+sed -e 's@^@https://media.xiph.org/BBB/BBB-1080-png/@g' > pnglist.txt
+
+mkdir -p src/
+
+aria2c --dir=./src/ \
+  --input-file=pnglist.txt \
+  --max-concurrent-downloads=4 \
+  --connect-timeout=60 \
+  --max-connection-per-server=16 \
+  --split=3 \
+  --min-split-size=5M \
+  --human-readable=true \
+  --download-result=full \
+  --file-allocation=none
 
 ```
 
-* check sha256
-
-```bash
-$ sha256sum bbb_original.mp4 
-658cb0019af04f7016b9686a6329e9120f97cb7d0cb67ab5fa0af6dd4f519e40  bbb_original.mp4
-
-```
+リファレンスデータを作成する。
+リファレンス用は下記の2つ
 
 ## エンコードとテスト
 
@@ -238,12 +250,12 @@ rm -rf *_vmaf.json
 | **libx264** |   O   |   O   |               | medium                | veryfast ,medium, veryslow          |
 | h264_nvenc  |       |   O   |       O       | 15(p4)                | 12(p2), 15(p4), 18(p7)              |
 | h264_qsv    |       |       |               | 4(medium) (default 0) | 7(veryfast), 4(medium), 1(veryslow) |
-| h264_vaapi  |       |   O   | O (rc_mode 1) | `-`                   |
-|             |       |       |               |                       |
+| h264_vaapi  |       |   O   | O (rc_mode 1) | `-`                   |                                     |
+|             |       |       |               |                       |                                     |
 | **libx265** |   O   |   O   |               | medium                | veryfast ,medium, veryslow          |
 | hevc_nvenc  |       |   O   |       O       | 15(p4)                | 12(p2), 15(p4), 18(p7)              |
 | hevc_qsv    |       |       |               | 4(medium) (default 0) | 7(veryfast), 4(medium), 1(veryslow) |
-| hevc_vaapi  |       |   O   | O (rc_mode 1) | `-`                   |
+| hevc_vaapi  |       |   O   | O (rc_mode 1) | `-`                   |                                     |
 
 |                    |      |      |                      |
 | :----------------- | :--- | :--- | :------------------- |
