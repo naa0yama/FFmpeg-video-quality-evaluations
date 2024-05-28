@@ -17,7 +17,7 @@ description = "Video encoding quality evaluation project using VMAF and SSIM"
 name = "Naoki Aoyama"
 
 [tool.poetry.dependencies]
-python = "3.10.14"
+python = "3.12.2"
 ffmpeg-progress-yield = "0.7.8"
 tqdm = "4.66.4"
 plotbitrate = "~1.1.2.0"
