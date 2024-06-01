@@ -220,15 +220,15 @@ aria2c --dir=./src/ \
 
 ```bash
 # FFmpeg
-cd ~/FFmpeg-video-quality-evaluations/tools/ffmpeg-vqe/ && docker build -t ffmpeg-vqe . && cd ../../
+docker build -t ffmpeg-vqe .
 
-docker run --rm -it --gpus all \
+docker run --user $(id -u):$(id -g) --rm -it --gpus all \
   -v $PWD/videos/source:/source \
   -v $PWD/videos/dist:/dist \
   -v $PWD/tools/ffmpeg-vqe:/opt \
   --device "/dev/dri:/dev/dri" \
   ffmpeg-vqe \
-  python3 /app/entrypoint.py --encode && \
+  python3 /app/entrypoint.py --encode -fss 180 -ft 60 && \
   bash /app/plotbitrate.sh
 
 mkdir -p assets/BigBuckBunny
@@ -267,7 +267,7 @@ rm -rf *_vmaf.json
 * [Hardware/VAAPI – FFmpeg](https://trac.ffmpeg.org/wiki/Hardware/VAAPI)
 
 ```bash
-docker run --user $(id -u):$(id -g) --rm -it ffmpeg-vqe /bin/bash
+docker run --user $(id -u):$(id -g) --rm -it --gpus all ffmpeg-vqe /bin/bash
 
 ```
 

@@ -3,6 +3,7 @@
 # To add a new markdown cell, type '# %% [markdown]'
 # %%
 """test_vscode_extensions."""
+
 # Standard Library
 import json
 import os
