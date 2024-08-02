@@ -42,6 +42,13 @@ RUN set -eux && \
     passwd -d vscode && \
     echo -e "vscode\tALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/vscode
 
+# Add Biome latest install
+RUN set -eux && \
+    curl -fSL -o /usr/local/bin/biome "$(curl -sfSL https://api.github.com/repos/biomejs/biome/releases/latest | \
+    jq -r '.assets[] | select(.name | endswith("linux-x64")) | .browser_download_url')" && \
+    chmod +x /usr/local/bin/biome && \
+    type -p biome
+
 ### Scripts
 RUN mkdir -p                                         /app
 COPY tools/ffmpeg-vqe/pyproject.toml                 /app
