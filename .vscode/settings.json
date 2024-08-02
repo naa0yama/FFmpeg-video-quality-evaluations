@@ -8,15 +8,14 @@
   "editor.detectIndentation": false, // ファイルの種類による、 TabSize と InsertSpaces の決定無効,種類ごとに個別に設定する
   "editor.insertSpaces": true,
   /*****************************************************************************
-  * VSCode > rulers, minimap, view */
+   * VSCode > rulers, minimap, view */
   "editor.guides.indentation": true, //        エディターでインデント ガイドを表示するかどうかを制御します。
   "editor.renderControlCharacters": true, //   制御文字を表示する
   "editor.renderLineHighlight": "all", //      選択行を行番号含めすべてハイライト
   "editor.renderWhitespace": "all", //         半角スペースを常に表示
-  "editor.rulers": [ //                        指定文字で縦ルーラーを表示する
-    80,
-    100,
-    120
+  "editor.rulers": [
+    //                        指定文字で縦ルーラーを表示する
+    80, 100, 120
   ],
   // 単語に関連したナビゲーションまたは操作を実行するときに、単語の区切り文字として仕様される文字。
   "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?、。",
@@ -44,9 +43,10 @@
   "files.maxMemoryForLargeFilesMB": 512,
   "files.trimFinalNewlines": true, //      ファイルの保存時に最終行以降をトリミング
   "files.trimTrailingWhitespace": true, // ファイルの保存時に行末の空白をトリミング
-  "files.watcherExclude": { /*「ファイル モニタリングから除外するファイル パスの glob パターンを構成します。
-                            ** この設定を変更すると、再起動が必要になります。始動時に Code が消費する CPU 時間が多い場合は、
-                            ** 大規模なフォルダーを除外して初期ロードを減らせます。」*/
+  "files.watcherExclude": {
+    /*「ファイル モニタリングから除外するファイル パスの glob パターンを構成します。
+     ** この設定を変更すると、再起動が必要になります。始動時に Code が消費する CPU 時間が多い場合は、
+     ** 大規模なフォルダーを除外して初期ロードを減らせます。」*/
     "**/.git/objects/**": true,
     "**/.history/**": true,
     "**/.mypy_cache/**": true,
@@ -57,8 +57,8 @@
     "**/vendor/**": true
   },
   "search.exclude": {
-    "**/.tmp": true, /* フルテキスト検索と Quick Open でファイルとフォルダーを除外するための glob パターン を構成します。
-                      ** Files: Exclude 設定からすべての glob パターンを継承します。*/
+    "**/.tmp": true /* フルテキスト検索と Quick Open でファイルとフォルダーを除外するための glob パターン を構成します。
+     ** Files: Exclude 設定からすべての glob パターンを継承します。*/,
     "**/bower_components": true,
     "**/bundle": true,
     "**/composer": true,
@@ -77,17 +77,24 @@
       "source.organizeImports.ruff": "explicit"
     },
     "editor.defaultFormatter": "charliermarsh.ruff",
-    "editor.tabSize": 4,
+    "editor.tabSize": 4
   },
   "[toml]": {
     "editor.tabSize": 4
   },
   "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.codeActionsOnSave": {
+      "quickfix.biome": "explicit"
+    },
     "editor.tabSize": 2
   },
   "[jsonc]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.codeActionsOnSave": {
+      "quickfix.biome": "explicit"
+    },
+    "editor.tabSize": 2
   },
   "[yaml]": {
     "editor.defaultFormatter": "redhat.vscode-yaml",
@@ -109,10 +116,7 @@
   "git.autoStash": true,
   "git.enableSmartCommit": false, // ステージされた変更がない場合はすべての変更をコミットします。
   "git.postCommitCommand": "push",
-  "git.commandsToLog": [
-    "commit",
-    "push"
-  ],
+  "git.commandsToLog": ["commit", "push"],
   /*****************************************************************************
    * VSCode > Extensions */
   "extensions.autoUpdate": true,
@@ -144,18 +148,12 @@
   "python.envFile": "${workspaceFolder}/.env",
   "python.experiments.enabled": false,
   "python.terminal.activateEnvInCurrentTerminal": true,
-  "python.venvFolders": [
-    "envs",
-    ".direnv",
-    ".venv"
-  ],
+  "python.venvFolders": ["envs", ".direnv", ".venv"],
   /* ---------------------------------------------------------------------------
-    * Python の設定 testing */
+   * Python の設定 testing */
   "python.testing.autoTestDiscoverOnSaveEnabled": true,
   "python.testing.cwd": "${workspaceFolder}",
-  "python.testing.pytestArgs": [
-    "tests"
-  ],
+  "python.testing.pytestArgs": ["tests"],
   "python.testing.pytestEnabled": true,
   "python.testing.pytestPath": "${workspaceFolder}/tools/ffmpeg-vqe/.venv/bin/pytest",
   "python.testing.unittestEnabled": false,
@@ -184,7 +182,7 @@
   "python.analysis.completeFunctionParens": true,
   "python.analysis.extraPaths": [
     "${workspaceFolder}/tools/ffmpeg-vqe/.venv/lib/**/site-packages/",
-    "${workspaceFolder}/tools/ffmpeg-vqe/src/ffmpegvqe/",
+    "${workspaceFolder}/tools/ffmpeg-vqe/src/ffmpegvqe/"
   ],
   "python.analysis.importFormat": "absolute",
   "python.analysis.typeCheckingMode": "off",
@@ -212,7 +210,7 @@
   // Extension: Ruff
   "ruff.importStrategy": "fromEnvironment",
   "ruff.lint.args": [
-    "--config=${workspaceFolder}/tools/ffmpeg-vqe/pyproject.toml",
+    "--config=${workspaceFolder}/tools/ffmpeg-vqe/pyproject.toml"
   ],
   "ruff.showNotifications": "always",
   /*****************************************************************************
@@ -230,9 +228,7 @@
   "prettier.singleQuote": false,
   /*****************************************************************************
    * Extension: Markdown PDF */
-  "markdown-pdf.styles": [
-    "markdown-pdf.css"
-  ],
+  "markdown-pdf.styles": ["markdown-pdf.css"],
   /*****************************************************************************
    * Extension: Ansible */
   "redhat.telemetry.enabled": false,
@@ -254,7 +250,7 @@
   "coverage-gutters.showRulerCoverage": true,
   /*****************************************************************************
    * Extension: Markdown All in One */
-  "markdown.extension.list.indentationSize": "inherit",
+  "markdown.extension.list.indentationSize": "inherit"
   /*****************************************************************************
    * Unknown: */
 }
