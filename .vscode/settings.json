@@ -54,7 +54,8 @@
     "**/.tox/**": true,
     "**/.venv/**": true,
     "**/node_modules/**": true,
-    "**/vendor/**": true
+    "**/vendor/**": true,
+    "**/videos/**": true,
   },
   "search.exclude": {
     "**/.tmp": true /* フルテキスト検索と Quick Open でファイルとフォルダーを除外するための glob パターン を構成します。

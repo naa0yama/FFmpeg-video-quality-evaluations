@@ -1,0 +1,20 @@
+Filter sab
+    Inputs:
+       #0: default (video)
+    Outputs:
+       #0: default (video)
+sab AVOptions:
+   luma_radius       <float>      ..FV....... set luma radius (from 0.1 to 4) (default 1)
+   lr                <float>      ..FV....... set luma radius (from 0.1 to 4) (default 1)
+   luma_pre_filter_radius <float>      ..FV....... set luma pre-filter radius (from 0.1 to 2) (default 1)
+   lpfr              <float>      ..FV....... set luma pre-filter radius (from 0.1 to 2) (default 1)
+   luma_strength     <float>      ..FV....... set luma strength (from 0.1 to 100) (default 1)
+   ls                <float>      ..FV....... set luma strength (from 0.1 to 100) (default 1)
+   chroma_radius     <float>      ..FV....... set chroma radius (from -0.9 to 4) (default -0.9)
+   cr                <float>      ..FV....... set chroma radius (from -0.9 to 4) (default -0.9)
+   chroma_pre_filter_radius <float>      ..FV....... set chroma pre-filter radius (from -0.9 to 2) (default -0.9)
+   cpfr              <float>      ..FV....... set chroma pre-filter radius (from -0.9 to 2) (default -0.9)
+   chroma_strength   <float>      ..FV....... set chroma strength (from -0.9 to 100) (default -0.9)
+   cs                <float>      ..FV....... set chroma strength (from -0.9 to 100) (default -0.9)
+
+This filter has support for timeline through the 'enable' option.

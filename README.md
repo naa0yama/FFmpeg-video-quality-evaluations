@@ -10,96 +10,6 @@ Video encoding quality evaluation project using VMAF and SSIM
 
 ## 準備
 
-### Intel HD (vaapi, Quick Sync Video)
-
-```bash
-sudo apt install intel-media-va-driver vainfo
-
-```
-
-* version check
-
-```bash
-sudo vainfo
-
-```
-
-* output
-
-```bash
-error: can't connect to X server!
-libva info: VA-API version 1.10.0
-libva info: Trying to open /usr/lib/x86_64-linux-gnu/dri/iHD_drv_video.so
-libva info: Found init function __vaDriverInit_1_10
-libva info: va_openDriver() returns 0
-vainfo: VA-API version: 1.10 (libva 2.10.0)
-vainfo: Driver version: Intel iHD driver for Intel(R) Gen Graphics - 21.1.1 ()
-vainfo: Supported profile and entrypoints
-      VAProfileMPEG2Simple            : VAEntrypointVLD
-      VAProfileMPEG2Main              : VAEntrypointVLD
-      VAProfileH264Main               : VAEntrypointVLD
-      VAProfileH264Main               : VAEntrypointEncSliceLP
-      VAProfileH264High               : VAEntrypointVLD
-      VAProfileH264High               : VAEntrypointEncSliceLP
-      VAProfileJPEGBaseline           : VAEntrypointVLD
-      VAProfileJPEGBaseline           : VAEntrypointEncPicture
-      VAProfileH264ConstrainedBaseline: VAEntrypointVLD
-      VAProfileH264ConstrainedBaseline: VAEntrypointEncSliceLP
-      VAProfileVP8Version0_3          : VAEntrypointVLD
-      VAProfileHEVCMain               : VAEntrypointVLD
-      VAProfileHEVCMain10             : VAEntrypointVLD
-      VAProfileVP9Profile0            : VAEntrypointVLD
-      VAProfileVP9Profile2            : VAEntrypointVLD
-```
-
-### NVIDIA
-
-Ref: [CUDA Toolkit 12.1 Update 1 Downloads | NVIDIA Developer](https://developer.nvidia.com/cuda-downloads)
-
-`sudo apt-get -y install cuda` の箇所はドライバーのみインストールされれば問題ないため変更しています
-
-```bash
-# Download Installer for Linux Debian 11 x86_64
-wget https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/cuda-keyring_1.0-1_all.deb
-sudo dpkg -i cuda-keyring_1.0-1_all.deb
-sudo add-apt-repository contrib
-sudo apt-get update
-sudo apt-get -y install cuda-drivers
-
-```
-
-* version check
-
-```bash
-sudo nvidia-smi
-
-```
-
-* output
-
-```bash
-Sat Apr 29 08:49:28 2023       
-+---------------------------------------------------------------------------------------+
-| NVIDIA-SMI 530.30.02              Driver Version: 530.30.02    CUDA Version: 12.1     |
-|-----------------------------------------+----------------------+----------------------+
-| GPU  Name                  Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
-| Fan  Temp  Perf            Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
-|                                         |                      |               MIG M. |
-|=========================================+======================+======================|
-|   0  NVIDIA GeForce RTX 2060 S...    On | 00000000:01:00.0 Off |                  N/A |
-|  0%   40C    P8               16W / 175W|      1MiB /  8192MiB |      0%      Default |
-|                                         |                      |                  N/A |
-+-----------------------------------------+----------------------+----------------------+
-                                                                                         
-+---------------------------------------------------------------------------------------+
-| Processes:                                                                            |
-|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
-|        ID   ID                                                             Usage      |
-|=======================================================================================|
-|  No running processes found                                                           |
-+---------------------------------------------------------------------------------------+
-```
-
 ### Device settings
 
 ```bash
@@ -118,42 +28,75 @@ KERNEL=="render*" GROUP="render", MODE="0666"
 
 ```
 
-#### please restart
-
-### Device recognition confirmation
-
-| dev                   | Hardware               |
-| :-------------------- | :--------------------- |
-| `/dev/dri/renderD128` | Intel UHD Graphics 630 |
-| `/dev/dri/renderD129` | GeForce RTX 2060 SUPER |
+### Intel HD (vaapi, Quick Sync Video)
 
 ```bash
-# ls -l /dev/dri/by-path/
-total 0
-lrwxrwxrwx 1 root root  8 Apr 28 23:39 pci-0000:00:02.0-card -> ../card0
-lrwxrwxrwx 1 root root 13 Apr 28 23:39 pci-0000:00:02.0-render -> ../renderD128
-lrwxrwxrwx 1 root root  8 Apr 28 23:39 pci-0000:01:00.0-card -> ../card1
-lrwxrwxrwx 1 root root 13 Apr 28 23:39 pci-0000:01:00.0-render -> ../renderD129
+sudo apt install vainfo intel-gpu-tools
 
 ```
 
-```bash
-# lspci -s 0000:00:02.0
-00:02.0 VGA compatible controller: Intel Corporation CometLake-S GT2 [UHD Graphics 630]
+* version check
 
-# lspci -s 0000:01:00.0
-01:00.0 VGA compatible controller: NVIDIA Corporation TU106 [GeForce RTX 2060 SUPER] (rev a1)
+```bash
+sudo vainfo
+
 ```
 
-### SystemD change multi-user.target
+* output
 
 ```bash
-# Check current settings
-$ systemctl get-default
-graphical.target
-
-# Change to multi-user.target
-$ sudo systemctl set-default multi-user.target
+error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+error: can't connect to X server!
+libva info: VA-API version 1.20.0
+libva info: Trying to open /usr/lib/x86_64-linux-gnu/dri/iHD_drv_video.so
+libva info: Found init function __vaDriverInit_1_20
+libva info: va_openDriver() returns 0
+vainfo: VA-API version: 1.20 (libva 2.12.0)
+vainfo: Driver version: Intel iHD driver for Intel(R) Gen Graphics - 24.1.0 ()
+vainfo: Supported profile and entrypoints
+      VAProfileNone                   : VAEntrypointVideoProc
+      VAProfileNone                   : VAEntrypointStats
+      VAProfileMPEG2Simple            : VAEntrypointVLD
+      VAProfileMPEG2Main              : VAEntrypointVLD
+      VAProfileH264Main               : VAEntrypointVLD
+      VAProfileH264Main               : VAEntrypointEncSliceLP
+      VAProfileH264High               : VAEntrypointVLD
+      VAProfileH264High               : VAEntrypointEncSliceLP
+      VAProfileJPEGBaseline           : VAEntrypointVLD
+      VAProfileJPEGBaseline           : VAEntrypointEncPicture
+      VAProfileH264ConstrainedBaseline: VAEntrypointVLD
+      VAProfileH264ConstrainedBaseline: VAEntrypointEncSliceLP
+      VAProfileHEVCMain               : VAEntrypointVLD
+      VAProfileHEVCMain               : VAEntrypointEncSliceLP
+      VAProfileHEVCMain10             : VAEntrypointVLD
+      VAProfileHEVCMain10             : VAEntrypointEncSliceLP
+      VAProfileVP9Profile0            : VAEntrypointVLD
+      VAProfileVP9Profile0            : VAEntrypointEncSliceLP
+      VAProfileVP9Profile1            : VAEntrypointVLD
+      VAProfileVP9Profile1            : VAEntrypointEncSliceLP
+      VAProfileVP9Profile2            : VAEntrypointVLD
+      VAProfileVP9Profile2            : VAEntrypointEncSliceLP
+      VAProfileVP9Profile3            : VAEntrypointVLD
+      VAProfileVP9Profile3            : VAEntrypointEncSliceLP
+      VAProfileHEVCMain12             : VAEntrypointVLD
+      VAProfileHEVCMain422_10         : VAEntrypointVLD
+      VAProfileHEVCMain422_10         : VAEntrypointEncSliceLP
+      VAProfileHEVCMain422_12         : VAEntrypointVLD
+      VAProfileHEVCMain444            : VAEntrypointVLD
+      VAProfileHEVCMain444            : VAEntrypointEncSliceLP
+      VAProfileHEVCMain444_10         : VAEntrypointVLD
+      VAProfileHEVCMain444_10         : VAEntrypointEncSliceLP
+      VAProfileHEVCMain444_12         : VAEntrypointVLD
+      VAProfileHEVCSccMain            : VAEntrypointVLD
+      VAProfileHEVCSccMain            : VAEntrypointEncSliceLP
+      VAProfileHEVCSccMain10          : VAEntrypointVLD
+      VAProfileHEVCSccMain10          : VAEntrypointEncSliceLP
+      VAProfileHEVCSccMain444         : VAEntrypointVLD
+      VAProfileHEVCSccMain444         : VAEntrypointEncSliceLP
+      VAProfileAV1Profile0            : VAEntrypointVLD
+      VAProfileAV1Profile0            : VAEntrypointEncSliceLP
+      VAProfileHEVCSccMain444_10      : VAEntrypointVLD
+      VAProfileHEVCSccMain444_10      : VAEntrypointEncSliceLP
 
 ```
 
@@ -164,24 +107,6 @@ Ref: [Install Docker Engine | Docker Documentation](https://docs.docker.com/engi
 ```bash
 curl https://get.docker.com | sh \
   && sudo systemctl --now enable docker
-
-```
-
-### Container Toolkit
-
-詳しくは記事を参考にして欲しいが、ホストマシーンにインストールされたDriver類を自動でmountしてくるためこれを使わないとうまく動かなかった。
-
-[NVIDIA Container Toolkit (NVIDIA Docker) は何をしてくれるか - Qiita](https://qiita.com/tkusumi/items/f275f0737fb5b261a868)
-[NVIDIA Docker って今どうなってるの？ (20.09 版) | by Kuninobu Sasaki | NVIDIA Japan | Medium](https://medium.com/nvidiajapan/nvidia-docker-%E3%81%A3%E3%81%A6%E4%BB%8A%E3%81%A9%E3%81%86%E3%81%AA%E3%81%A3%E3%81%A6%E3%82%8B%E3%81%AE-20-09-%E7%89%88-558fae883f44)
-
-インストール自体は [Installation Guide — NVIDIA Cloud Native Technologies documentation](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker) の Docker の箇所をすれば問題ない
-
-```bash
-distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
-      && curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
-      && curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | \
-            sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
-            sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 
 ```
 
@@ -222,15 +147,23 @@ aria2c --dir=./src/ \
 # FFmpeg
 docker build -t ffmpeg-vqe .
 
-docker run --user $(id -u):$(id -g) --rm -it --gpus all \
+docker run --user $(id -u):$(id -g) --rm -it \
   -v $PWD/videos/source:/source \
   -v $PWD/videos/dist:/dist \
-  -v $PWD/tools/ffmpeg-vqe:/opt \
+  -v $PWD/tools/ffmpeg-vqe:/src \
   --device "/dev/dri:/dev/dri" \
-  ffmpeg-vqe \
-  python3 /app/entrypoint.py --encode -fss 180 -ft 60 && \
-  bash /app/plotbitrate.sh
+  ffmpeg-vqe /bin/bash
 
+```
+
+```bash
+rm -rfv /dist/*.* && \
+python3 /app/entrypoint.py --encode -fss 180 -ft 60 && \
+bash /app/plotbitrate.sh
+
+```
+
+```bash
 mkdir -p assets/BigBuckBunny
 cp -ar videos/dist assets/BigBuckBunny
 cd assets/BigBuckBunny
@@ -239,13 +172,13 @@ rm -rf *_vmaf.json
 
 ```
 
-* crf(constant quality mode)
-* qp(Constant quantization parameter)
-* cq(constant quality mode in VBR)
+* CRF(Constant Rate Factor)
+* QP(Constant quantization parameter)
+* CQ(Constant Quality mode in VBR)
 
 * preset は標準, 標準から -3, +3 を試す
 
-| codec       |  crf  |  qp   |      cq       | preset default        | 試す preset                         |
+| codec       |  CRF  |  QP   |      CQ       | preset default        | 試す preset                         |
 | :---------- | :---: | :---: | :-----------: | :-------------------- | :---------------------------------- |
 | **libx264** |   O   |   O   |               | medium                | veryfast ,medium, veryslow          |
 | h264_nvenc  |       |   O   |       O       | 15(p4)                | 12(p2), 15(p4), 18(p7)              |
@@ -262,9 +195,75 @@ rm -rf *_vmaf.json
 | **Global options** |      |      |                      |
 |                    |      | `-y` | 出力ファイルの上書き |
 
+* ``
+* `-rc-lookahead`: B-frame+1, MAX 20
+
+* [NVIDIA GeForce RTX 2060 Super](https://www.elsa-jp.co.jp/products/detail/elsa-geforce-rtx-2060-super-s-a-c/) 向けに最適化をする
+
+|              |                    |
+| :----------- | :----------------- |
+| GPU Name     | TU106              |
+| GPU Variant  | TU106-410-A1       |
+| Architecture | Turing             |
+|              |                    |
+| DirectX      | 12 Ultimate (12_2) |
+| OpenGL       | 4.6                |
+| OpenCL       | 3.0                |
+| Vulkan       | 1.3                |
+| CUDA         | 7.5                |
+| Shader Model | 6.7                |
+
+| type           | option                        | Description                                                  |
+| :------------- | :---------------------------- | :----------------------------------------------------------- |
+| Hardware       | `-hwaccel cuda`               | ハードウェアデコーダー                                       |
+|                | `-hwaccel_output_format cuda` | ハードウェア支援を受けたデコードの出力フォーマット           |
+|                |                               |                                                              |
+| Format Options | `-fflags +discardcorrupt`     | 破損frameの破棄                                              |
+|                | `-movflags faststart`         | メタデータをファイルの先頭にする                             |
+|                | `-tag:v hvc1`                 | Apple 製品で再生出来ないため `hvc1` 方式であることを明示する |
+|                | `-f mkv`                      | ファイルフォーマットは MKV にする                            |
+|                | `-map 0:v`                    | 映像を input からマッピング                                  |
+|                | `-ignore_unknown`             | 不明コーデックをコピーしない                                 |
+|                | `-y`                          | 確認せずに上書き                                             |
+|                | `-g 250`                      | GOP サイズの指定 (Default nvenc_hevc: 250)                   |
+|                | `-bf 5`                       | 非 B-frame 間の B-frame 数(Default: 3, Max 5)                |
+|                | `-refs 9`                     | 参照フレーム                                                 |
+|                | `-b_ref_mode each`            | 参照 B-frame として使う (Default: (B-frames)/2)              |
+|                | `-rc-lookahead 20`            | 先読みフレーム数(Default: 0, Min: (B-frames)+1, Max: 20)     |
+|                | `-temporal-aq 1`              | フレーム間(時間方向)の適応的量子化を有効にする (Default 0)   |
+|                |                               |                                                              |
+| Video          | `-aspect:v 16:9`              | アスペクト比を 16:9 に設定                                   |
+|                | `-c:v hevc_nvenc`             | エンコーダーを NVENC HEVC (x265) に設定                      |
+|                | `-preset:v p4`                | preset を指定                                                |
+|                | `-profile:v main10`           | 10-bit 4:2:0 プロファイル                                    |
+|                | `-tune hq`                    | 画質最適化指定                                               |
+|                |                               |                                                              |
+| Audio          | `-c:a aac`                    | AAC に変換                                                   |
+|                | `-ar 48000`                   | サンプリングレート 48kHz                                     |
+|                | `-ab 256k`                    | ビットレート 256kbps                                         |
+|                | `-bsf:a aac_adtstoasc`        | MPEG-2 から MPEG-4 に変更するオプション                      |
+
+* `-i_qfactor 0.75`
+* `-b_qfactor 1.1`
+
+* -vf yadif=0:-1:1,hqdn3d=4.0,scale=1280:720:flags=lanczos+accurate_rnd,unsharp=3:3:0.5:3:3:0.5:0
+* -map 0:p:%SID10%:0
+* -map 0:p:%SID10%:1
+* -map 0:p:%SID10%:2
+* -sn
+* -dn
+
+```bash
+for i in decoders encoders; do echo ${i}:; ffmpeg -hide_banner -${i} | \
+    egrep -i "[x|h]264|[x|h]265|av1|cuvid|hevc|libmfx|nv[dec|enc]|qsv|vaapi|vp9"; done
+
+```
+
 * [HWAccelIntro – FFmpeg](https://trac.ffmpeg.org/wiki/HWAccelIntro)
 * [Hardware/QuickSync – FFmpeg](https://trac.ffmpeg.org/wiki/Hardware/QuickSync)
 * [Hardware/VAAPI – FFmpeg](https://trac.ffmpeg.org/wiki/Hardware/VAAPI)
+* [Using FFmpeg with NVIDIA GPU Hardware Acceleration - NVIDIA Docs](https://docs.nvidia.com/video-technologies/video-codec-sdk/12.2/ffmpeg-with-nvidia-gpu/index.html)
+* [libvmaf with CUDA -- how to build and use · Issue #1227 · Netflix/vmaf](https://github.com/Netflix/vmaf/issues/1227)
 
 ```bash
 docker run --user $(id -u):$(id -g) --rm -it --gpus all ffmpeg-vqe /bin/bash
@@ -272,78 +271,48 @@ docker run --user $(id -u):$(id -g) --rm -it --gpus all ffmpeg-vqe /bin/bash
 ```
 
 ```bash
-ffmpeg -hide_banner -h encoder=libx264    > x264_libx264.txt
-ffmpeg -hide_banner -h encoder=h264_nvenc > x264_h264_nvenc.txt
-ffmpeg -hide_banner -h encoder=h264_qsv   > x264_h264_qsv.txt
-ffmpeg -hide_banner -h encoder=h264_vaapi > x264_h264_vaapi.txt
-ffmpeg -hide_banner -h encoder=libx265    > x265_libx265.txt
-ffmpeg -hide_banner -h encoder=hevc_nvenc > x265_hevc_nvenc.txt
-ffmpeg -hide_banner -h encoder=hevc_qsv   > x265_hevc_qsv.txt
-ffmpeg -hide_banner -h encoder=hevc_vaapi > x265_hevc_vaapi.txt
+for decoder in av1 av1_qsv h264 h264_qsv hevc hevc_qsv mpeg2_qsv vp9_qsv
+do
+  ffmpeg -hide_banner -h decoder=${decoder}    > /source/decoder_${decoder}.txt
+done
 
-ffmpeg [options] [[infile options] -i infile]... {[outfile options] outfile}...
+for encoder in libaom-av1 av1_qsv libx264 h264_qsv libx265 hevc_qsv mpeg2_qsv vp9_qsv
+do
+  ffmpeg -hide_banner -h encoder=${encoder}    > /source/encoder_${encoder}.txt
+done
 
-# base
-ffmpeg -t 15 -i /source/bbb_original.mp4 -vcodec copy -an -y /dist/base.mp4
+for filter in \
+  deinterlace_qsv \
+  fieldmatch \
+  libvmaf \
+  overlay_qsv \
+  sab \
+  scale \
+  scale_qsv \
+  vpp_qsv \
+  yadif
+do
+  ffmpeg -hide_banner -h filter=${filter}    > /source/filter_${filter}.txt
+done
 
-# x264
-ffmpeg -y \
-  -i /dist/base.mp4 \
-  -c:v libx264 -preset medium \
-  /dist/x264_x264_default_medium.mp4
+```
 
-# h264_nvenc
-ffmpeg -y \
-  -hwaccel cuda -hwaccel_output_format cuda \
-  -i /dist/base.mp4 \
-  -c:v h264_nvenc -preset 15 \
-  /dist/x264_nvenc_default_p4.mp4
+## Tools
 
-# h264_qsv
-ffmpeg -y \
-  -hwaccel qsv -hwaccel_output_format qsv \
-  -i /dist/base.mp4 \
-  -c:v h264_qsv -preset 4 \
-  /dist/x264_qsv_default_medium.mp4
+### dist Summary csv gen
 
-# h264_vaapi
-ffmpeg -y \
-  -hwaccel vaapi -hwaccel_output_format vaapi \
-  -i /dist/base.mp4 \
-  -c:v h264_vaapi \
-   /dist/x264_vaapi_default_none.mp4
+TBA
 
+### VMAF cuda
 
-# x265
-ffmpeg -y \
-  -i /dist/base.mp4 \
-  -c:v libx265 -preset medium \
-  -tag:v hvc1 \
-  /dist/x265_x265_default_medium.mp4
-
-# hevc_nvenc
-ffmpeg -y \
-  -hwaccel cuda -hwaccel_output_format cuda \
-  -i /dist/base.mp4 \
-  -c:v hevc_nvenc -preset 15 \
-  -tag:v hvc1 \
-  /dist/x265_nvenc_default_p4.mp4
-
-# hevc_qsv
-ffmpeg -y \
-  -hwaccel qsv -hwaccel_output_format qsv \
-  -i /dist/base.mp4 \
-  -c:v hevc_qsv -preset 4 \
-  -tag:v hvc1 \
-  /dist/x265_qsv_default_medium.mp4
-
-# hevc_vaapi
-ffmpeg -y \
-  -hwaccel vaapi -hwaccel_output_format vaapi \
-  -i /dist/base.mp4 \
-  -c:v hevc_vaapi \
-  -tag:v hvc1 \
-   /dist/x265_vaapi_default_none.mp4
+```bash
+ffmpeg -hide_banner \
+  -hwaccel cuda -hwaccel_output_format cuda -c:v hevc_cuvid  -i /dist/tmp.mp4 \
+  -hwaccel cuda -hwaccel_output_format cuda -c:v mpeg2_cuvid -i /source/BBB_JapanTV_MPEG-2_1440x1080_30i.m2ts \
+  -filter_complex "
+    [0:v:0]scale_npp=format=yuv420p:w=1440:h=1080[dis],
+    [1:v:0]scale_npp=format=yuv420p[ref],
+    [dis][ref]libvmaf_cuda=model=version=vmaf_v0.6.1\\:pool=harmonic_mean:feature=name=psnr|name=float_ssim:log_fmt=json:log_path=/dist/tmp_vmaf.json:shortest=1:repeatlast=0" -f null -
 
 ```
 

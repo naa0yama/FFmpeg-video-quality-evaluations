@@ -1,0 +1,10 @@
+Filter deinterlace_qsv
+    Inputs:
+       #0: default (video)
+    Outputs:
+       #0: default (video)
+deinterlace_qsv AVOptions:
+   mode              <int>        ..FV....... set deinterlace mode (from 1 to 2) (default advanced)
+     bob             1            ..FV....... bob algorithm
+     advanced        2            ..FV....... Motion adaptive algorithm
+

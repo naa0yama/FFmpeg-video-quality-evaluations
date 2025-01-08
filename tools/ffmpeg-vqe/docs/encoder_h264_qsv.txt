@@ -1,8 +1,7 @@
-> ffmpeg -hide_banner -h encoder=h264_qsv
 Encoder h264_qsv []:
-    General capabilities: delay hybrid
+    General capabilities: delay hybrid 
     Threading capabilities: none
-    Supported hardware devices: qsv qsv qsv
+    Supported hardware devices: qsv qsv qsv 
     Supported pixel formats: nv12 qsv
 h264_qsv encoder AVOptions:
   -async_depth       <int>        E..V....... Maximum processing parallelism (from 1 to INT_MAX) (default 4)
@@ -16,6 +15,7 @@ h264_qsv encoder AVOptions:
      veryslow        1            E..V.......
   -forced_idr        <boolean>    E..V....... Forcing I frames as IDR frames (default false)
   -low_power         <boolean>    E..V....... enable low power mode(experimental: many limitations by mfx version, BRC modes, etc.) (default auto)
+  -qsv_params        <dictionary> E..V....... Set QSV encoder parameters as key1=value1:key2=value2:...
   -rdo               <int>        E..V....... Enable rate distortion optimization (from -1 to 1) (default -1)
   -max_frame_size    <int>        E..V....... Maximum encoded frame size in bytes (from -1 to INT_MAX) (default -1)
   -max_frame_size_i  <int>        E..V....... Maximum encoded I frame size in bytes (from -1 to INT_MAX) (default -1)
@@ -82,7 +82,5 @@ h264_qsv encoder AVOptions:
      high            100          E..V.......
   -a53cc             <boolean>    E..V....... Use A53 Closed Captions (if available) (default true)
   -aud               <boolean>    E..V....... Insert the Access Unit Delimiter NAL (default false)
-  -mfmode            <int>        E..V....... Multi-Frame Mode (from 0 to 2) (default auto)
-     off             1            E..V.......
-     auto            2            E..V.......
   -repeat_pps        <boolean>    E..V....... repeat pps for every frame (default false)
+

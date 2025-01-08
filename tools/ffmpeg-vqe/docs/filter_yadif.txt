@@ -1,0 +1,21 @@
+Filter yadif
+    slice threading supported
+    Inputs:
+       #0: default (video)
+    Outputs:
+       #0: default (video)
+yadif AVOptions:
+   mode              <int>        ..FV....... specify the interlacing mode (from 0 to 3) (default send_frame)
+     send_frame      0            ..FV....... send one frame for each frame
+     send_field      1            ..FV....... send one frame for each field
+     send_frame_nospatial 2            ..FV....... send one frame for each frame, but skip spatial interlacing check
+     send_field_nospatial 3            ..FV....... send one frame for each field, but skip spatial interlacing check
+   parity            <int>        ..FV....... specify the assumed picture field parity (from -1 to 1) (default auto)
+     tff             0            ..FV....... assume top field first
+     bff             1            ..FV....... assume bottom field first
+     auto            -1           ..FV....... auto detect parity
+   deint             <int>        ..FV....... specify which frames to deinterlace (from 0 to 1) (default all)
+     all             0            ..FV....... deinterlace all frames
+     interlaced      1            ..FV....... only deinterlace frames marked as interlaced
+
+This filter has support for timeline through the 'enable' option.

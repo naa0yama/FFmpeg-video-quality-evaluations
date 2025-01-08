@@ -1,0 +1,16 @@
+Filter scale_qsv
+    Inputs:
+       #0: default (video)
+    Outputs:
+       #0: default (video)
+scale_qsv AVOptions:
+   w                 <string>     ..FV....... Output video width(0=input video width, -1=keep input video aspect) (default "iw")
+   h                 <string>     ..FV....... Output video height(0=input video height, -1=keep input video aspect) (default "ih")
+   format            <string>     ..FV....... Output pixel format (default "same")
+   mode              <int>        ..FV....... scaling & format conversion mode (mode compute(3), vd(4) and ve(5) are only available on some platforms) (from 0 to 5) (default 0)
+     low_power       1            ..FV....... low power mode
+     hq              2            ..FV....... high quality mode
+     compute         3            ..FV....... compute
+     vd              4            ..FV....... vd
+     ve              5            ..FV....... ve
+
