@@ -59,55 +59,31 @@ args = parser.parse_args()
 
 __configs: dict = {
     "origfile": "/source/BBB_JapanTV_MPEG-2_1440x1080_30i.m2ts",
-    "basefile": "/dist/base.m2ts",
+    "basefile": "/dist/base.mkv",
     "patterns": [
         {
-            "codec": "libx264",
-            "type": "x264_crf23",
+            "codec": "av1_qsv",
+            "type": "av1",
             "presets": ["veryfast", "medium", "veryslow"],
-            "infile": {"options": []},
-            "outfile": {"options": ["-crf", "23"]},
-            "hwaccels": [],
-        },
-        {
-            "codec": "h264_nvenc",
-            "type": "x264",
-            "presets": ["p4", "p6", "p7"],
             "infile": {"options": []},
             "outfile": {"options": []},
-            "hwaccels": ["-hwaccel", "cuda", "-hwaccel_output_format", "cuda"],
+            "hwaccels": ["-hwaccel", "qsv", "-hwaccel_output_format", "qsv"],
         },
         {
-            "codec": "libx265",
-            "type": "x265_crf26",
-            "presets": ["veryfast", "medium", "veryslow"],
-            "infile": {"options": []},
-            "outfile": {"options": ["-crf", "26", "-tag:v", "hvc1"]},
-            "hwaccels": [],
-        },
-        {
-            "codec": "libx265",
-            "type": "x265_crf28",
-            "presets": ["veryfast", "medium", "veryslow"],
-            "infile": {"options": []},
-            "outfile": {"options": ["-crf", "28", "-tag:v", "hvc1"]},
-            "hwaccels": [],
-        },
-        {
-            "codec": "libx265",
-            "type": "x265_crf30",
-            "presets": ["veryfast", "medium", "veryslow"],
-            "infile": {"options": []},
-            "outfile": {"options": ["-crf", "30", "-tag:v", "hvc1"]},
-            "hwaccels": [],
-        },
-        {
-            "codec": "hevc_nvenc",
+            "codec": "hevc_qsv",
             "type": "x265",
-            "presets": ["p4", "p6", "p7"],
+            "presets": ["veryfast", "medium", "veryslow"],
             "infile": {"options": []},
-            "outfile": {"options": ["-tag:v", "hvc1"]},
-            "hwaccels": ["-hwaccel", "cuda", "-hwaccel_output_format", "cuda"],
+            "outfile": {"options": []},
+            "hwaccels": ["-hwaccel", "qsv", "-hwaccel_output_format", "qsv"],
+        },
+        {
+            "codec": "hevc_qsv",
+            "type": "x265",
+            "presets": ["veryfast", "medium", "veryslow"],
+            "infile": {"options": []},
+            "outfile": {"options": []},
+            "hwaccels": ["-hwaccel", "qsv", "-hwaccel_output_format", "qsv"],
         },
     ],
 }
@@ -194,9 +170,9 @@ def getvmaf(encode_cfg: dict, outputext: str) -> dict:
         f"{encode_cfg['infile']['filename']}",
         "-i",
         f"{encode_cfg['outfile']['filename']}{outputext}",
-        "-lavfi",
+        "-filter_complex",
         (
-            "libvmaf='model=version=vmaf_v0.6.1\\:name=vmaf:feature=name=float_ssim:"
+            "[0:v][1:v]libvmaf=model=version=vmaf_v0.6.1\\:pool=harmonic_mean:feature=name=psnr|name=float_ssim:"
             f"n_threads={os.cpu_count()}:"
             f"log_fmt=json:log_path={encode_cfg['outfile']['filename']}_vmaf.json"
         ),

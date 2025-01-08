@@ -1,0 +1,40 @@
+Filter fieldmatch
+    Inputs:
+        dynamic (depending on the options)
+    Outputs:
+       #0: default (video)
+fieldmatch AVOptions:
+   order             <int>        ..FV....... specify the assumed field order (from -1 to 1) (default auto)
+     auto            -1           ..FV....... auto detect parity
+     bff             0            ..FV....... assume bottom field first
+     tff             1            ..FV....... assume top field first
+   mode              <int>        ..FV....... set the matching mode or strategy to use (from 0 to 5) (default pc_n)
+     pc              0            ..FV....... 2-way match (p/c)
+     pc_n            1            ..FV....... 2-way match + 3rd match on combed (p/c + u)
+     pc_u            2            ..FV....... 2-way match + 3rd match (same order) on combed (p/c + u)
+     pc_n_ub         3            ..FV....... 2-way match + 3rd match on combed + 4th/5th matches if still combed (p/c + u + u/b)
+     pcn             4            ..FV....... 3-way match (p/c/n)
+     pcn_ub          5            ..FV....... 3-way match + 4th/5th matches on combed (p/c/n + u/b)
+   ppsrc             <boolean>    ..FV....... mark main input as a pre-processed input and activate clean source input stream (default false)
+   field             <int>        ..FV....... set the field to match from (from -1 to 1) (default auto)
+     auto            -1           ..FV....... automatic (same value as 'order')
+     bottom          0            ..FV....... bottom field
+     top             1            ..FV....... top field
+   mchroma           <boolean>    ..FV....... set whether or not chroma is included during the match comparisons (default true)
+   y0                <int>        ..FV....... define an exclusion band which excludes the lines between y0 and y1 from the field matching decision (from 0 to INT_MAX) (default 0)
+   y1                <int>        ..FV....... define an exclusion band which excludes the lines between y0 and y1 from the field matching decision (from 0 to INT_MAX) (default 0)
+   scthresh          <double>     ..FV....... set scene change detection threshold (from 0 to 100) (default 12)
+   combmatch         <int>        ..FV....... set combmatching mode (from 0 to 2) (default sc)
+     none            0            ..FV....... disable combmatching
+     sc              1            ..FV....... enable combmatching only on scene change
+     full            2            ..FV....... enable combmatching all the time
+   combdbg           <int>        ..FV....... enable comb debug (from 0 to 2) (default none)
+     none            0            ..FV....... no forced calculation
+     pcn             1            ..FV....... calculate p/c/n
+     pcnub           2            ..FV....... calculate p/c/n/u/b
+   cthresh           <int>        ..FV....... set the area combing threshold used for combed frame detection (from -1 to 255) (default 9)
+   chroma            <boolean>    ..FV....... set whether or not chroma is considered in the combed frame decision (default false)
+   blockx            <int>        ..FV....... set the x-axis size of the window used during combed frame detection (from 4 to 512) (default 16)
+   blocky            <int>        ..FV....... set the y-axis size of the window used during combed frame detection (from 4 to 512) (default 16)
+   combpel           <int>        ..FV....... set the number of combed pixels inside any of the blocky by blockx size blocks on the frame for the frame to be detected as combed (from 0 to INT_MAX) (default 80)
+

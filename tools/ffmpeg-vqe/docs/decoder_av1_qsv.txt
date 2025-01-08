@@ -1,0 +1,11 @@
+Decoder av1_qsv []:
+    General capabilities: dr1 delay avoidprobe hybrid 
+    Threading capabilities: none
+    Supported hardware devices: qsv 
+av1_qsv AVOptions:
+  -async_depth       <int>        .D.V....... Internal parallelization depth, the higher the value the higher the latency. (from 1 to INT_MAX) (default 4)
+  -gpu_copy          <int>        .D.V....... A GPU-accelerated copy between video and system memory (from 0 to 2) (default default)
+     default         0            .D.V.......
+     on              1            .D.V.......
+     off             2            .D.V.......
+

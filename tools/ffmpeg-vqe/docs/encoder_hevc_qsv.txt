@@ -1,8 +1,7 @@
-> ffmpeg -hide_banner -h encoder=hevc_qsv
 Encoder hevc_qsv []:
-    General capabilities: delay hybrid
+    General capabilities: delay hybrid 
     Threading capabilities: none
-    Supported hardware devices: qsv qsv qsv
+    Supported hardware devices: qsv qsv qsv 
     Supported pixel formats: nv12 p010le p012le yuyv422 y210le qsv bgra x2rgb10le vuyx xv30le
 hevc_qsv encoder AVOptions:
   -async_depth       <int>        E..V....... Maximum processing parallelism (from 1 to INT_MAX) (default 4)
@@ -16,6 +15,7 @@ hevc_qsv encoder AVOptions:
      veryslow        1            E..V.......
   -forced_idr        <boolean>    E..V....... Forcing I frames as IDR frames (default false)
   -low_power         <boolean>    E..V....... enable low power mode(experimental: many limitations by mfx version, BRC modes, etc.) (default auto)
+  -qsv_params        <dictionary> E..V....... Set QSV encoder parameters as key1=value1:key2=value2:...
   -rdo               <int>        E..V....... Enable rate distortion optimization (from -1 to 1) (default -1)
   -max_frame_size    <int>        E..V....... Maximum encoded frame size in bytes (from -1 to INT_MAX) (default -1)
   -max_frame_size_i  <int>        E..V....... Maximum encoded I frame size in bytes (from -1 to INT_MAX) (default -1)
@@ -85,3 +85,4 @@ hevc_qsv encoder AVOptions:
   -int_ref_cycle_size <int>        E..V....... Number of frames in the intra refresh cycle (from -1 to 65535) (default -1)
   -int_ref_qp_delta  <int>        E..V....... QP difference for the refresh MBs (from -32768 to 32767) (default -32768)
   -int_ref_cycle_dist <int>        E..V....... Distance between the beginnings of the intra-refresh cycles in frames (from -1 to 32767) (default -1)
+

@@ -1,0 +1,33 @@
+Encoder av1_qsv []:
+    General capabilities: delay hybrid 
+    Threading capabilities: none
+    Supported hardware devices: qsv qsv qsv 
+    Supported pixel formats: nv12 p010le qsv
+av1_qsv encoder AVOptions:
+  -async_depth       <int>        E..V....... Maximum processing parallelism (from 1 to INT_MAX) (default 4)
+  -preset            <int>        E..V....... (from 0 to 7) (default 0)
+     veryfast        7            E..V.......
+     faster          6            E..V.......
+     fast            5            E..V.......
+     medium          4            E..V.......
+     slow            3            E..V.......
+     slower          2            E..V.......
+     veryslow        1            E..V.......
+  -forced_idr        <boolean>    E..V....... Forcing I frames as IDR frames (default false)
+  -low_power         <boolean>    E..V....... enable low power mode(experimental: many limitations by mfx version, BRC modes, etc.) (default auto)
+  -qsv_params        <dictionary> E..V....... Set QSV encoder parameters as key1=value1:key2=value2:...
+  -b_strategy        <int>        E..V....... Strategy to choose between I/P/B-frames (from -1 to 1) (default -1)
+  -adaptive_i        <int>        E..V....... Adaptive I-frame placement (from -1 to 1) (default -1)
+  -adaptive_b        <int>        E..V....... Adaptive B-frame placement (from -1 to 1) (default -1)
+  -extbrc            <int>        E..V....... Extended bitrate control (from -1 to 1) (default -1)
+  -low_delay_brc     <boolean>    E..V....... Allow to strictly obey avg frame size (default auto)
+  -max_frame_size    <int>        E..V....... Maximum encoded frame size in bytes (from -1 to INT_MAX) (default -1)
+  -max_frame_size_i  <int>        E..V....... Maximum encoded I frame size in bytes (from -1 to INT_MAX) (default -1)
+  -max_frame_size_p  <int>        E..V....... Maximum encoded P frame size in bytes (from -1 to INT_MAX) (default -1)
+  -profile           <int>        E..V....... (from 0 to INT_MAX) (default unknown)
+     unknown         0            E..V.......
+     main            1            E..V.......
+  -tile_cols         <int>        E..V....... Number of columns for tiled encoding (from 0 to 65535) (default 0)
+  -tile_rows         <int>        E..V....... Number of rows for tiled encoding (from 0 to 65535) (default 0)
+  -look_ahead_depth  <int>        E..V....... Depth of look ahead in number frames, available when extbrc option is enabled (from 0 to 100) (default 0)
+

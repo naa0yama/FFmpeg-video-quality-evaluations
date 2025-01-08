@@ -1,0 +1,57 @@
+Filter vpp_qsv
+    Inputs:
+       #0: default (video)
+    Outputs:
+       #0: default (video)
+vpp_qsv AVOptions:
+   deinterlace       <int>        ..FV....... deinterlace mode: 0=off, 1=bob, 2=advanced (from 0 to 2) (default 0)
+     bob             1            ..FV....... Bob deinterlace mode.
+     advanced        2            ..FV....... Advanced deinterlace mode. 
+   denoise           <int>        ..FV....... denoise level [0, 100] (from 0 to 100) (default 0)
+   detail            <int>        ..FV....... enhancement level [0, 100] (from 0 to 100) (default 0)
+   framerate         <rational>   ..FV....... output framerate (from 0 to DBL_MAX) (default 0/1)
+   procamp           <int>        ..FV....... Enable ProcAmp (from 0 to 1) (default 0)
+   hue               <float>      ..FV....... ProcAmp hue (from -180 to 180) (default 0)
+   saturation        <float>      ..FV....... ProcAmp saturation (from 0 to 10) (default 1)
+   contrast          <float>      ..FV....... ProcAmp contrast (from 0 to 10) (default 1)
+   brightness        <float>      ..FV....... ProcAmp brightness (from -100 to 100) (default 0)
+   transpose         <int>        ..FV....... set transpose direction (from -1 to 6) (default -1)
+     cclock_hflip    0            ..FV....... rotate counter-clockwise with horizontal flip
+     clock           1            ..FV....... rotate clockwise
+     cclock          2            ..FV....... rotate counter-clockwise
+     clock_hflip     3            ..FV....... rotate clockwise with horizontal flip
+     reversal        4            ..FV....... rotate by half-turn
+     hflip           5            ..FV....... flip horizontally
+     vflip           6            ..FV....... flip vertically
+   cw                <string>     ..FV....... set the width crop area expression (default "iw")
+   ch                <string>     ..FV....... set the height crop area expression (default "ih")
+   cx                <string>     ..FV....... set the x crop area expression (default "(in_w-out_w)/2")
+   cy                <string>     ..FV....... set the y crop area expression (default "(in_h-out_h)/2")
+   w                 <string>     ..FV....... Output video width(0=input video width, -1=keep input video aspect) (default "cw")
+   width             <string>     ..FV....... Output video width(0=input video width, -1=keep input video aspect) (default "cw")
+   h                 <string>     ..FV....... Output video height(0=input video height, -1=keep input video aspect) (default "w*ch/cw")
+   height            <string>     ..FV....... Output video height(0=input video height, -1=keep input video aspect) (default "w*ch/cw")
+   format            <string>     ..FV....... Output pixel format (default "same")
+   async_depth       <int>        ..FV....... Internal parallelization depth, the higher the value the higher the latency. (from 0 to INT_MAX) (default 4)
+   scale_mode        <int>        ..FV....... scaling & format conversion mode (mode compute(3), vd(4) and ve(5) are only available on some platforms) (from 0 to 5) (default auto)
+     auto            0            ..FV....... auto mode
+     low_power       1            ..FV....... low power mode
+     hq              2            ..FV....... high quality mode
+     compute         3            ..FV....... compute
+     vd              4            ..FV....... vd
+     ve              5            ..FV....... ve
+   rate              <int>        ..FV....... Generate output at frame rate or field rate, available only for deinterlace mode (from 0 to 1) (default frame)
+     frame           0            ..FV....... Output at frame rate (one frame of output for each field-pair)
+     field           1            ..FV....... Output at field rate (one frame of output for each field)
+   out_range         <int>        ..FV....... Output color range (from 0 to 2) (default 0)
+     full            2            ..FV....... Full range
+     limited         1            ..FV....... Limited range
+     jpeg            2            ..FV....... Full range
+     mpeg            1            ..FV....... Limited range
+     tv              1            ..FV....... Limited range
+     pc              2            ..FV....... Full range
+   out_color_matrix  <string>     ..FV....... Output color matrix coefficient set
+   out_color_primaries <string>     ..FV....... Output color primaries
+   out_color_transfer <string>     ..FV....... Output color transfer characteristics
+   tonemap           <int>        ..FV....... Perform tonemapping (0=disable tonemapping, 1=perform tonemapping if the input has HDR metadata) (from 0 to 1) (default 0)
+
