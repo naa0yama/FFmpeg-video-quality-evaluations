@@ -20,31 +20,17 @@ EOF
 
 ```
 
-* check
-
-```bash
-$ cat /etc/udev/rules.d/99-render.rules 
-KERNEL=="render*" GROUP="render", MODE="0666"
-
-```
-
 ### Intel HD (vaapi, Quick Sync Video)
 
 ```bash
-sudo apt install vainfo intel-gpu-tools
+sudo apt install hwinfo intel-gpu-tools vainfo
 
 ```
 
-* version check
+Version check
 
 ```bash
-sudo vainfo
-
-```
-
-* output
-
-```bash
+> sudo vainfo
 error: XDG_RUNTIME_DIR is invalid or not set in the environment.
 error: can't connect to X server!
 libva info: VA-API version 1.20.0
@@ -112,41 +98,45 @@ curl https://get.docker.com | sh \
 
 ## 映像の準備
 
-今回は、 CC-BY 4.0 で配布されている [Big Buck Bunny](http://www.bigbuckbunny.org) を利用する。  
-ミラーとして [Xiph.org :: Test Media](https://media.xiph.org/) で配布されているのでこちらから元 png 画像をダウンロードした。
+本プロジェクトでは長期的にリファレンス映像を利用する可能性が高そうに思えたため CC-BY 4.0 で配布されている [Big Buck Bunny](http://www.bigbuckbunny.org) をベースに Release に保管することで永続化しています。  
 
-```bash{name="ダウンロードの例"}
-#!/usr/bin/env bash
-set -eux
+地上デジタル放送の映像に近づけるため、下記の設定で出力した映像としています。  
+映像設定の詳細は [Releases · naa0yama/FFmpeg-video-quality-evaluations](https://github.com/naa0yama/FFmpeg-video-quality-evaluations/releases) のAssetにある encode.ps1 で確認できます。  
+すべてダウンロードする場合は `videos/source/reference_downloads.sh` にスクリプトを用意してあります。
 
-curl -sfSL https://media.xiph.org/BBB/BBB-1080-png/MD5SUMS.txt | \
-awk '{print $2}' | \
-sed -e 's@^@https://media.xiph.org/BBB/BBB-1080-png/@g' > pnglist.txt
+| Type          | size      | frame rate | p/i         | bitrate avg / max            | Filename                                              |
+| :------------ | :-------- | :--------- | :---------- | :--------------------------- | :---------------------------------------------------- |
+| Source        | 1280x720  | 24000/1001 | progressive | `-b:v 10M`<br>`-maxrate 15M` | `BBB_JapanTV_MPEG-2_1280x720_24p.m2ts`                |
+|               |           | 30000/1001 | progressive | `-b:v 10M`<br>`-maxrate 15M` | `BBB_JapanTV_MPEG-2_1280x720_30p.m2ts`                |
+|               |           |            | interlace   | `-b:v 10M`<br>`-maxrate 15M` | `BBB_JapanTV_MPEG-2_1280x720_30i.m2ts`                |
+|               | 1440x1080 | 24000/1001 | progressive | `-b:v 14M`<br>`-maxrate 20M` | `BBB_JapanTV_MPEG-2_1440x1080_24p.m2ts`               |
+|               |           | 30000/1001 | progressive | `-b:v 14M`<br>`-maxrate 20M` | `BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts`               |
+|               |           |            | interlace   | `-b:v 14M`<br>`-maxrate 20M` | `BBB_JapanTV_MPEG-2_1440x1080_30i.m2ts`               |
+| telecine 23   |           |            | interlace   | `-b:v 14M`<br>`-maxrate 20M` | `BBB_JapanTV_MPEG-2_1440x1080_30i_telecine_23.m2ts`   |
+| telecine 2332 |           |            | interlace   | `-b:v 14M`<br>`-maxrate 20M` | `BBB_JapanTV_MPEG-2_1440x1080_30i_telecine_2332.m2ts` |
+|               |           |            |             |                              |                                                       |
+|               | 1920x1080 | 24000/1001 | progressive | `-b:v 18M`<br>`-maxrate 24M` | `BBB_JapanTV_MPEG-2_1920x1080_24p.m2ts`               |
+|               |           | 30000/1001 | progressive | `-b:v 18M`<br>`-maxrate 24M` | `BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts`               |
+|               |           |            | interlace   | `-b:v 18M`<br>`-maxrate 24M` | `BBB_JapanTV_MPEG-2_1920x1080_30i.m2ts`               |
+| telecine 23   |           |            | interlace   | `-b:v 18M`<br>`-maxrate 24M` | `BBB_JapanTV_MPEG-2_1920x1080_30i_telecine_23.m2ts`   |
+| telecine 2332 |           |            | interlace   | `-b:v 18M`<br>`-maxrate 24M` | `BBB_JapanTV_MPEG-2_1920x1080_30i_telecine_2332.m2ts` |
 
-mkdir -p src/
-
-aria2c --dir=./src/ \
-  --input-file=pnglist.txt \
-  --max-concurrent-downloads=4 \
-  --connect-timeout=60 \
-  --max-connection-per-server=16 \
-  --split=3 \
-  --min-split-size=5M \
-  --human-readable=true \
-  --download-result=full \
-  --file-allocation=none
-
-```
-
-リファレンスデータを作成する。
-リファレンス用は下記の2つ
 
 ## エンコードとテスト
 
+* CQP (Constant Quantization Parameter)
+* ICQ (Intelligent Constant Quality)
+* LA-ICQ (Look-Ahead Intelligent Constant Quality)
+* VBR (Variable Bit Rate)
+
+libx265 でおなじみ CRF(Constant Rate Factor) は QSV には存在しない  
+画質は、 LA-ICQ が最も良く ICQ、CQP、VBR の順になる
+
 ```bash
-# FFmpeg
+# コンテナーの build
 docker build -t ffmpeg-vqe .
 
+# コンテナへのログイン
 docker run --user $(id -u):$(id -g) --rm -it \
   -v $PWD/videos/source:/source \
   -v $PWD/videos/dist:/dist \
@@ -157,6 +147,7 @@ docker run --user $(id -u):$(id -g) --rm -it \
 ```
 
 ```bash
+# /dist を初期化して、エンコードを開始
 rm -rfv /dist/*.* && \
 python3 /app/entrypoint.py --encode -fss 180 -ft 60 && \
 bash /app/plotbitrate.sh
@@ -164,6 +155,7 @@ bash /app/plotbitrate.sh
 ```
 
 ```bash
+# 結果を assets に移動して *_vmaf.json を圧縮
 mkdir -p assets/BigBuckBunny
 cp -ar videos/dist assets/BigBuckBunny
 cd assets/BigBuckBunny
@@ -172,46 +164,52 @@ rm -rf *_vmaf.json
 
 ```
 
-* CRF(Constant Rate Factor)
-* QP(Constant quantization parameter)
-* CQ(Constant Quality mode in VBR)
+### CQP (Constant Quantization Parameter)
 
-* preset は標準, 標準から -3, +3 を試す
+一定品質を維持する設定のため、単調なシーンでは過剰、複雑なシーンではビットレート不足となる
 
-| codec       |  CRF  |  QP   |      CQ       | preset default        | 試す preset                         |
-| :---------- | :---: | :---: | :-----------: | :-------------------- | :---------------------------------- |
-| **libx264** |   O   |   O   |               | medium                | veryfast ,medium, veryslow          |
-| h264_nvenc  |       |   O   |       O       | 15(p4)                | 12(p2), 15(p4), 18(p7)              |
-| h264_qsv    |       |       |               | 4(medium) (default 0) | 7(veryfast), 4(medium), 1(veryslow) |
-| h264_vaapi  |       |   O   | O (rc_mode 1) | `-`                   |                                     |
-|             |       |       |               |                       |                                     |
-| **libx265** |   O   |   O   |               | medium                | veryfast ,medium, veryslow          |
-| hevc_nvenc  |       |   O   |       O       | 15(p4)                | 12(p2), 15(p4), 18(p7)              |
-| hevc_qsv    |       |       |               | 4(medium) (default 0) | 7(veryfast), 4(medium), 1(veryslow) |
-| hevc_vaapi  |       |   O   | O (rc_mode 1) | `-`                   |                                     |
+```bash
+ffmpeg -hwaccel qsv -i input.mp4 \
+    -c:v hevc_qsv -preset veryfast \
+    -q:v 23 \
+    output.mp4
 
-|                    |      |      |                      |
-| :----------------- | :--- | :--- | :------------------- |
-| **Global options** |      |      |                      |
-|                    |      | `-y` | 出力ファイルの上書き |
+```
 
-* ``
-* `-rc-lookahead`: B-frame+1, MAX 20
+### ICQ (Intelligent Constant Quality)
 
-* [NVIDIA GeForce RTX 2060 Super](https://www.elsa-jp.co.jp/products/detail/elsa-geforce-rtx-2060-super-s-a-c/) 向けに最適化をする
+このモードは画質を一定に保ちながら、シーンの複雑さに応じてビットレートを調整します。
 
-|              |                    |
-| :----------- | :----------------- |
-| GPU Name     | TU106              |
-| GPU Variant  | TU106-410-A1       |
-| Architecture | Turing             |
-|              |                    |
-| DirectX      | 12 Ultimate (12_2) |
-| OpenGL       | 4.6                |
-| OpenCL       | 3.0                |
-| Vulkan       | 1.3                |
-| CUDA         | 7.5                |
-| Shader Model | 6.7                |
+```bash
+ffmpeg -hwaccel qsv -i input.mp4 \
+  -c:v hevc_qsv -preset veryfast \
+  -global_quality 20 \
+  output.mp4
+
+```
+
+### LA-ICQ (Look-Ahead Intelligent Constant Quality)
+
+先読み解析により画質制御がされ適切なビットレートを割り当てることで、画質と容量のバランスを取ります
+
+```bash
+ffmpeg -hwaccel qsv -i input.mp4 \
+  -c:v hevc_qsv -preset veryfast \
+  -look_ahead 1 -look_ahead_depth 30 -global_quality 20 \
+  output.mp4
+```
+
+### VBR (Variable Bit Rate)
+
+平均ビットレートによる制御のため画質に関係なく、同容量のサイズにするには優れている
+
+```bash
+ffmpeg -hwaccel qsv -i input.mp4 \
+  -c:v hevc_qsv -preset veryfast \
+  -b:v 2000k -maxrate 2000k \
+  output.mp4
+
+```
 
 | type           | option                        | Description                                                  |
 | :------------- | :---------------------------- | :----------------------------------------------------------- |
@@ -243,42 +241,30 @@ rm -rf *_vmaf.json
 |                | `-ab 256k`                    | ビットレート 256kbps                                         |
 |                | `-bsf:a aac_adtstoasc`        | MPEG-2 から MPEG-4 に変更するオプション                      |
 
-* `-i_qfactor 0.75`
-* `-b_qfactor 1.1`
-
-* -vf yadif=0:-1:1,hqdn3d=4.0,scale=1280:720:flags=lanczos+accurate_rnd,unsharp=3:3:0.5:3:3:0.5:0
-* -map 0:p:%SID10%:0
-* -map 0:p:%SID10%:1
-* -map 0:p:%SID10%:2
-* -sn
-* -dn
-
-```bash
-for i in decoders encoders; do echo ${i}:; ffmpeg -hide_banner -${i} | \
-    egrep -i "[x|h]264|[x|h]265|av1|cuvid|hevc|libmfx|nv[dec|enc]|qsv|vaapi|vp9"; done
-
-```
-
 * [HWAccelIntro – FFmpeg](https://trac.ffmpeg.org/wiki/HWAccelIntro)
 * [Hardware/QuickSync – FFmpeg](https://trac.ffmpeg.org/wiki/Hardware/QuickSync)
 * [Hardware/VAAPI – FFmpeg](https://trac.ffmpeg.org/wiki/Hardware/VAAPI)
 * [Using FFmpeg with NVIDIA GPU Hardware Acceleration - NVIDIA Docs](https://docs.nvidia.com/video-technologies/video-codec-sdk/12.2/ffmpeg-with-nvidia-gpu/index.html)
 * [libvmaf with CUDA -- how to build and use · Issue #1227 · Netflix/vmaf](https://github.com/Netflix/vmaf/issues/1227)
 
-```bash
-docker run --user $(id -u):$(id -g) --rm -it --gpus all ffmpeg-vqe /bin/bash
+## Memos
 
-```
+### dist Summary csv gen
+
+TBA
+
+### マニュアル生成
 
 ```bash
+mkdir -p /source/{decoders,encoders,filters}
 for decoder in av1 av1_qsv h264 h264_qsv hevc hevc_qsv mpeg2_qsv vp9_qsv
 do
-  ffmpeg -hide_banner -h decoder=${decoder}    > /source/decoder_${decoder}.txt
+  ffmpeg -hide_banner -h decoder=${decoder}    > /source/decoders/decoder_${decoder}.txt
 done
 
 for encoder in libaom-av1 av1_qsv libx264 h264_qsv libx265 hevc_qsv mpeg2_qsv vp9_qsv
 do
-  ffmpeg -hide_banner -h encoder=${encoder}    > /source/encoder_${encoder}.txt
+  ffmpeg -hide_banner -h encoder=${encoder}    > /source/encoders/encoder_${encoder}.txt
 done
 
 for filter in \
@@ -292,16 +278,10 @@ for filter in \
   vpp_qsv \
   yadif
 do
-  ffmpeg -hide_banner -h filter=${filter}    > /source/filter_${filter}.txt
+  ffmpeg -hide_banner -h filter=${filter}    > /source/filters/filter_${filter}.txt
 done
 
 ```
-
-## Tools
-
-### dist Summary csv gen
-
-TBA
 
 ### VMAF cuda
 
@@ -317,3 +297,31 @@ ffmpeg -hide_banner \
 ```
 
 [FFmpeg Filters Documentation](https://ffmpeg.org/ffmpeg-filters.html#Examples-91)
+
+### 映像の準備
+
+今回は、 CC-BY 4.0 で配布されている [Big Buck Bunny](http://www.bigbuckbunny.org) を利用する。  
+ミラーとして [Xiph.org :: Test Media](https://media.xiph.org/) で配布されているのでこちらから元 png 画像をダウンロードした。
+
+```bash{name="ダウンロードの例"}
+#!/usr/bin/env bash
+set -eux
+
+curl -sfSL https://media.xiph.org/BBB/BBB-1080-png/MD5SUMS.txt | \
+awk '{print $2}' | \
+sed -e 's@^@https://media.xiph.org/BBB/BBB-1080-png/@g' > pnglist.txt
+
+mkdir -p src/
+
+aria2c --dir=./src/ \
+  --input-file=pnglist.txt \
+  --max-concurrent-downloads=4 \
+  --connect-timeout=60 \
+  --max-connection-per-server=16 \
+  --split=3 \
+  --min-split-size=5M \
+  --human-readable=true \
+  --download-result=full \
+  --file-allocation=none
+
+```
