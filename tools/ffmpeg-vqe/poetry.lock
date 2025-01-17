@@ -134,13 +134,13 @@ files = [
 
 [[package]]
 name = "ffmpeg-progress-yield"
-version = "0.7.8"
+version = "0.7.9"
 description = "Run an ffmpeg command with progress"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "ffmpeg-progress-yield-0.7.8.tar.gz", hash = "sha256:9ae6ae5f832ae7c7b0f6518f1341fe6eee1ba8fc9d3400cba1cba38f2eaa461e"},
-    {file = "ffmpeg_progress_yield-0.7.8-py2.py3-none-any.whl", hash = "sha256:732ef90d78f8b5c0b78be289050589299d128d03063be55a9deab80d67319a21"},
+    {file = "ffmpeg-progress-yield-0.7.9.tar.gz", hash = "sha256:29e4d49689fbdb0e71b71b39c7697b94b39cc63103ad02337ace6d7fe9282816"},
+    {file = "ffmpeg_progress_yield-0.7.9-py2.py3-none-any.whl", hash = "sha256:6a9f519730269ea95b5968a07725424e941df9b8f52356485f9ceafc807f8a8b"},
 ]
 
 [[package]]
@@ -989,4 +989,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.12"
-content-hash = "50b1c0bae9c89a7bea290680d66d419e94ceb8ec75263c638429c9a1d03e6378"
+content-hash = "1a353b568f89746a50c69c2f19aafc5da7f767e195d1a560fae97a2d2df7ae61"
