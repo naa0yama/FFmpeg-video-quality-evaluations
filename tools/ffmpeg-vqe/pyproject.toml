@@ -18,7 +18,7 @@ name = "Naoki Aoyama"
 
 [tool.poetry.dependencies]
 python = "~3.12"
-ffmpeg-progress-yield = "0.7.8"
+ffmpeg-progress-yield = "0.7.9"
 tqdm = "4.66.4"
 plotbitrate = "~1.1.2.0"
 
