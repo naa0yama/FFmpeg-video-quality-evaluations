@@ -121,7 +121,6 @@ curl https://get.docker.com | sh \
 | telecine 23   |           |            | interlace   | `-b:v 18M`<br>`-maxrate 24M` | `BBB_JapanTV_MPEG-2_1920x1080_30i_telecine_23.m2ts`   |
 | telecine 2332 |           |            | interlace   | `-b:v 18M`<br>`-maxrate 24M` | `BBB_JapanTV_MPEG-2_1920x1080_30i_telecine_2332.m2ts` |
 
-
 ## エンコードとテスト
 
 * CQP (Constant Quantization Parameter)
@@ -140,7 +139,7 @@ docker build -t ffmpeg-vqe .
 docker run --user $(id -u):$(id -g) --rm -it \
   -v $PWD/videos/source:/source \
   -v $PWD/videos/dist:/dist \
-  -v $PWD/tools/ffmpeg-vqe:/src \
+  -v $PWD:/src \
   --device "/dev/dri:/dev/dri" \
   ffmpeg-vqe /bin/bash
 
@@ -148,9 +147,9 @@ docker run --user $(id -u):$(id -g) --rm -it \
 
 ```bash
 # /dist を初期化して、エンコードを開始
-rm -rfv /dist/*.* && \
-python3 /app/entrypoint.py --encode -fss 180 -ft 60 && \
-bash /app/plotbitrate.sh
+rm -rfv ./videos/dist/*.* && \
+python3 src/ffmpegvqe/entrypoint.py --encode -fss 180 -ft 60 && \
+bash ./plotbitrate.sh
 
 ```
 
@@ -313,7 +312,7 @@ sed -e 's@^@https://media.xiph.org/BBB/BBB-1080-png/@g' > pnglist.txt
 
 mkdir -p src/
 
-aria2c --dir=./src/ \
+aria2c --dir=./src \
   --input-file=pnglist.txt \
   --max-concurrent-downloads=4 \
   --connect-timeout=60 \

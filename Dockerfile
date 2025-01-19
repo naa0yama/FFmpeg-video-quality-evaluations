@@ -6,8 +6,7 @@ FROM ghcr.io/naa0yama/join_logo_scp_trial:v25.01.0500-beta4-ubuntu2404
 ARG DEBIAN_FRONTEND=noninteractive \
     DEFAULT_USERNAME=user \
     \
-    ASDF_VERSION="v0.14.1" \
-    POETRY_VERSION="1.8.2"
+    ASDF_VERSION="v0.14.1"
 
 SHELL ["/bin/bash", "-c"]
 RUN mkdir -p /app
@@ -18,6 +17,7 @@ RUN set -eux && \
     apt-get install -y --no-install-recommends \
     bash \
     binutils \
+    btop \
     ca-certificates \
     curl \
     fish \
@@ -39,8 +39,9 @@ RUN set -eux && \
 
 # Create user
 RUN set -eux && \
-    groupadd --gid 1001 vscode && \
-    useradd -s /bin/bash --uid 1001 --gid 1001 -m vscode && \
+    userdel -r ubuntu && \
+    groupadd --gid 60001 vscode && \
+    useradd -s /bin/bash --uid 60001 --gid 60001 -m vscode && \
     echo vscode:password | chpasswd && \
     passwd -d vscode && \
     echo -e "vscode\tALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/vscode
@@ -102,20 +103,6 @@ RUN set -eux && \
     source $HOME/.asdf/asdf.sh && \
     asdf install python && \
     asdf install
-
-### Scripts
-COPY tools/ffmpeg-vqe/pyproject.toml                 /app
-COPY tools/ffmpeg-vqe/poetry.lock                    /app
-WORKDIR                                              /app
-
-COPY tools/ffmpeg-vqe/src/ffmpegvqe/entrypoint.py    /app/entrypoint.py
-COPY tools/ffmpeg-vqe/plotbitrate.sh                 /app/plotbitrate.sh
-
-RUN set -eux && \
-    source $HOME/.asdf/asdf.sh && \
-    type poetry && \
-    poetry config virtualenvs.create false && \
-    poetry install --no-interaction --only=main -C /app
 
 ENTRYPOINT [ "/bin/bash", "-c" ]
 CMD [ "" ]

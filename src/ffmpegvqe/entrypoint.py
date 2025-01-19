@@ -23,13 +23,13 @@ parser = argparse.ArgumentParser(description="FFmpeg video quality encoding qual
 parser.add_argument(
     "--config",
     help="config file path.",
-    default="/source/encode_config.json",
+    default="./videos/source/encode_config.json",
 )
 
 parser.add_argument(
     "--dist",
     help="dist dir (default: /dist)",
-    default="/dist",
+    default="./videos/dist",
 )
 
 parser.add_argument(
@@ -58,28 +58,20 @@ parser.add_argument(
 args = parser.parse_args()
 
 __configs: dict = {
-    "origfile": "/source/BBB_JapanTV_MPEG-2_1440x1080_30i.m2ts",
-    "basefile": "/dist/base.mkv",
+    "origfile": "./videos/source/BBB_JapanTV_MPEG-2_1440x1080_30i.m2ts",
+    "basefile": "./videos/dist/base.mkv",
     "patterns": [
+        {
+            "codec": "libx264",
+            "type": "libx264",
+            "presets": ["medium"],
+            "infile": {"options": []},
+            "outfile": {"options": []},
+            "hwaccels": [],
+        },
         {
             "codec": "av1_qsv",
             "type": "av1",
-            "presets": ["veryfast", "medium", "veryslow"],
-            "infile": {"options": []},
-            "outfile": {"options": []},
-            "hwaccels": ["-hwaccel", "qsv", "-hwaccel_output_format", "qsv"],
-        },
-        {
-            "codec": "hevc_qsv",
-            "type": "x265",
-            "presets": ["veryfast", "medium", "veryslow"],
-            "infile": {"options": []},
-            "outfile": {"options": []},
-            "hwaccels": ["-hwaccel", "qsv", "-hwaccel_output_format", "qsv"],
-        },
-        {
-            "codec": "hevc_qsv",
-            "type": "x265",
             "presets": ["veryfast", "medium", "veryslow"],
             "infile": {"options": []},
             "outfile": {"options": []},

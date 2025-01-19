@@ -144,7 +144,7 @@
   "ansible.python.interpreterPath": ".venv/bin/python3",
   /*****************************************************************************
    * Extension: Python */
-  "python.defaultInterpreterPath": "${workspaceFolder}/tools/ffmpeg-vqe/.venv/bin/python3",
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python3",
   "python.disableInstallationCheck": true,
   "python.envFile": "${workspaceFolder}/.env",
   "python.experiments.enabled": false,
@@ -156,7 +156,7 @@
   "python.testing.cwd": "${workspaceFolder}",
   "python.testing.pytestArgs": ["tests"],
   "python.testing.pytestEnabled": true,
-  "python.testing.pytestPath": "${workspaceFolder}/tools/ffmpeg-vqe/.venv/bin/pytest",
+  "python.testing.pytestPath": "${workspaceFolder}/.venv/bin/pytest",
   "python.testing.unittestEnabled": false,
   "testing.alwaysRevealTestOnStateChange": true,
   "testing.automaticallyOpenPeekViewDuringAutoRun": true,
@@ -165,25 +165,25 @@
   // Extension: Mypy Type Checker
   "mypy-type-checker.args": [
     "--config-file",
-    "${workspaceFolder}/tools/ffmpeg-vqe/pyproject.toml"
+    "${workspaceFolder}/pyproject.toml"
   ],
   "mypy-type-checker.severity": {
     "error": "Error",
     "note": "Information"
   },
   "mypy-type-checker.path": [
-    "${workspaceFolder}/tools/ffmpeg-vqe/.venv/bin/mypy"
+    "${workspaceFolder}/.venv/bin/mypy"
   ],
   "mypy-type-checker.interpreter": [
-    "${workspaceFolder}/tools/ffmpeg-vqe/.venv/bin/python3"
+    "${workspaceFolder}/.venv/bin/python3"
   ],
   // Extension: Pylance
   "python.analysis.autoImportCompletions": true,
   "python.analysis.autoImportUserSymbols": true,
   "python.analysis.completeFunctionParens": true,
   "python.analysis.extraPaths": [
-    "${workspaceFolder}/tools/ffmpeg-vqe/.venv/lib/**/site-packages/",
-    "${workspaceFolder}/tools/ffmpeg-vqe/src/ffmpegvqe/"
+    "${workspaceFolder}/.venv/lib/**/site-packages/",
+    "${workspaceFolder}/src/ffmpegvqe/"
   ],
   "python.analysis.importFormat": "absolute",
   "python.analysis.typeCheckingMode": "off",
