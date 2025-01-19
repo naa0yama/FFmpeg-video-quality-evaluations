@@ -4,6 +4,7 @@
   "name": "Python3",
   "dockerFile": "../Dockerfile",
   "postCreateCommand": "./.devcontainer/postCreateCommand.sh",
+  "runArgs": ["--device=/dev/dri:/dev/dri"],
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
   // "image": "mcr.microsoft.com/devcontainers/python:0-3.10-bullseye",
   // Features to add to the dev container. More info: https://containers.dev/features.
@@ -49,5 +50,6 @@
     }
   },
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-  "remoteUser": "vscode"
+  "remoteUser": "vscode",
+  "updateRemoteUserUID": true
 }

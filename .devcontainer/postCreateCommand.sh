@@ -2,4 +2,4 @@
 set -eux
 
 rm -rf .venv/
-poetry install --no-interaction -C tools/ffmpeg-vqe
+poetry install --no-interaction
