@@ -101,7 +101,7 @@ curl https://get.docker.com | sh \
 本プロジェクトでは長期的にリファレンス映像を利用する可能性が高そうに思えたため CC-BY 4.0 で配布されている [Big Buck Bunny](http://www.bigbuckbunny.org) をベースに Release に保管することで永続化しています。  
 
 地上デジタル放送の映像に近づけるため、下記の設定で出力した映像としています。  
-映像設定の詳細は [Releases · naa0yama/FFmpeg-video-quality-evaluations](https://github.com/naa0yama/FFmpeg-video-quality-evaluations/releases) のAssetにある encode.ps1 で確認できます。  
+映像設定の詳細は [Releases · naa0yama/FFmpeg-video-quality-evaluations](https://github.com/naa0yama/FFmpeg-video-quality-evaluations/releases) の Asset にある encode.ps1 で確認できます。  
 すべてダウンロードする場合は `videos/source/reference_downloads.sh` にスクリプトを用意してあります。
 
 | Type          | size      | frame rate | p/i         | bitrate avg / max            | Filename                                              |
@@ -122,6 +122,43 @@ curl https://get.docker.com | sh \
 | telecine 2332 |           |            | interlace   | `-b:v 18M`<br>`-maxrate 24M` | `BBB_JapanTV_MPEG-2_1920x1080_30i_telecine_2332.m2ts` |
 
 ## エンコードとテスト
+
+圧縮率、エンコード時間は下記のようになる。これは 30p を SW エンコードした比較のため参考程度にするが、傾向として libx264 と libx265 は比例しており、 libx265 の方が約1/2に圧縮できることがわかった。 また、 bitrate が半分になることで、ファイルサイズの縮小にも大きく寄与している。VMAF スコアは 30p の場合横並びでばらつきも少ないためよく出来ているのだと思う。  
+
+エンコード速度については libx264 が軽量なため高速で処理される傾向があり、次に libx265, libaom-av1 と続く結果になった。 libaom-av1 はデフォルト設定では遅すぎため `-cpu-used 5` を追加しての計測だがそれでも早いとは言えない、せめて 1x で捌けるようにはなってほしいものだ。
+libx265 と libaom-av1 では圧縮比率はそこまで変わらないため、無理に libaom-av1 を使わなくても良さそうである。  
+
+| size                 | codec      | fps/s | File Size(KiB) | 圧縮率(%) |      VMAF | bitrate avg (kbits/s) | speed | 1時間で約(MB) | 年間容量(GB) |
+| :------------------- | :--------- | ----: | -------------: | --------: | --------: | --------------------: | ----: | ------------: | -----------: |
+| 1280x720             | mpeg2ts    |   156 |        148,542 |         - | 86.186533 |               10141.6 | 5.22x |               |              |
+|                      | libx264    |       |                |           |           |                       |       |               |              |
+|                      | libx265    |       |                |           |           |                       |       |               |              |
+|                      | libaom-av1 |       |                |           |           |                       |       |               |              |
+|                      |            |       |                |           |           |                       |       |               |              |
+| 1440x1080            | mpeg2ts    |   105 |        208,914 |           | 93.594580 |               14263.5 | 3.52x |               |              |
+|                      | libx264    |       |                |           |           |                       |       |               |              |
+|                      | libx265    |       |                |           |           |                       |       |               |              |
+|                      | libaom-av1 |       |                |           |           |                       |       |               |              |
+|                      |            |       |                |           |           |                       |       |               |              |
+| 1920x1080            | mpeg2ts    |   140 |        268,476 |           | 97.678510 |               18330.0 | 4.67x |               |              |
+|                      | libx264    |       |                |           |           |                       |       |               |              |
+|                      | libx265    |       |                |           |           |                       |       |               |              |
+|                      | libaom-av1 |       |                |           |           |                       |       |               |              |
+|                      |            |       |                |           |           |                       |       |               |              |
+| **番外編**           |            |       |                |           |           |                       |       |               |              |
+| 1440x1080 -> 960x720 | libx264    |       |                |           |           |                       |       |               |              |
+|                      | libx265    |       |                |           |           |                       |       |               |              |
+|                      | libaom-av1 |       |                |           |           |                       |       |               |              |
+
+* ログは [normal_sw_encode.log](docs/normal_sw_encode.log) にある
+* 960x720 の VMAF は解像度をリサイズフィルターで戻して計測している点に注意
+* `1時間で約(MB)` は `(14.4Mbps/8)*3600=` を元に計算
+* 年間容量は週間90本(30min 80本、60min 10本) x52週間 = 年間 2,600時間を元に計算
+
+番外編として、筆者の考えでは YouTube などの主要配信サービスがアップロードする動画のビットレートとして 720p 5-6Mbps、1080p 8-12Mbps を推奨しているため bitrate が 1440x1080 では足りないのでは? と思っている。  
+また、 1280x720 にすると 4:3 を 16:9 に変更するため余計な処理がされる気がしているのとアスペクト比は `-aspect 16:9` で設定できるため縦幅 720 に固定することで 960x720 の 4:3 を作りエンコード時間と容量を削減する設定を試してみた。
+
+### Intel QSV のテスト
 
 * CQP (Constant Quantization Parameter)
 * ICQ (Intelligent Constant Quality)
@@ -147,8 +184,8 @@ docker run --user $(id -u):$(id -g) --rm -it \
 
 ```bash
 # /dist を初期化して、エンコードを開始
-rm -rfv ./videos/dist/*.* && \
-python3 src/ffmpegvqe/entrypoint.py --encode -fss 180 -ft 60 && \
+bash -c 'rm -rfv ./videos/dist/*.*' && \
+python3 src/ffmpegvqe/entrypoint.py --ffmpeg-threads 0 --encode -fss 180 -ft 60 && \
 bash ./plotbitrate.sh
 
 ```
@@ -162,6 +199,11 @@ tar -Jcvf BigBuckBunny_vmaf.tar.xz *_vmaf.json
 rm -rf *_vmaf.json
 
 ```
+
+|                   | libx264 | libx265 | libaom-av1 |
+| :---------------- | ------: | ------: | ---------: |
+| `-q:v`            |      23 |      28 |         32 |
+| `-global_quality` |      23 |      28 |         32 |
 
 ### CQP (Constant Quantization Parameter)
 
@@ -182,7 +224,7 @@ ffmpeg -hwaccel qsv -i input.mp4 \
 ```bash
 ffmpeg -hwaccel qsv -i input.mp4 \
   -c:v hevc_qsv -preset veryfast \
-  -global_quality 20 \
+  -global_quality 23 \
   output.mp4
 
 ```
@@ -194,7 +236,7 @@ ffmpeg -hwaccel qsv -i input.mp4 \
 ```bash
 ffmpeg -hwaccel qsv -i input.mp4 \
   -c:v hevc_qsv -preset veryfast \
-  -look_ahead 1 -look_ahead_depth 30 -global_quality 20 \
+  -look_ahead 1 -global_quality 23 \
   output.mp4
 ```
 
@@ -250,7 +292,7 @@ ffmpeg -hwaccel qsv -i input.mp4 \
 
 ### dist Summary csv gen
 
-TBA
+[plotbitrate.sh](plotbitrate.sh) 後半に CSV で吐くようにした。
 
 ### マニュアル生成
 
@@ -297,30 +339,10 @@ ffmpeg -hide_banner \
 
 [FFmpeg Filters Documentation](https://ffmpeg.org/ffmpeg-filters.html#Examples-91)
 
-### 映像の準備
+### 生データのダウンロード
 
 今回は、 CC-BY 4.0 で配布されている [Big Buck Bunny](http://www.bigbuckbunny.org) を利用する。  
 ミラーとして [Xiph.org :: Test Media](https://media.xiph.org/) で配布されているのでこちらから元 png 画像をダウンロードした。
 
-```bash{name="ダウンロードの例"}
-#!/usr/bin/env bash
-set -eux
-
-curl -sfSL https://media.xiph.org/BBB/BBB-1080-png/MD5SUMS.txt | \
-awk '{print $2}' | \
-sed -e 's@^@https://media.xiph.org/BBB/BBB-1080-png/@g' > pnglist.txt
-
-mkdir -p src/
-
-aria2c --dir=./src \
-  --input-file=pnglist.txt \
-  --max-concurrent-downloads=4 \
-  --connect-timeout=60 \
-  --max-connection-per-server=16 \
-  --split=3 \
-  --min-split-size=5M \
-  --human-readable=true \
-  --download-result=full \
-  --file-allocation=none
-
-```
+スクリプトにまとめてあるため `videos/source/bbb_download.sh` を参照。  
+エンコードした、Reference 動画のダウンロードは `videos/source/reference_downloads.sh` を参照。

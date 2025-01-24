@@ -55,10 +55,17 @@ parser.add_argument(
     "--ffmpeg-cattime",
     help="-t <duration>  stop transcoding after specified duration (default: None)",
 )
+parser.add_argument(
+    "-fthreads",
+    "--ffmpeg-threads",
+    help="Set the number of threads to be used (default: 4)",
+    type=int,
+    default=4,
+)
 args = parser.parse_args()
 
 __configs: dict = {
-    "origfile": "./videos/source/BBB_JapanTV_MPEG-2_1440x1080_30i.m2ts",
+    "origfile": "./videos/source/BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts",
     "basefile": "./videos/dist/base.mkv",
     "patterns": [
         {
@@ -70,12 +77,119 @@ __configs: dict = {
             "hwaccels": [],
         },
         {
-            "codec": "av1_qsv",
-            "type": "av1",
-            "presets": ["veryfast", "medium", "veryslow"],
+            "codec": "libx265",
+            "type": "libx265",
+            "presets": ["medium"],
             "infile": {"options": []},
             "outfile": {"options": []},
-            "hwaccels": ["-hwaccel", "qsv", "-hwaccel_output_format", "qsv"],
+            "hwaccels": [],
+        },
+        {
+            "codec": "h264_qsv",
+            "type": "h264_qsv",
+            "presets": ["medium"],
+            "infile": {"options": []},
+            "outfile": {"options": []},
+            "hwaccels": [],
+        },
+        {
+            "codec": "h264_qsv",
+            "type": "h264_qsv_CQP",
+            "presets": ["medium"],
+            "infile": {"options": []},
+            "outfile": {"options": ["-q:v", "23"]},
+            "hwaccels": [],
+        },
+        {
+            "codec": "h264_qsv",
+            "type": "h264_qsv_ICQ",
+            "presets": ["medium"],
+            "infile": {"options": []},
+            "outfile": {"options": ["-global_quality", "23"]},
+            "hwaccels": [],
+        },
+        {
+            "codec": "h264_qsv",
+            "type": "h264_qsv_LA-ICQ",
+            "presets": ["medium"],
+            "infile": {
+                "options": [],
+            },
+            "outfile": {
+                "options": [
+                    "-look_ahead",
+                    "1",
+                    "-global_quality",
+                    "23",
+                ],
+            },
+            "hwaccels": [],
+        },
+        {
+            "codec": "hevc_qsv",
+            "type": "hevc_qsv_CQP",
+            "presets": ["medium"],
+            "infile": {"options": []},
+            "outfile": {"options": ["-q:v", "28"]},
+            "hwaccels": [],
+        },
+        {
+            "codec": "hevc_qsv",
+            "type": "hevc_qsv_ICQ",
+            "presets": ["medium"],
+            "infile": {"options": []},
+            "outfile": {"options": ["-global_quality", "28"]},
+            "hwaccels": [],
+        },
+        {
+            "codec": "hevc_qsv",
+            "type": "hevc_qsv_LA-ICQ",
+            "presets": ["medium"],
+            "infile": {
+                "options": [],
+            },
+            "outfile": {
+                "options": [
+                    "-look_ahead",
+                    "1",
+                    "-global_quality",
+                    "28",
+                ],
+            },
+            "hwaccels": [],
+        },
+        {
+            "codec": "av1_qsv",
+            "type": "av1_qsv_CQP",
+            "presets": ["medium"],
+            "infile": {"options": []},
+            "outfile": {"options": ["-q:v", "30"]},
+            "hwaccels": [],
+        },
+        {
+            "codec": "av1_qsv",
+            "type": "av1_qsv_ICQ",
+            "presets": ["medium"],
+            "infile": {"options": []},
+            "outfile": {"options": ["-global_quality", "30"]},
+            "hwaccels": [],
+        },
+        {
+            "codec": "av1_qsv",
+            "type": "av1_qsv_LA-ICQ",
+            "presets": ["medium"],
+            "infile": {
+                "options": [],
+            },
+            "outfile": {
+                "options": [
+                    "-look_ahead",
+                    "1",
+                    "-global_quality",
+                    "30",
+                ],
+            },
+            "hwaccels": [],
         },
     ],
 }
@@ -86,6 +200,8 @@ def encoding(encode_cfg: dict, outputext: str) -> dict:
     __ffmpege_cmd: list = [
         "ffmpeg",
         "-y",
+        "-threads",
+        f"{args.ffmpeg_threads}",
     ]
 
     if encode_cfg["hwaccels"] != []:
@@ -159,14 +275,20 @@ def getvmaf(encode_cfg: dict, outputext: str) -> dict:
     __ffmpege_cmd: list = [
         "ffmpeg",
         "-i",
-        f"{encode_cfg['infile']['filename']}",
-        "-i",
         f"{encode_cfg['outfile']['filename']}{outputext}",
-        "-filter_complex",
+        "-i",
+        f"{encode_cfg['infile']['filename']}",
+        "-lavfi",
         (
-            "[0:v][1:v]libvmaf=model=version=vmaf_v0.6.1\\:pool=harmonic_mean:feature=name=psnr|name=float_ssim:"
+            "[0:v]settb=AVTB,setpts=PTS-STARTPTS[Distorted];"
+            "[1:v]settb=AVTB,setpts=PTS-STARTPTS[Reference];"
+            "[Distorted][Reference]libvmaf=eof_action=endall:"
+            "log_fmt=json:"
+            f"log_fmt=json:log_path={encode_cfg['outfile']['filename']}_vmaf.json:"
             f"n_threads={os.cpu_count()}:"
-            f"log_fmt=json:log_path={encode_cfg['outfile']['filename']}_vmaf.json"
+            "pool=harmonic_mean:"
+            "feature=name=psnr|name=float_ssim:"
+            "model=version=vmaf_v0.6.1"
         ),
         "-an",
         "-f",
@@ -207,6 +329,7 @@ def main() -> None:  # noqa: PLR0915, C901
                 "codec": __pattern["codec"],
                 "type": __pattern["type"],
                 "preset": __preset,
+                "threads": args.ffmpeg_threads,
                 "infile": {
                     "filename": __basefile,
                     "options": __pattern["infile"]["options"],
@@ -247,6 +370,8 @@ def main() -> None:  # noqa: PLR0915, C901
         __ffmpege_cmd: list = [
             "ffmpeg",
             "-y",
+            "-threads",
+            f"{args.ffmpeg_threads}",
             "-i",
             f"{__origfile}",
             "-c:v",

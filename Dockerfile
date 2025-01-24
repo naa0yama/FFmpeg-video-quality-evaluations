@@ -6,7 +6,8 @@ FROM ghcr.io/naa0yama/join_logo_scp_trial:v25.01.0500-beta4-ubuntu2404
 ARG DEBIAN_FRONTEND=noninteractive \
     DEFAULT_USERNAME=user \
     \
-    ASDF_VERSION="v0.14.1"
+    ASDF_VERSION="v0.14.1" \
+    BIOME_VERSION="cli/v1.8.3"
 
 SHELL ["/bin/bash", "-c"]
 RUN mkdir -p /app
@@ -36,6 +37,14 @@ RUN set -eux && \
     apt -y autoremove && \
     apt -y clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Add Biome latest install
+RUN set -eux && \
+    if [ -z "${BIOME_VERSION}" ]; then echo "BIOME_VERSION is blank"; else echo "BIOME_VERSION is set to '$BIOME_VERSION'"; fi && \
+    curl -fSL -o /usr/local/bin/biome "$(curl -sfSL https://api.github.com/repos/biomejs/biome/releases/tags/${BIOME_VERSION} | \
+    jq -r '.assets[] | select(.name | endswith("linux-x64")) | .browser_download_url')" && \
+    chmod +x /usr/local/bin/biome && \
+    type -p biome
 
 # Create user
 RUN set -eux && \
