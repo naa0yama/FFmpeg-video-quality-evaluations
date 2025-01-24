@@ -211,7 +211,7 @@
   // Extension: Ruff
   "ruff.importStrategy": "fromEnvironment",
   "ruff.lint.args": [
-    "--config=${workspaceFolder}/tools/ffmpeg-vqe/pyproject.toml"
+    "--config=${workspaceFolder}/pyproject.toml"
   ],
   "ruff.showNotifications": "always",
   /*****************************************************************************

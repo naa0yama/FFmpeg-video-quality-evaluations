@@ -1,0 +1,1221 @@
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1280x720_30p.m2ts" -vcodec libx264  -profile:v main -f matroska "BBB_JapanTV_MPEG-2_1280x720_30p_libx264.mkv"
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1280x720_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 10274 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1280x720 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 15000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Stream mapping:
+  Stream #0:0 -> #0:0 (mpeg2video (native) -> h264 (libx264))
+Press [q] to stop, [?] for help
+[libx264 @ 0000024125f109c0] using SAR=1/1
+[libx264 @ 0000024125f109c0] using cpu capabilities: MMX2 SSE2Fast SSSE3 SSE4.2 AVX FMA3 BMI2 AVX2 AVX512
+[libx264 @ 0000024125f109c0] profile Main, level 3.1, 4:2:0, 8-bit
+[libx264 @ 0000024125f109c0] 264 - core 164 r3192 c24e06c - H.264/MPEG-4 AVC codec - Copyleft 2003-2024 - http://www.videolan.org/x264.html - options: cabac=1 ref=3 deblock=1:0:0 analyse=0x1:0x111 me=hex subme=7 psy=1 psy_rd=1.00:0
+.00 mixed_ref=1 me_range=16 chroma_me=1 trellis=1 8x8dct=0 cqm=0 deadzone=21,11 fast_pskip=1 chroma_qp_offset=-2 threads=22 lookahead_threads=3 sliced_threads=0 nr=0 decimate=1 interlaced=0 bluray_compat=0 constrained_intra=0 bfram
+es=3 b_pyramid=2 b_adapt=1 b_bias=0 direct=1 weightb=1 open_gop=0 weightp=2 keyint=250 keyint_min=25 scenecut=40 intra_refresh=0 rc_lookahead=40 rc=crf mbtree=1 crf=23.0 qcomp=0.60 qpmin=0 qpmax=69 qpstep=4 ip_ratio=1.40 aq=1:1.00
+Output #0, matroska, to 'BBB_JapanTV_MPEG-2_1280x720_30p_libx264.mkv':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: h264 (H264 / 0x34363248), yuv420p(tv, bt709, bottom coded first (swapped)), 1280x720 [SAR 1:1 DAR 16:9], q=2-31, 29.97 fps, 1k tbn
+      Metadata:
+        encoder         : Lavc61.19.100 libx264
+      Side data:
+        cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+frame= 3266 fps=326 q=29.0 size=   31232KiB time=00:01:48.90 bitrate=2349.2kbits/s speed=10.9x
+frame= 7195 fps=359 q=29.0 size=   58368KiB time=00:04:00.00 bitrate=1992.2kbits/s speed=  12x
+frame=10465 fps=348 q=29.0 size=   93696KiB time=00:05:49.11 bitrate=2198.6kbits/s speed=11.6x
+frame=13614 fps=340 q=29.0 size=  142080KiB time=00:07:34.18 bitrate=2562.6kbits/s speed=11.3x
+[out#0/matroska @ 0000024125c42b40] video:145205KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.073468%
+frame=14315 fps=344 q=-1.0 Lsize=  145312KiB time=00:07:57.57 bitrate=2492.6kbits/s speed=11.5x
+[libx264 @ 0000024125f109c0] frame I:148   Avg QP:18.36  size:101571
+[libx264 @ 0000024125f109c0] frame P:8054  Avg QP:22.50  size: 14279
+[libx264 @ 0000024125f109c0] frame B:6113  Avg QP:26.73  size:  3051
+[libx264 @ 0000024125f109c0] consecutive B-frames: 38.2%  9.6% 14.7% 37.5%
+[libx264 @ 0000024125f109c0] mb I  I16..4: 32.4%  0.0% 67.6%
+[libx264 @ 0000024125f109c0] mb P  I16..4:  3.5%  0.0%  2.2%  P16..4: 31.9%  9.6%  7.0%  0.0%  0.0%    skip:45.7%
+[libx264 @ 0000024125f109c0] mb B  I16..4:  0.7%  0.0%  0.7%  B16..8: 24.1%  2.0%  0.4%  direct: 1.4%  skip:70.6%  L0:43.8% L1:51.3% BI: 5.0%
+[libx264 @ 0000024125f109c0] coded y,uvDC,uvAC intra: 44.4% 60.9% 27.4% inter: 10.2% 14.1% 2.0%
+[libx264 @ 0000024125f109c0] i16 v,h,dc,p: 39% 24% 12% 25%
+[libx264 @ 0000024125f109c0] i4 v,h,dc,ddl,ddr,vr,hd,vl,hu: 24% 18% 18%  6%  7%  8%  6%  6%  5%
+[libx264 @ 0000024125f109c0] i8c dc,h,v,p: 50% 22% 18%  9%
+[libx264 @ 0000024125f109c0] Weighted P-Frames: Y:1.8% UV:1.0%
+[libx264 @ 0000024125f109c0] ref P L0: 70.8% 15.1% 10.2%  3.8%  0.1%
+[libx264 @ 0000024125f109c0] ref B L0: 88.4%  9.3%  2.3%
+[libx264 @ 0000024125f109c0] ref B L1: 97.4%  2.6%
+[libx264 @ 0000024125f109c0] kb/s:2490.38
+
+
+[VMAF] libx264 1280x720 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1280x720_30p.m2ts" -i "BBB_JapanTV_MPEG-2_1280x720_30p_libx264.mkv" -filter_complex "[0:v][1:v]libvmaf=model=version=vmaf_v0.6.1\\:pool=harmonic_mean:feature=
+name=psnr|name=float_ssim:n_threads=16:log_fmt=json:log_path=vmaf//BBB_JapanTV_MPEG-2_1280x720_30p_libx264.json" -f null -
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1280x720_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 10274 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1280x720 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 15000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Input #1, matroska,webm, from 'BBB_JapanTV_MPEG-2_1280x720_30p_libx264.mkv':
+  Metadata:
+    ENCODER         : Lavf61.7.100
+  Duration: 00:07:57.64, start: 0.000000, bitrate: 2492 kb/s
+  Stream #1:0: Video: h264 (Main), yuv420p(tv, bt709, bottom coded first (swapped)), 1280x720 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 1k tbn
+      Metadata:
+        ENCODER         : Lavc61.19.100 libx264
+        DURATION        : 00:07:57.643000000
+Stream mapping:
+  Stream #0:0 (mpeg2video) -> libvmaf
+  Stream #1:0 (h264) -> libvmaf
+  libvmaf:default -> Stream #0:0 (wrapped_avframe)
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: wrapped_avframe, yuv420p(tv, bt709, bottom coded first (swapped)), 1280x720 [SAR 1:1 DAR 16:9], q=2-31, 200 kb/s, 29.97 fps, 29.97 tbn
+      Metadata:
+        encoder         : Lavc61.19.100 wrapped_avframe
+frame= 1918 fps=192 q=-0.0 size=N/A time=00:01:03.99 bitrate=N/A speed=6.39x
+frame= 3854 fps=192 q=-0.0 size=N/A time=00:02:08.59 bitrate=N/A speed=6.42x
+frame= 5796 fps=193 q=-0.0 size=N/A time=00:03:13.39 bitrate=N/A speed=6.44x
+frame= 7729 fps=193 q=-0.0 size=N/A time=00:04:17.89 bitrate=N/A speed=6.44x
+frame= 9659 fps=193 q=-0.0 size=N/A time=00:05:22.28 bitrate=N/A speed=6.44x
+frame=11594 fps=193 q=-0.0 size=N/A time=00:06:26.85 bitrate=N/A speed=6.44x
+frame=13517 fps=193 q=-0.0 size=N/A time=00:07:31.01 bitrate=N/A speed=6.43x
+[Parsed_libvmaf_0 @ 000002603f960c40] VMAF score: 74.859105
+[out#0/null @ 000002603e947b40] video:6151KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=14315 fps=192 q=-0.0 Lsize=N/A time=00:07:57.64 bitrate=N/A speed=6.39x
+
+
+[ENCODE] libx265 1280x720 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1280x720_30p.m2ts" -vcodec libx265  -profile:v main -f matroska "BBB_JapanTV_MPEG-2_1280x720_30p_libx265.mkv"
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1280x720_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 10274 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1280x720 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 15000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Stream mapping:
+  Stream #0:0 -> #0:0 (mpeg2video (native) -> hevc (libx265))
+Press [q] to stop, [?] for help
+x265 [info]: HEVC encoder version 4.0+6-a069836f3
+x265 [info]: build info [Windows][GCC 14.2.0][64 bit] 8bit+10bit+12bit
+x265 [info]: using cpu capabilities: MMX2 SSE2Fast LZCNT SSSE3 SSE4.2 AVX FMA3 BMI2 AVX2
+x265 [info]: Main profile, Level-3.1 (Main tier)
+x265 [info]: Thread pool created using 16 threads
+x265 [info]: Slices                              : 1
+x265 [info]: frame threads / pool features       : 4 / wpp(12 rows)
+x265 [info]: Coding QT: max CU size, min CU size : 64 / 8
+x265 [info]: Residual QT: max TU size, max depth : 32 / 1 inter / 1 intra
+x265 [info]: ME / range / subpel / merge         : hex / 57 / 2 / 3
+x265 [info]: Keyframe min / max / scenecut / bias  : 25 / 250 / 40 / 5.00
+x265 [info]: Lookahead / bframes / badapt        : 20 / 4 / 2
+x265 [info]: b-pyramid / weightp / weightb       : 1 / 1 / 0
+x265 [info]: References / ref-limit  cu / depth  : 3 / off / on
+x265 [info]: AQ: mode / str / qg-size / cu-tree  : 2 / 1.0 / 32 / 1
+x265 [info]: Rate Control / qCompress            : CRF-28.0 / 0.60
+x265 [info]: tools: rd=3 psy-rd=2.00 early-skip rskip mode=1 signhide tmvp
+x265 [info]: tools: b-intra strong-intra-smoothing lslices=4 deblock sao
+Output #0, matroska, to 'BBB_JapanTV_MPEG-2_1280x720_30p_libx265.mkv':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: hevc, yuv420p(tv, bt709, bottom coded first (swapped)), 1280x720 [SAR 1:1 DAR 16:9], q=2-31, 29.97 fps, 1k tbn
+      Metadata:
+        encoder         : Lavc61.19.100 libx265
+      Side data:
+        cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+frame= 1167 fps=117 q=35.8 size=    7168KiB time=00:00:38.87 bitrate=1510.6kbits/s speed=3.88x
+frame= 2664 fps=133 q=35.5 size=   11264KiB time=00:01:28.82 bitrate=1038.9kbits/s speed=4.44x
+frame= 4160 fps=138 q=32.2 size=   15360KiB time=00:02:18.73 bitrate= 907.0kbits/s speed=4.62x
+frame= 5413 fps=135 q=34.8 size=   18944KiB time=00:03:00.54 bitrate= 859.6kbits/s speed=4.51x
+frame= 6730 fps=134 q=28.0 size=   23552KiB time=00:03:44.49 bitrate= 859.4kbits/s speed=4.48x
+frame= 7942 fps=132 q=35.6 size=   28416KiB time=00:04:24.93 bitrate= 878.7kbits/s speed=4.41x
+frame= 9126 fps=130 q=29.3 size=   34816KiB time=00:05:04.43 bitrate= 936.9kbits/s speed=4.34x
+frame=10403 fps=130 q=33.9 size=   39168KiB time=00:05:47.04 bitrate= 924.6kbits/s speed=4.33x
+frame=11743 fps=130 q=34.7 size=   44544KiB time=00:06:31.75 bitrate= 931.5kbits/s speed=4.35x
+frame=13059 fps=130 q=29.2 size=   54784KiB time=00:07:15.66 bitrate=1030.1kbits/s speed=4.35x
+frame=14161 fps=129 q=34.0 size=   72448KiB time=00:07:52.43 bitrate=1256.2kbits/s speed=4.29x
+[out#0/matroska @ 0000023a72532b40] video:72926KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:2KiB muxing overhead: 0.146651%
+frame=14315 fps=129 q=31.5 Lsize=   73033KiB time=00:07:57.57 bitrate=1252.8kbits/s speed= 4.3x
+x265 [info]: frame I:    142, Avg QP:24.90  kb/s: 13329.04
+x265 [info]: frame P:   5769, Avg QP:29.00  kb/s: 2422.04
+x265 [info]: frame B:   8404, Avg QP:35.21  kb/s: 240.99
+x265 [info]: Weighted P-Frames: Y:2.3% UV:1.6%
+encoded 14315 frames in 110.95s (129.02 fps), 1249.79 kb/s, Avg QP:32.60
+
+[VMAF] libx265 1280x720 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1280x720_30p.m2ts" -i "BBB_JapanTV_MPEG-2_1280x720_30p_libx265.mkv" -filter_complex "[0:v][1:v]libvmaf=model=version=vmaf_v0.6.1\\:pool=harmonic_mean:feature=
+name=psnr|name=float_ssim:n_threads=16:log_fmt=json:log_path=vmaf//BBB_JapanTV_MPEG-2_1280x720_30p_libx265.json" -f null -
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1280x720_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 10274 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1280x720 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 15000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Input #1, matroska,webm, from 'BBB_JapanTV_MPEG-2_1280x720_30p_libx265.mkv':
+  Metadata:
+    ENCODER         : Lavf61.7.100
+  Duration: 00:07:57.64, start: 0.000000, bitrate: 1252 kb/s
+  Stream #1:0: Video: hevc (Main), yuv420p(tv, bt709, bottom coded first (swapped)), 1280x720 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 1k tbn
+      Metadata:
+        ENCODER         : Lavc61.19.100 libx265
+        DURATION        : 00:07:57.643000000
+Stream mapping:
+  Stream #0:0 (mpeg2video) -> libvmaf
+  Stream #1:0 (hevc) -> libvmaf
+  libvmaf:default -> Stream #0:0 (wrapped_avframe)
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: wrapped_avframe, yuv420p(tv, bt709, bottom coded first (swapped)), 1280x720 [SAR 1:1 DAR 16:9], q=2-31, 200 kb/s, 29.97 fps, 29.97 tbn
+      Metadata:
+        encoder         : Lavc61.19.100 wrapped_avframe
+frame= 1890 fps=189 q=-0.0 size=N/A time=00:01:03.06 bitrate=N/A speed=6.29x
+frame= 3809 fps=190 q=-0.0 size=N/A time=00:02:07.09 bitrate=N/A speed=6.34x
+frame= 5728 fps=191 q=-0.0 size=N/A time=00:03:11.12 bitrate=N/A speed=6.36x
+frame= 7643 fps=191 q=-0.0 size=N/A time=00:04:15.02 bitrate=N/A speed=6.36x
+frame= 9558 fps=191 q=-0.0 size=N/A time=00:05:18.91 bitrate=N/A speed=6.37x
+frame=11474 fps=191 q=-0.0 size=N/A time=00:06:22.84 bitrate=N/A speed=6.37x
+frame=13377 fps=191 q=-0.0 size=N/A time=00:07:26.34 bitrate=N/A speed=6.37x
+[Parsed_libvmaf_0 @ 000001ec1e318d80] VMAF score: 73.869261
+[out#0/null @ 000001ec19257d00] video:6151KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=14315 fps=189 q=-0.0 Lsize=N/A time=00:07:57.64 bitrate=N/A speed=6.32x
+
+
+[ENCODE] libaom-av1 1280x720 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1280x720_30p.m2ts" -vcodec libaom-av1 -cpu-used 5 -profile:v main -f matroska "BBB_JapanTV_MPEG-2_1280x720_30p_libaom-av1.mkv"
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1280x720_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 10274 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1280x720 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 15000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Stream mapping:
+  Stream #0:0 -> #0:0 (mpeg2video (native) -> av1 (libaom-av1))
+Press [q] to stop, [?] for help
+[libaom-av1 @ 0000028a2138e900] 3.10.0-110-g3817481261
+[libaom-av1 @ 0000028a2138e900] Neither bitrate nor constrained quality specified, using default CRF of 32
+Output #0, matroska, to 'BBB_JapanTV_MPEG-2_1280x720_30p_libaom-av1.mkv':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: av1 (Main) (AV01 / 0x31305641), yuv420p(tv, bt709, bottom coded first (swapped)), 1280x720 [SAR 1:1 DAR 16:9], q=2-31, 29.97 fps, 1k tbn
+      Metadata:
+        encoder         : Lavc61.19.100 libaom-av1
+      Side data:
+        cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+frame=  264 fps= 26 q=0.0 size=     256KiB time=00:00:08.80 bitrate= 238.1kbits/s speed=0.879x
+frame=  492 fps= 25 q=0.0 size=    1536KiB time=00:00:16.41 bitrate= 766.5kbits/s speed=0.819x
+frame=  688 fps= 23 q=0.0 size=    1536KiB time=00:00:22.95 bitrate= 548.1kbits/s speed=0.764x
+frame=14131 fps= 12 q=0.0 size=   69632KiB time=00:07:51.50 bitrate=1209.8kbits/s speed=0.396x
+frame=14215 fps= 12 q=0.0 size=   69632KiB time=00:07:54.30 bitrate=1202.6kbits/s speed=0.395x
+frame=14291 fps= 12 q=0.0 size=   69888KiB time=00:07:56.84 bitrate=1200.7kbits/s speed=0.393x
+[out#0/matroska @ 0000028a212bf5c0] video:69995KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.098868%
+frame=14315 fps= 12 q=0.0 Lsize=   70064KiB time=00:07:57.64 bitrate=1201.7kbits/s speed=0.393x
+
+
+[VMAF] libaom-av1 1280x720 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1280x720_30p.m2ts" -i "BBB_JapanTV_MPEG-2_1280x720_30p_libaom-av1.mkv" -filter_complex "[0:v][1:v]libvmaf=model=version=vmaf_v0.6.1\\:pool=harmonic_mean:featu
+re=name=psnr|name=float_ssim:n_threads=16:log_fmt=json:log_path=vmaf//BBB_JapanTV_MPEG-2_1280x720_30p_libaom-av1.json" -f null -
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1280x720_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 10274 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1280x720 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 15000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Input #1, matroska,webm, from 'BBB_JapanTV_MPEG-2_1280x720_30p_libaom-av1.mkv':
+  Metadata:
+    ENCODER         : Lavf61.7.100
+  Duration: 00:07:57.64, start: 0.000000, bitrate: 1201 kb/s
+  Stream #1:0: Video: av1 (libaom-av1) (Main), yuv420p(tv, bt709, bottom coded first (swapped)), 1280x720 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 1k tbn
+      Metadata:
+        ENCODER         : Lavc61.19.100 libaom-av1
+        DURATION        : 00:07:57.643000000
+Stream mapping:
+  Stream #0:0 (mpeg2video) -> libvmaf
+  Stream #1:0 (libaom-av1) -> libvmaf
+  libvmaf:default -> Stream #0:0 (wrapped_avframe)
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: wrapped_avframe, yuv420p(tv, bt709, bottom coded first (swapped)), 1280x720 [SAR 1:1 DAR 16:9], q=2-31, 200 kb/s, 29.97 fps, 29.97 tbn
+      Metadata:
+        encoder         : Lavc61.19.100 wrapped_avframe
+frame= 1753 fps=175 q=-0.0 size=N/A time=00:00:58.45 bitrate=N/A speed=5.84x
+frame= 3505 fps=175 q=-0.0 size=N/A time=00:01:56.95 bitrate=N/A speed=5.84x
+frame= 5283 fps=176 q=-0.0 size=N/A time=00:02:56.27 bitrate=N/A speed=5.86x
+frame= 7021 fps=175 q=-0.0 size=N/A time=00:03:54.26 bitrate=N/A speed=5.85x
+frame= 8679 fps=173 q=-0.0 size=N/A time=00:04:49.58 bitrate=N/A speed=5.78x
+frame=10370 fps=173 q=-0.0 size=N/A time=00:05:46.01 bitrate=N/A speed=5.76x
+frame=12089 fps=172 q=-0.0 size=N/A time=00:06:43.36 bitrate=N/A speed=5.75x
+frame=13380 fps=167 q=-0.0 size=N/A time=00:07:26.44 bitrate=N/A speed=5.57x
+[Parsed_libvmaf_0 @ 0000013c644051c0] VMAF score: 75.610709
+[out#0/null @ 0000013c6440dd00] video:6151KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=14315 fps=166 q=-0.0 Lsize=N/A time=00:07:57.64 bitrate=N/A speed=5.53x
+
+
+[ENCODE] libx264 1440x1080 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts" -vcodec libx264  -profile:v main -f matroska "BBB_JapanTV_MPEG-2_1440x1080_30p_libx264.mkv"
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 14380 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1440x1080 [SAR 4:3 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 20000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Stream mapping:
+  Stream #0:0 -> #0:0 (mpeg2video (native) -> h264 (libx264))
+Press [q] to stop, [?] for help
+[libx264 @ 0000025d47de4780] using SAR=4/3
+[libx264 @ 0000025d47de4780] using cpu capabilities: MMX2 SSE2Fast SSSE3 SSE4.2 AVX FMA3 BMI2 AVX2 AVX512
+[libx264 @ 0000025d47de4780] profile Main, level 4.0, 4:2:0, 8-bit
+[libx264 @ 0000025d47de4780] 264 - core 164 r3192 c24e06c - H.264/MPEG-4 AVC codec - Copyleft 2003-2024 - http://www.videolan.org/x264.html - options: cabac=1 ref=3 deblock=1:0:0 analyse=0x1:0x111 me=hex subme=7 psy=1 psy_rd=1.00:0
+.00 mixed_ref=1 me_range=16 chroma_me=1 trellis=1 8x8dct=0 cqm=0 deadzone=21,11 fast_pskip=1 chroma_qp_offset=-2 threads=24 lookahead_threads=4 sliced_threads=0 nr=0 decimate=1 interlaced=0 bluray_compat=0 constrained_intra=0 bfram
+es=3 b_pyramid=2 b_adapt=1 b_bias=0 direct=1 weightb=1 open_gop=0 weightp=2 keyint=250 keyint_min=25 scenecut=40 intra_refresh=0 rc_lookahead=40 rc=crf mbtree=1 crf=23.0 qcomp=0.60 qpmin=0 qpmax=69 qpstep=4 ip_ratio=1.40 aq=1:1.00
+Output #0, matroska, to 'BBB_JapanTV_MPEG-2_1440x1080_30p_libx264.mkv':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: h264 (H264 / 0x34363248), yuv420p(tv, bt709, bottom coded first (swapped)), 1440x1080 [SAR 4:3 DAR 16:9], q=2-31, 29.97 fps, 1k tbn
+      Metadata:
+        encoder         : Lavc61.19.100 libx264
+      Side data:
+        cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+frame= 1760 fps=176 q=29.0 size=   34560KiB time=00:00:58.65 bitrate=4826.5kbits/s speed=5.85x
+frame= 4229 fps=211 q=29.0 size=   58880KiB time=00:02:21.04 bitrate=3419.9kbits/s speed=7.04x
+frame= 6488 fps=216 q=29.0 size=   83200KiB time=00:03:36.41 bitrate=3149.4kbits/s speed= 7.2x
+frame= 8428 fps=210 q=29.0 size=  113920KiB time=00:04:41.14 bitrate=3319.4kbits/s speed=7.02x
+frame=10466 fps=209 q=29.0 size=  152064KiB time=00:05:49.14 bitrate=3567.8kbits/s speed=6.97x
+frame=12543 fps=209 q=29.0 size=  176640KiB time=00:06:58.45 bitrate=3458.1kbits/s speed=6.96x
+[out#0/matroska @ 0000025d47cb3200] video:225129KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.048135%
+frame=14315 fps=207 q=-1.0 Lsize=  225238KiB time=00:07:57.57 bitrate=3863.6kbits/s speed=6.92x
+[libx264 @ 0000025d47de4780] frame I:140   Avg QP:18.24  size:150326
+[libx264 @ 0000025d47de4780] frame P:8681  Avg QP:22.24  size: 21164
+[libx264 @ 0000025d47de4780] frame B:5494  Avg QP:26.11  size:  4689
+[libx264 @ 0000025d47de4780] consecutive B-frames: 44.8%  8.6% 10.8% 35.9%
+[libx264 @ 0000025d47de4780] mb I  I16..4: 34.6%  0.0% 65.4%
+[libx264 @ 0000025d47de4780] mb P  I16..4:  4.3%  0.0%  2.4%  P16..4: 32.0%  8.9%  6.5%  0.0%  0.0%    skip:46.0%
+[libx264 @ 0000025d47de4780] mb B  I16..4:  1.0%  0.0%  0.8%  B16..8: 21.7%  1.7%  0.3%  direct: 1.6%  skip:72.9%  L0:44.8% L1:50.9% BI: 4.3%
+[libx264 @ 0000025d47de4780] coded y,uvDC,uvAC intra: 40.9% 57.0% 22.2% inter: 9.8% 14.2% 1.9%
+[libx264 @ 0000025d47de4780] i16 v,h,dc,p: 43% 20% 13% 23%
+[libx264 @ 0000025d47de4780] i4 v,h,dc,ddl,ddr,vr,hd,vl,hu: 33% 14% 18%  5%  6%  8%  5%  6%  4%
+[libx264 @ 0000025d47de4780] i8c dc,h,v,p: 51% 19% 23%  8%
+[libx264 @ 0000025d47de4780] Weighted P-Frames: Y:1.5% UV:0.8%
+[libx264 @ 0000025d47de4780] ref P L0: 71.2% 14.4% 10.5%  3.8%  0.0%
+[libx264 @ 0000025d47de4780] ref B L0: 87.6%  9.9%  2.5%
+[libx264 @ 0000025d47de4780] ref B L1: 97.1%  2.9%
+[libx264 @ 0000025d47de4780] kb/s:3861.15
+
+
+[VMAF] libx264 1440x1080 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts" -i "BBB_JapanTV_MPEG-2_1440x1080_30p_libx264.mkv" -filter_complex "[0:v][1:v]libvmaf=model=version=vmaf_v0.6.1\\:pool=harmonic_mean:featur
+e=name=psnr|name=float_ssim:n_threads=16:log_fmt=json:log_path=vmaf//BBB_JapanTV_MPEG-2_1440x1080_30p_libx264.json" -f null -
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 14380 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1440x1080 [SAR 4:3 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 20000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Input #1, matroska,webm, from 'BBB_JapanTV_MPEG-2_1440x1080_30p_libx264.mkv':
+  Metadata:
+    ENCODER         : Lavf61.7.100
+  Duration: 00:07:57.64, start: 0.000000, bitrate: 3863 kb/s
+  Stream #1:0: Video: h264 (Main), yuv420p(tv, bt709, bottom coded first (swapped)), 1440x1080 [SAR 4:3 DAR 16:9], 29.97 fps, 29.97 tbr, 1k tbn
+      Metadata:
+        ENCODER         : Lavc61.19.100 libx264
+        DURATION        : 00:07:57.643000000
+Stream mapping:
+  Stream #0:0 (mpeg2video) -> libvmaf
+  Stream #1:0 (h264) -> libvmaf
+  libvmaf:default -> Stream #0:0 (wrapped_avframe)
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: wrapped_avframe, yuv420p(tv, bt709, bottom coded first (swapped)), 1440x1080 [SAR 4:3 DAR 16:9], q=2-31, 200 kb/s, 29.97 fps, 29.97 tbn
+      Metadata:
+        encoder         : Lavc61.19.100 wrapped_avframe
+frame= 1162 fps=116 q=-0.0 size=N/A time=00:00:38.77 bitrate=N/A speed=3.87x
+frame= 2320 fps=116 q=-0.0 size=N/A time=00:01:17.41 bitrate=N/A speed=3.86x
+frame= 3476 fps=116 q=-0.0 size=N/A time=00:01:55.98 bitrate=N/A speed=3.86x
+frame= 4634 fps=116 q=-0.0 size=N/A time=00:02:34.62 bitrate=N/A speed=3.86x
+frame= 5803 fps=116 q=-0.0 size=N/A time=00:03:13.62 bitrate=N/A speed=3.87x
+frame= 6936 fps=115 q=-0.0 size=N/A time=00:03:51.43 bitrate=N/A speed=3.85x
+frame= 8074 fps=115 q=-0.0 size=N/A time=00:04:29.40 bitrate=N/A speed=3.84x
+frame= 9209 fps=115 q=-0.0 size=N/A time=00:05:07.27 bitrate=N/A speed=3.83x
+frame=10351 fps=115 q=-0.0 size=N/A time=00:05:45.34 bitrate=N/A speed=3.83x
+frame=11509 fps=115 q=-0.0 size=N/A time=00:06:24.01 bitrate=N/A speed=3.83x
+frame=12673 fps=115 q=-0.0 size=N/A time=00:07:02.85 bitrate=N/A speed=3.84x
+frame=13839 fps=115 q=-0.0 size=N/A time=00:07:41.76 bitrate=N/A speed=3.84x
+[Parsed_libvmaf_0 @ 000001a39ff07a80] VMAF score: 74.552797
+[out#0/null @ 000001a3981def00] video:6151KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=14315 fps=115 q=-0.0 Lsize=N/A time=00:07:57.64 bitrate=N/A speed=3.83x
+
+
+[ENCODE] libx265 1440x1080 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts" -vcodec libx265  -profile:v main -f matroska "BBB_JapanTV_MPEG-2_1440x1080_30p_libx265.mkv"
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 14380 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1440x1080 [SAR 4:3 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 20000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Stream mapping:
+  Stream #0:0 -> #0:0 (mpeg2video (native) -> hevc (libx265))
+Press [q] to stop, [?] for help
+x265 [info]: HEVC encoder version 4.0+6-a069836f3
+x265 [info]: build info [Windows][GCC 14.2.0][64 bit] 8bit+10bit+12bit
+x265 [info]: using cpu capabilities: MMX2 SSE2Fast LZCNT SSSE3 SSE4.2 AVX FMA3 BMI2 AVX2
+x265 [info]: Main profile, Level-4 (Main tier)
+x265 [info]: Thread pool created using 16 threads
+x265 [info]: Slices                              : 1
+x265 [info]: frame threads / pool features       : 4 / wpp(17 rows)
+x265 [info]: Coding QT: max CU size, min CU size : 64 / 8
+x265 [info]: Residual QT: max TU size, max depth : 32 / 1 inter / 1 intra
+x265 [info]: ME / range / subpel / merge         : hex / 57 / 2 / 3
+x265 [info]: Keyframe min / max / scenecut / bias  : 25 / 250 / 40 / 5.00
+x265 [info]: Lookahead / bframes / badapt        : 20 / 4 / 2
+x265 [info]: b-pyramid / weightp / weightb       : 1 / 1 / 0
+x265 [info]: References / ref-limit  cu / depth  : 3 / off / on
+x265 [info]: AQ: mode / str / qg-size / cu-tree  : 2 / 1.0 / 32 / 1
+x265 [info]: Rate Control / qCompress            : CRF-28.0 / 0.60
+x265 [info]: tools: rd=3 psy-rd=2.00 early-skip rskip mode=1 signhide tmvp
+x265 [info]: tools: b-intra strong-intra-smoothing lslices=6 deblock sao
+Output #0, matroska, to 'BBB_JapanTV_MPEG-2_1440x1080_30p_libx265.mkv':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: hevc, yuv420p(tv, bt709, bottom coded first (swapped)), 1440x1080 [SAR 4:3 DAR 16:9], q=2-31, 29.97 fps, 1k tbn
+      Metadata:
+        encoder         : Lavc61.19.100 libx265
+      Side data:
+        cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+frame=  753 fps= 75 q=28.1 size=    7424KiB time=00:00:25.05 bitrate=2427.0kbits/s speed= 2.5x
+frame= 1585 fps= 79 q=30.2 size=   13312KiB time=00:00:52.81 bitrate=2064.6kbits/s speed=2.64x
+frame= 2491 fps= 83 q=36.1 size=   16384KiB time=00:01:23.04 bitrate=1616.1kbits/s speed=2.76x
+frame= 3355 fps= 84 q=28.1 size=   19712KiB time=00:01:51.87 bitrate=1443.4kbits/s speed=2.79x
+frame= 4282 fps= 85 q=31.1 size=   23296KiB time=00:02:22.80 bitrate=1336.3kbits/s speed=2.85x
+frame= 5058 fps= 84 q=28.8 size=   26368KiB time=00:02:48.70 bitrate=1280.4kbits/s speed=2.81x
+frame= 5886 fps= 84 q=33.3 size=   29952KiB time=00:03:16.32 bitrate=1249.8kbits/s speed= 2.8x
+frame= 6650 fps= 83 q=33.1 size=   34304KiB time=00:03:41.82 bitrate=1266.9kbits/s speed=2.77x
+frame= 7394 fps= 82 q=34.0 size=   39680KiB time=00:04:06.64 bitrate=1317.9kbits/s speed=2.74x
+frame= 8141 fps= 81 q=36.0 size=   43264KiB time=00:04:31.57 bitrate=1305.1kbits/s speed=2.71x
+frame= 8795 fps= 80 q=27.3 size=   48896KiB time=00:04:53.39 bitrate=1365.3kbits/s speed=2.66x
+frame= 9694 fps= 81 q=34.0 size=   54784KiB time=00:05:23.38 bitrate=1387.8kbits/s speed=2.69x
+frame=10368 fps= 80 q=34.0 size=   59904KiB time=00:05:45.87 bitrate=1418.8kbits/s speed=2.66x
+frame=11110 fps= 79 q=29.1 size=   64512KiB time=00:06:10.63 bitrate=1425.9kbits/s speed=2.64x
+frame=11936 fps= 79 q=29.2 size=   68608KiB time=00:06:38.19 bitrate=1411.5kbits/s speed=2.65x
+frame=12672 fps= 79 q=23.8 size=   73472KiB time=00:07:02.75 bitrate=1423.7kbits/s speed=2.64x
+frame=13271 fps= 78 q=29.3 size=   94720KiB time=00:07:22.74 bitrate=1752.6kbits/s speed= 2.6x
+frame=14022 fps= 78 q=35.1 size=  105984KiB time=00:07:47.80 bitrate=1856.0kbits/s speed=2.59x
+[out#0/matroska @ 00000183c5563200] video:106578KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:2KiB muxing overhead: 0.100451%
+frame=14315 fps= 78 q=35.1 Lsize=  106685KiB time=00:07:57.57 bitrate=1830.0kbits/s speed=2.61x
+x265 [info]: frame I:    104, Avg QP:24.85  kb/s: 23141.31
+x265 [info]: frame P:   6316, Avg QP:28.93  kb/s: 3323.47
+x265 [info]: frame B:   7895, Avg QP:35.15  kb/s: 348.96
+x265 [info]: Weighted P-Frames: Y:2.0% UV:1.3%
+encoded 14315 frames in 182.72s (78.34 fps), 1826.95 kb/s, Avg QP:32.33
+
+
+[VMAF] libx265 1440x1080 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts" -i "BBB_JapanTV_MPEG-2_1440x1080_30p_libx265.mkv" -filter_complex "[0:v][1:v]libvmaf=model=version=vmaf_v0.6.1\\:pool=harmonic_mean:featur
+e=name=psnr|name=float_ssim:n_threads=16:log_fmt=json:log_path=vmaf//BBB_JapanTV_MPEG-2_1440x1080_30p_libx265.json" -f null -
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 14380 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1440x1080 [SAR 4:3 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 20000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Input #1, matroska,webm, from 'BBB_JapanTV_MPEG-2_1440x1080_30p_libx265.mkv':
+  Metadata:
+    ENCODER         : Lavf61.7.100
+  Duration: 00:07:57.64, start: 0.000000, bitrate: 1829 kb/s
+  Stream #1:0: Video: hevc (Main), yuv420p(tv, bt709, bottom coded first (swapped)), 1440x1080 [SAR 4:3 DAR 16:9], 29.97 fps, 29.97 tbr, 1k tbn
+      Metadata:
+        ENCODER         : Lavc61.19.100 libx265
+        DURATION        : 00:07:57.643000000
+Stream mapping:
+  Stream #0:0 (mpeg2video) -> libvmaf
+  Stream #1:0 (hevc) -> libvmaf
+  libvmaf:default -> Stream #0:0 (wrapped_avframe)
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: wrapped_avframe, yuv420p(tv, bt709, bottom coded first (swapped)), 1440x1080 [SAR 4:3 DAR 16:9], q=2-31, 200 kb/s, 29.97 fps, 29.97 tbn
+      Metadata:
+        encoder         : Lavc61.19.100 wrapped_avframe
+frame= 1054 fps=105 q=-0.0 size=N/A time=00:00:35.16 bitrate=N/A speed=3.51x
+frame= 2170 fps=108 q=-0.0 size=N/A time=00:01:12.40 bitrate=N/A speed=3.62x
+frame= 3288 fps=109 q=-0.0 size=N/A time=00:01:49.70 bitrate=N/A speed=3.65x
+frame= 4418 fps=110 q=-0.0 size=N/A time=00:02:27.41 bitrate=N/A speed=3.68x
+frame= 5533 fps=111 q=-0.0 size=N/A time=00:03:04.61 bitrate=N/A speed=3.69x
+frame= 6653 fps=111 q=-0.0 size=N/A time=00:03:41.98 bitrate=N/A speed=3.69x
+frame= 7710 fps=110 q=-0.0 size=N/A time=00:04:17.25 bitrate=N/A speed=3.67x
+frame= 8786 fps=110 q=-0.0 size=N/A time=00:04:53.15 bitrate=N/A speed=3.66x
+frame= 9905 fps=110 q=-0.0 size=N/A time=00:05:30.49 bitrate=N/A speed=3.67x
+frame=11019 fps=110 q=-0.0 size=N/A time=00:06:07.66 bitrate=N/A speed=3.67x
+frame=12144 fps=110 q=-0.0 size=N/A time=00:06:45.20 bitrate=N/A speed=3.68x
+frame=13253 fps=110 q=-0.0 size=N/A time=00:07:22.20 bitrate=N/A speed=3.68x
+[Parsed_libvmaf_0 @ 000002726658d1c0] VMAF score: 73.646893
+[out#0/null @ 00000272643c22c0] video:6151KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=14315 fps=110 q=-0.0 Lsize=N/A time=00:07:57.64 bitrate=N/A speed=3.66x
+
+
+[ENCODE] libaom-av1 1440x1080 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts" -vcodec libaom-av1 -cpu-used 5 -profile:v main -f matroska "BBB_JapanTV_MPEG-2_1440x1080_30p_libaom-av1.mkv"
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 14380 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1440x1080 [SAR 4:3 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 20000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Stream mapping:
+  Stream #0:0 -> #0:0 (mpeg2video (native) -> av1 (libaom-av1))
+Press [q] to stop, [?] for help
+[libaom-av1 @ 000001351edb4c00] 3.10.0-110-g3817481261
+[libaom-av1 @ 000001351edb4c00] Neither bitrate nor constrained quality specified, using default CRF of 32
+Output #0, matroska, to 'BBB_JapanTV_MPEG-2_1440x1080_30p_libaom-av1.mkv':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: av1 (Main) (AV01 / 0x31305641), yuv420p(tv, bt709, bottom coded first (swapped)), 1440x1080 [SAR 4:3 DAR 16:9], q=2-31, 29.97 fps, 1k tbn
+      Metadata:
+        encoder         : Lavc61.19.100 libaom-av1
+      Side data:
+        cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+frame=   89 fps=8.9 q=0.0 size=       1KiB time=00:00:02.96 bitrate=   2.9kbits/s speed=0.297x
+frame=  152 fps=7.6 q=0.0 size=     256KiB time=00:00:05.07 bitrate= 413.5kbits/s speed=0.253x
+frame=  208 fps=6.9 q=0.0 size=     256KiB time=00:00:06.94 bitrate= 302.2kbits/s speed=0.231x
+frame=14173 fps=6.9 q=0.0 size=   96512KiB time=00:07:52.90 bitrate=1671.8kbits/s speed=0.231x
+frame=14231 fps=6.9 q=0.0 size=   96512KiB time=00:07:54.84 bitrate=1665.0kbits/s speed=0.231x
+frame=14287 fps=6.9 q=0.0 size=   96768KiB time=00:07:56.70 bitrate=1662.9kbits/s speed=0.231x
+[out#0/matroska @ 000001351eee9ec0] video:96907KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.071711%
+frame=14315 fps=6.9 q=0.0 Lsize=   96976KiB time=00:07:57.64 bitrate=1663.2kbits/s speed=0.231x
+
+
+[VMAF] libaom-av1 1440x1080 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts" -i "BBB_JapanTV_MPEG-2_1440x1080_30p_libaom-av1.mkv" -filter_complex "[0:v][1:v]libvmaf=model=version=vmaf_v0.6.1\\:pool=harmonic_mean:fea
+ture=name=psnr|name=float_ssim:n_threads=16:log_fmt=json:log_path=vmaf//BBB_JapanTV_MPEG-2_1440x1080_30p_libaom-av1.json" -f null -
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 14380 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1440x1080 [SAR 4:3 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 20000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Input #1, matroska,webm, from 'BBB_JapanTV_MPEG-2_1440x1080_30p_libaom-av1.mkv':
+  Metadata:
+    ENCODER         : Lavf61.7.100
+  Duration: 00:07:57.64, start: 0.000000, bitrate: 1663 kb/s
+  Stream #1:0: Video: av1 (libaom-av1) (Main), yuv420p(tv, bt709, bottom coded first (swapped)), 1440x1080 [SAR 1:1 DAR 4:3], SAR 4:3 DAR 16:9, 29.97 fps, 29.97 tbr, 1k tbn
+      Metadata:
+        ENCODER         : Lavc61.19.100 libaom-av1
+        DURATION        : 00:07:57.643000000
+Stream mapping:
+  Stream #0:0 (mpeg2video) -> libvmaf
+  Stream #1:0 (libaom-av1) -> libvmaf
+  libvmaf:default -> Stream #0:0 (wrapped_avframe)
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: wrapped_avframe, yuv420p(tv, bt709, bottom coded first (swapped)), 1440x1080 [SAR 4:3 DAR 16:9], q=2-31, 200 kb/s, 29.97 fps, 29.97 tbn
+      Metadata:
+        encoder         : Lavc61.19.100 wrapped_avframe
+frame= 1050 fps=105 q=-0.0 size=N/A time=00:00:35.03 bitrate=N/A speed= 3.5x
+frame= 2107 fps=105 q=-0.0 size=N/A time=00:01:10.30 bitrate=N/A speed=3.51x
+frame= 3206 fps=107 q=-0.0 size=N/A time=00:01:46.97 bitrate=N/A speed=3.56x
+frame= 4307 fps=107 q=-0.0 size=N/A time=00:02:23.71 bitrate=N/A speed=3.59x
+frame= 5392 fps=108 q=-0.0 size=N/A time=00:02:59.91 bitrate=N/A speed=3.59x
+frame= 6459 fps=107 q=-0.0 size=N/A time=00:03:35.51 bitrate=N/A speed=3.59x
+frame= 7505 fps=107 q=-0.0 size=N/A time=00:04:10.41 bitrate=N/A speed=3.57x
+frame= 8542 fps=107 q=-0.0 size=N/A time=00:04:45.01 bitrate=N/A speed=3.56x
+frame= 9600 fps=106 q=-0.0 size=N/A time=00:05:20.32 bitrate=N/A speed=3.55x
+frame=10609 fps=106 q=-0.0 size=N/A time=00:05:53.98 bitrate=N/A speed=3.53x
+frame=11660 fps=106 q=-0.0 size=N/A time=00:06:29.05 bitrate=N/A speed=3.53x
+frame=12742 fps=106 q=-0.0 size=N/A time=00:07:05.15 bitrate=N/A speed=3.54x
+frame=13477 fps=104 q=-0.0 size=N/A time=00:07:29.68 bitrate=N/A speed=3.45x
+[Parsed_libvmaf_0 @ 0000028da6ac2b00] VMAF score: 75.277499
+[out#0/null @ 0000028da6ae8e80] video:6151KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=14315 fps=103 q=-0.0 Lsize=N/A time=00:07:57.64 bitrate=N/A speed=3.45x
+
+
+[ENCODE] libx264 1920x1080 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts" -vcodec libx264  -profile:v main -f matroska "BBB_JapanTV_MPEG-2_1920x1080_30p_libx264.mkv"
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 18466 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1920x1080 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 24000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Stream mapping:
+  Stream #0:0 -> #0:0 (mpeg2video (native) -> h264 (libx264))
+Press [q] to stop, [?] for help
+[libx264 @ 0000016d4c0a0340] using SAR=1/1
+[libx264 @ 0000016d4c0a0340] using cpu capabilities: MMX2 SSE2Fast SSSE3 SSE4.2 AVX FMA3 BMI2 AVX2 AVX512
+[libx264 @ 0000016d4c0a0340] profile Main, level 4.0, 4:2:0, 8-bit
+[libx264 @ 0000016d4c0a0340] 264 - core 164 r3192 c24e06c - H.264/MPEG-4 AVC codec - Copyleft 2003-2024 - http://www.videolan.org/x264.html - options: cabac=1 ref=3 deblock=1:0:0 analyse=0x1:0x111 me=hex subme=7 psy=1 psy_rd=1.00:0
+.00 mixed_ref=1 me_range=16 chroma_me=1 trellis=1 8x8dct=0 cqm=0 deadzone=21,11 fast_pskip=1 chroma_qp_offset=-2 threads=24 lookahead_threads=4 sliced_threads=0 nr=0 decimate=1 interlaced=0 bluray_compat=0 constrained_intra=0 bfram
+es=3 b_pyramid=2 b_adapt=1 b_bias=0 direct=1 weightb=1 open_gop=0 weightp=2 keyint=250 keyint_min=25 scenecut=40 intra_refresh=0 rc_lookahead=40 rc=crf mbtree=1 crf=23.0 qcomp=0.60 qpmin=0 qpmax=69 qpstep=4 ip_ratio=1.40 aq=1:1.00
+Output #0, matroska, to 'BBB_JapanTV_MPEG-2_1920x1080_30p_libx264.mkv':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: h264 (H264 / 0x34363248), yuv420p(tv, bt709, bottom coded first (swapped)), 1920x1080 [SAR 1:1 DAR 16:9], q=2-31, 29.97 fps, 1k tbn
+      Metadata:
+        encoder         : Lavc61.19.100 libx264
+      Side data:
+        cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+frame= 1217 fps=121 q=29.0 size=   37376KiB time=00:00:40.54 bitrate=7552.6kbits/s speed=4.04x
+frame= 3014 fps=150 q=29.0 size=   63744KiB time=00:01:40.50 bitrate=5195.9kbits/s speed=5.02x
+frame= 4915 fps=164 q=29.0 size=   88576KiB time=00:02:43.93 bitrate=4426.4kbits/s speed=5.45x
+frame= 6570 fps=164 q=29.0 size=  113152KiB time=00:03:39.15 bitrate=4229.7kbits/s speed=5.47x
+frame= 8100 fps=162 q=29.0 size=  148480KiB time=00:04:30.20 bitrate=4501.6kbits/s speed=5.39x
+frame= 9634 fps=160 q=29.0 size=  183040KiB time=00:05:21.38 bitrate=4665.6kbits/s speed=5.35x
+frame=11157 fps=159 q=29.0 size=  215808KiB time=00:06:12.20 bitrate=4749.8kbits/s speed=5.31x
+frame=12670 fps=158 q=29.0 size=  240384KiB time=00:07:02.65 bitrate=4659.2kbits/s speed=5.27x
+frame=14183 fps=157 q=29.0 size=  289536KiB time=00:07:53.17 bitrate=5012.7kbits/s speed=5.25x
+[out#0/matroska @ 0000016d4bfcf780] video:291122KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.037652%
+frame=14315 fps=158 q=-1.0 Lsize=  291232KiB time=00:07:57.57 bitrate=4995.6kbits/s speed=5.27x
+[libx264 @ 0000016d4c0a0340] frame I:140   Avg QP:18.18  size:183479
+[libx264 @ 0000016d4c0a0340] frame P:8528  Avg QP:22.12  size: 27240
+[libx264 @ 0000016d4c0a0340] frame B:5647  Avg QP:25.89  size:  7104
+[libx264 @ 0000016d4c0a0340] consecutive B-frames: 42.5% 10.3% 13.1% 34.1%
+[libx264 @ 0000016d4c0a0340] mb I  I16..4: 38.2%  0.0% 61.8%
+[libx264 @ 0000016d4c0a0340] mb P  I16..4:  5.0%  0.0%  2.5%  P16..4: 32.4%  8.3%  6.1%  0.0%  0.0%    skip:45.8%
+[libx264 @ 0000016d4c0a0340] mb B  I16..4:  1.4%  0.0%  0.9%  B16..8: 22.6%  1.8%  0.4%  direct: 1.9%  skip:71.0%  L0:45.7% L1:49.7% BI: 4.6%
+[libx264 @ 0000016d4c0a0340] coded y,uvDC,uvAC intra: 37.6% 54.8% 18.4% inter: 9.5% 14.4% 2.0%
+[libx264 @ 0000016d4c0a0340] i16 v,h,dc,p: 39% 23% 15% 22%
+[libx264 @ 0000016d4c0a0340] i4 v,h,dc,ddl,ddr,vr,hd,vl,hu: 29% 18% 20%  5%  6%  7%  5%  5%  4%
+[libx264 @ 0000016d4c0a0340] i8c dc,h,v,p: 51% 22% 19%  8%
+[libx264 @ 0000016d4c0a0340] Weighted P-Frames: Y:1.8% UV:1.0%
+[libx264 @ 0000016d4c0a0340] ref P L0: 70.9% 14.5% 10.7%  3.9%  0.0%
+[libx264 @ 0000016d4c0a0340] ref B L0: 86.1% 11.2%  2.7%
+[libx264 @ 0000016d4c0a0340] ref B L1: 97.3%  2.7%
+[libx264 @ 0000016d4c0a0340] kb/s:4992.98
+
+
+[VMAF] libx264 1920x1080 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts" -i "BBB_JapanTV_MPEG-2_1920x1080_30p_libx264.mkv" -filter_complex "[0:v][1:v]libvmaf=model=version=vmaf_v0.6.1\\:pool=harmonic_mean:featur
+e=name=psnr|name=float_ssim:n_threads=16:log_fmt=json:log_path=vmaf//BBB_JapanTV_MPEG-2_1920x1080_30p_libx264.json" -f null -
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 18466 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1920x1080 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 24000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Input #1, matroska,webm, from 'BBB_JapanTV_MPEG-2_1920x1080_30p_libx264.mkv':
+  Metadata:
+    ENCODER         : Lavf61.7.100
+  Duration: 00:07:57.64, start: 0.000000, bitrate: 4994 kb/s
+  Stream #1:0: Video: h264 (Main), yuv420p(tv, bt709, bottom coded first (swapped)), 1920x1080 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 1k tbn
+      Metadata:
+        ENCODER         : Lavc61.19.100 libx264
+        DURATION        : 00:07:57.643000000
+Stream mapping:
+  Stream #0:0 (mpeg2video) -> libvmaf
+  Stream #1:0 (h264) -> libvmaf
+  libvmaf:default -> Stream #0:0 (wrapped_avframe)
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: wrapped_avframe, yuv420p(tv, bt709, bottom coded first (swapped)), 1920x1080 [SAR 1:1 DAR 16:9], q=2-31, 200 kb/s, 29.97 fps, 29.97 tbn
+      Metadata:
+        encoder         : Lavc61.19.100 wrapped_avframe
+frame=  887 fps= 89 q=-0.0 size=N/A time=00:00:29.59 bitrate=N/A speed=2.96x
+frame= 1770 fps= 88 q=-0.0 size=N/A time=00:00:59.05 bitrate=N/A speed=2.95x
+frame= 2652 fps= 88 q=-0.0 size=N/A time=00:01:28.48 bitrate=N/A speed=2.94x
+frame= 3538 fps= 88 q=-0.0 size=N/A time=00:01:58.05 bitrate=N/A speed=2.95x
+frame= 4422 fps= 88 q=-0.0 size=N/A time=00:02:27.54 bitrate=N/A speed=2.95x
+frame= 5303 fps= 88 q=-0.0 size=N/A time=00:02:56.94 bitrate=N/A speed=2.94x
+frame= 6185 fps= 88 q=-0.0 size=N/A time=00:03:26.37 bitrate=N/A speed=2.94x
+frame= 7069 fps= 88 q=-0.0 size=N/A time=00:03:55.86 bitrate=N/A speed=2.94x
+frame= 7945 fps= 88 q=-0.0 size=N/A time=00:04:25.09 bitrate=N/A speed=2.94x
+frame= 8821 fps= 88 q=-0.0 size=N/A time=00:04:54.32 bitrate=N/A speed=2.94x
+frame= 9709 fps= 88 q=-0.0 size=N/A time=00:05:23.95 bitrate=N/A speed=2.94x
+frame=10588 fps= 88 q=-0.0 size=N/A time=00:05:53.28 bitrate=N/A speed=2.94x
+frame=11470 fps= 88 q=-0.0 size=N/A time=00:06:22.71 bitrate=N/A speed=2.94x
+frame=12353 fps= 88 q=-0.0 size=N/A time=00:06:52.17 bitrate=N/A speed=2.94x
+frame=13233 fps= 88 q=-0.0 size=N/A time=00:07:21.54 bitrate=N/A speed=2.94x
+frame=14110 fps= 88 q=-0.0 size=N/A time=00:07:50.80 bitrate=N/A speed=2.94x
+[Parsed_libvmaf_0 @ 000001d84add7680] VMAF score: 74.270129
+[out#0/null @ 000001d844946d80] video:6151KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=14315 fps= 88 q=-0.0 Lsize=N/A time=00:07:57.64 bitrate=N/A speed=2.93x
+
+
+[ENCODE] libx265 1920x1080 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts" -vcodec libx265  -profile:v main -f matroska "BBB_JapanTV_MPEG-2_1920x1080_30p_libx265.mkv"
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 18466 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1920x1080 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 24000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Stream mapping:
+  Stream #0:0 -> #0:0 (mpeg2video (native) -> hevc (libx265))
+Press [q] to stop, [?] for help
+x265 [info]: HEVC encoder version 4.0+6-a069836f3
+x265 [info]: build info [Windows][GCC 14.2.0][64 bit] 8bit+10bit+12bit
+x265 [info]: using cpu capabilities: MMX2 SSE2Fast LZCNT SSSE3 SSE4.2 AVX FMA3 BMI2 AVX2
+x265 [info]: Main profile, Level-4 (Main tier)
+x265 [info]: Thread pool created using 16 threads
+x265 [info]: Slices                              : 1
+x265 [info]: frame threads / pool features       : 4 / wpp(17 rows)
+x265 [info]: Coding QT: max CU size, min CU size : 64 / 8
+x265 [info]: Residual QT: max TU size, max depth : 32 / 1 inter / 1 intra
+x265 [info]: ME / range / subpel / merge         : hex / 57 / 2 / 3
+x265 [info]: Keyframe min / max / scenecut / bias  : 25 / 250 / 40 / 5.00
+x265 [info]: Lookahead / bframes / badapt        : 20 / 4 / 2
+x265 [info]: b-pyramid / weightp / weightb       : 1 / 1 / 0
+x265 [info]: References / ref-limit  cu / depth  : 3 / off / on
+x265 [info]: AQ: mode / str / qg-size / cu-tree  : 2 / 1.0 / 32 / 1
+x265 [info]: Rate Control / qCompress            : CRF-28.0 / 0.60
+x265 [info]: tools: rd=3 psy-rd=2.00 early-skip rskip mode=1 signhide tmvp
+x265 [info]: tools: b-intra strong-intra-smoothing lslices=6 deblock sao
+Output #0, matroska, to 'BBB_JapanTV_MPEG-2_1920x1080_30p_libx265.mkv':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: hevc, yuv420p(tv, bt709, bottom coded first (swapped)), 1920x1080 [SAR 1:1 DAR 16:9], q=2-31, 29.97 fps, 1k tbn
+      Metadata:
+        encoder         : Lavc61.19.100 libx265
+      Side data:
+        cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+frame=  620 fps= 62 q=32.6 size=    6656KiB time=00:00:20.62 bitrate=2644.2kbits/s speed=2.06x
+frame= 1215 fps= 61 q=35.9 size=   14848KiB time=00:00:40.47 bitrate=3005.3kbits/s speed=2.02x
+frame= 1878 fps= 63 q=32.4 size=   18688KiB time=00:01:02.59 bitrate=2445.7kbits/s speed=2.08x
+frame= 2693 fps= 67 q=30.2 size=   22272KiB time=00:01:29.78 bitrate=2032.0kbits/s speed=2.24x
+frame= 3397 fps= 68 q=35.8 size=   25856KiB time=00:01:53.27 bitrate=1869.8kbits/s speed=2.26x
+frame= 4170 fps= 69 q=29.9 size=   29440KiB time=00:02:19.07 bitrate=1734.2kbits/s speed=2.31x
+frame= 4773 fps= 68 q=28.8 size=   32768KiB time=00:02:39.19 bitrate=1686.2kbits/s speed=2.27x
+frame= 5423 fps= 68 q=34.1 size=   36096KiB time=00:03:00.88 bitrate=1634.8kbits/s speed=2.26x
+frame= 6078 fps= 67 q=33.0 size=   40192KiB time=00:03:22.73 bitrate=1624.0kbits/s speed=2.25x
+frame= 6685 fps= 67 q=35.9 size=   44544KiB time=00:03:42.98 bitrate=1636.4kbits/s speed=2.23x
+frame= 7283 fps= 66 q=28.9 size=   50432KiB time=00:04:02.94 bitrate=1700.6kbits/s speed= 2.2x
+frame= 7853 fps= 65 q=30.4 size=   55296KiB time=00:04:21.96 bitrate=1729.2kbits/s speed=2.18x
+frame= 8436 fps= 65 q=28.2 size=   60160KiB time=00:04:41.41 bitrate=1751.3kbits/s speed=2.16x
+frame= 9006 fps= 64 q=33.5 size=   68096KiB time=00:05:00.43 bitrate=1856.8kbits/s speed=2.14x
+frame= 9793 fps= 65 q=36.0 size=   71168KiB time=00:05:26.69 bitrate=1784.6kbits/s speed=2.17x
+frame=10345 fps= 65 q=29.3 size=   77056KiB time=00:05:45.11 bitrate=1829.1kbits/s speed=2.15x
+frame=10921 fps= 64 q=35.1 size=   81920KiB time=00:06:04.33 bitrate=1842.0kbits/s speed=2.14x
+frame=11510 fps= 64 q=34.6 size=   87040KiB time=00:06:23.98 bitrate=1856.9kbits/s speed=2.13x
+frame=12210 fps= 64 q=36.1 size=   90112KiB time=00:06:47.34 bitrate=1812.2kbits/s speed=2.14x
+frame=12813 fps= 64 q=36.1 size=   95488KiB time=00:07:07.46 bitrate=1830.0kbits/s speed=2.13x
+frame=13458 fps= 64 q=35.4 size=  113152KiB time=00:07:28.98 bitrate=2064.5kbits/s speed=2.13x
+frame=14307 fps= 65 q=35.3 size=  116480KiB time=00:07:57.31 bitrate=1999.1kbits/s speed=2.17x
+[out#0/matroska @ 00000281ce48f780] video:116936KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:2KiB muxing overhead: 0.091395%
+frame=14315 fps= 65 q=33.4 Lsize=  117043KiB time=00:07:57.57 bitrate=2007.7kbits/s speed=2.17x
+x265 [info]: frame I:     98, Avg QP:25.06  kb/s: 29028.33
+x265 [info]: frame P:   6018, Avg QP:28.87  kb/s: 3682.58
+x265 [info]: frame B:   8199, Avg QP:35.12  kb/s: 449.97
+x265 [info]: Weighted P-Frames: Y:2.0% UV:1.5%
+encoded 14315 frames in 220.45s (64.93 fps), 2004.60 kb/s, Avg QP:32.42
+
+
+[VMAF] libx265 1920x1080 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts" -i "BBB_JapanTV_MPEG-2_1920x1080_30p_libx265.mkv" -filter_complex "[0:v][1:v]libvmaf=model=version=vmaf_v0.6.1\\:pool=harmonic_mean:featur
+e=name=psnr|name=float_ssim:n_threads=16:log_fmt=json:log_path=vmaf//BBB_JapanTV_MPEG-2_1920x1080_30p_libx265.json" -f null -
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 18466 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1920x1080 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 24000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Input #1, matroska,webm, from 'BBB_JapanTV_MPEG-2_1920x1080_30p_libx265.mkv':
+  Metadata:
+    ENCODER         : Lavf61.7.100
+  Duration: 00:07:57.64, start: 0.000000, bitrate: 2007 kb/s
+  Stream #1:0: Video: hevc (Main), yuv420p(tv, bt709, bottom coded first (swapped)), 1920x1080 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 1k tbn
+      Metadata:
+        ENCODER         : Lavc61.19.100 libx265
+        DURATION        : 00:07:57.643000000
+Stream mapping:
+  Stream #0:0 (mpeg2video) -> libvmaf
+  Stream #1:0 (hevc) -> libvmaf
+  libvmaf:default -> Stream #0:0 (wrapped_avframe)
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: wrapped_avframe, yuv420p(tv, bt709, bottom coded first (swapped)), 1920x1080 [SAR 1:1 DAR 16:9], q=2-31, 200 kb/s, 29.97 fps, 29.97 tbn
+      Metadata:
+        encoder         : Lavc61.19.100 wrapped_avframe
+frame=  871 fps= 87 q=-0.0 size=N/A time=00:00:29.06 bitrate=N/A speed= 2.9x
+frame= 1749 fps= 87 q=-0.0 size=N/A time=00:00:58.35 bitrate=N/A speed=2.91x
+frame= 2630 fps= 88 q=-0.0 size=N/A time=00:01:27.75 bitrate=N/A speed=2.92x
+frame= 3510 fps= 88 q=-0.0 size=N/A time=00:01:57.11 bitrate=N/A speed=2.92x
+frame= 4389 fps= 88 q=-0.0 size=N/A time=00:02:26.44 bitrate=N/A speed=2.92x
+frame= 5270 fps= 88 q=-0.0 size=N/A time=00:02:55.84 bitrate=N/A speed=2.93x
+frame= 6143 fps= 88 q=-0.0 size=N/A time=00:03:24.97 bitrate=N/A speed=2.92x
+frame= 7022 fps= 88 q=-0.0 size=N/A time=00:03:54.30 bitrate=N/A speed=2.92x
+frame= 7894 fps= 88 q=-0.0 size=N/A time=00:04:23.39 bitrate=N/A speed=2.92x
+frame= 8767 fps= 88 q=-0.0 size=N/A time=00:04:52.52 bitrate=N/A speed=2.92x
+frame= 9648 fps= 88 q=-0.0 size=N/A time=00:05:21.92 bitrate=N/A speed=2.92x
+frame=10525 fps= 88 q=-0.0 size=N/A time=00:05:51.18 bitrate=N/A speed=2.92x
+frame=11404 fps= 88 q=-0.0 size=N/A time=00:06:20.51 bitrate=N/A speed=2.92x
+frame=12282 fps= 88 q=-0.0 size=N/A time=00:06:49.80 bitrate=N/A speed=2.92x
+frame=13156 fps= 88 q=-0.0 size=N/A time=00:07:18.97 bitrate=N/A speed=2.92x
+frame=14025 fps= 88 q=-0.0 size=N/A time=00:07:47.96 bitrate=N/A speed=2.92x
+[Parsed_libvmaf_0 @ 00000262bc331d80] VMAF score: 73.352727
+[out#0/null @ 00000262bc279840] video:6151KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=14315 fps= 87 q=-0.0 Lsize=N/A time=00:07:57.64 bitrate=N/A speed=2.91x
+
+
+[ENCODE] libaom-av1 1920x1080 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts" -vcodec libaom-av1 -cpu-used 5 -profile:v main -f matroska "BBB_JapanTV_MPEG-2_1920x1080_30p_libaom-av1.mkv"
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 18466 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1920x1080 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 24000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Stream mapping:
+  Stream #0:0 -> #0:0 (mpeg2video (native) -> av1 (libaom-av1))
+Press [q] to stop, [?] for help
+[libaom-av1 @ 0000017d29350440] 3.10.0-110-g3817481261
+[libaom-av1 @ 0000017d29350440] Neither bitrate nor constrained quality specified, using default CRF of 32
+Output #0, matroska, to 'BBB_JapanTV_MPEG-2_1920x1080_30p_libaom-av1.mkv':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: av1 (Main) (AV01 / 0x31305641), yuv420p(tv, bt709, bottom coded first (swapped)), 1920x1080 [SAR 1:1 DAR 16:9], q=2-31, 29.97 fps, 1k tbn
+      Metadata:
+        encoder         : Lavc61.19.100 libaom-av1
+      Side data:
+        cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+frame=   71 fps=7.1 q=0.0 size=       1KiB time=00:00:02.36 bitrate=   3.5kbits/s speed=0.237x
+frame=  127 fps=6.3 q=0.0 size=       1KiB time=00:00:04.23 bitrate=   2.0kbits/s speed=0.212x
+frame=  181 fps=6.0 q=0.0 size=     512KiB time=00:00:06.03 bitrate= 694.5kbits/s speed=0.201x
+frame=14183 fps=6.0 q=0.0 size=  118528KiB time=00:07:53.23 bitrate=2051.8kbits/s speed= 0.2x
+frame=14231 fps=6.0 q=0.0 size=  118528KiB time=00:07:54.84 bitrate=2044.9kbits/s speed= 0.2x
+frame=14287 fps=6.0 q=0.0 size=  119040KiB time=00:07:56.70 bitrate=2045.6kbits/s speed= 0.2x
+[out#0/matroska @ 0000017d2907f5c0] video:119246KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.058320%
+frame=14315 fps=6.0 q=0.0 Lsize=  119316KiB time=00:07:57.64 bitrate=2046.4kbits/s speed= 0.2x
+
+
+[VMAF] libaom-av1 1920x1080 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts" -i "BBB_JapanTV_MPEG-2_1920x1080_30p_libaom-av1.mkv" -filter_complex "[0:v][1:v]libvmaf=model=version=vmaf_v0.6.1\\:pool=harmonic_mean:fea
+ture=name=psnr|name=float_ssim:n_threads=16:log_fmt=json:log_path=vmaf//BBB_JapanTV_MPEG-2_1920x1080_30p_libaom-av1.json" -f null -
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 18466 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1920x1080 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 24000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Input #1, matroska,webm, from 'BBB_JapanTV_MPEG-2_1920x1080_30p_libaom-av1.mkv':
+  Metadata:
+    ENCODER         : Lavf61.7.100
+  Duration: 00:07:57.64, start: 0.000000, bitrate: 2046 kb/s
+  Stream #1:0: Video: av1 (libaom-av1) (Main), yuv420p(tv, bt709, bottom coded first (swapped)), 1920x1080 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 1k tbn
+      Metadata:
+        ENCODER         : Lavc61.19.100 libaom-av1
+        DURATION        : 00:07:57.643000000
+Stream mapping:
+  Stream #0:0 (mpeg2video) -> libvmaf
+  Stream #1:0 (libaom-av1) -> libvmaf
+  libvmaf:default -> Stream #0:0 (wrapped_avframe)
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: wrapped_avframe, yuv420p(tv, bt709, bottom coded first (swapped)), 1920x1080 [SAR 1:1 DAR 16:9], q=2-31, 200 kb/s, 29.97 fps, 29.97 tbn
+      Metadata:
+        encoder         : Lavc61.19.100 wrapped_avframe
+frame=  769 fps= 77 q=-0.0 size=N/A time=00:00:25.65 bitrate=N/A speed=2.56x
+frame= 1589 fps= 79 q=-0.0 size=N/A time=00:00:53.01 bitrate=N/A speed=2.65x
+frame= 2398 fps= 80 q=-0.0 size=N/A time=00:01:20.01 bitrate=N/A speed=2.66x
+frame=12807 fps= 80 q=-0.0 size=N/A time=00:07:07.32 bitrate=N/A speed=2.67x
+frame=13373 fps= 79 q=-0.0 size=N/A time=00:07:26.21 bitrate=N/A speed=2.62x
+frame=14149 fps= 78 q=-0.0 size=N/A time=00:07:52.10 bitrate=N/A speed=2.62x
+[Parsed_libvmaf_0 @ 000001875a8bee00] VMAF score: 74.996648
+[out#0/null @ 000001875a564c00] video:6151KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=14315 fps= 78 q=-0.0 Lsize=N/A time=00:07:57.64 bitrate=N/A speed=2.61x
+
+
+
+
+# JSONデータを変数として定義
+$jsonData = @'
+[
+    { "size": "960x720","codec": "libx264",    "options": "" },
+    { "size": "960x720","codec": "libx265",    "options": "" },
+    { "size": "960x720","codec": "libaom-av1", "options": "-cpu-used 5" }
+]
+'@
+$jsonContent = $jsonData | ConvertFrom-Json
+$coreCount = [Environment]::ProcessorCount
+
+# JSONデータをループする
+foreach ($setting in $jsonContent) {
+    $codec = $setting.codec
+    $size = $setting.size
+    $options = $setting.options
+
+    $inputFilePath = "BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts"
+    $outputFilePath = "BBB_JapanTV_MPEG-2_${size}_30p_${codec}.mkv"
+
+    $ffmpegCommandList = @(
+        "ffmpeg -y -hide_banner -stats_period 10",
+        "-i `"$inputFilePath`"",
+        "-vcodec $codec",
+        "${options}",
+        "-profile:v main",
+        "-vf scale=w=960:h=720",
+        "-f matroska",
+        "`"$outputFilePath`""
+    )
+    $ffmpegCommand = $ffmpegCommandList -join " "
+    Write-Host "[ENCODE] ${codec} ${size} progressive"
+    Write-Host "Executing: $ffmpegCommand"
+    Invoke-Expression $ffmpegCommand
+
+    $ffmpegCommandList = @(
+        "ffmpeg -y -hide_banner -stats_period 10",
+        "-i `"$inputFilePath`"",
+        "-i `"$outputFilePath`"",
+        "-filter_complex `"[1:v]scale=w=1440:h=1080[resize],[0:v][resize]libvmaf=model=version=vmaf_v0.6.1\\:pool=harmonic_mean:feature=name=psnr|name=float_ssim:n_threads=${coreCount}:log_fmt=json:log_path=vmaf//BBB_JapanTV_MPEG-2_${size}_30p_${codec}.json`"",
+        "-f null -"
+    )
+    $ffmpegCommand = $ffmpegCommandList -join " "
+    Write-Host "[VMAF] ${codec} ${size} progressive"
+    Write-Host "Executing: $ffmpegCommand"
+    Invoke-Expression $ffmpegCommand
+}
+
+
+[ENCODE] libx264 960x720 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts" -vcodec libx264  -profile:v main -vf scale=w=960:h=720 -f matroska "BBB_JapanTV_MPEG-2_960x720_30p_libx264.mkv"
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 14380 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1440x1080 [SAR 4:3 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 20000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Stream mapping:
+  Stream #0:0 -> #0:0 (mpeg2video (native) -> h264 (libx264))
+Press [q] to stop, [?] for help
+[libx264 @ 00000258b92942c0] using SAR=4/3
+[libx264 @ 00000258b92942c0] using cpu capabilities: MMX2 SSE2Fast SSSE3 SSE4.2 AVX FMA3 BMI2 AVX2 AVX512
+[libx264 @ 00000258b92942c0] profile Main, level 3.1, 4:2:0, 8-bit
+[libx264 @ 00000258b92942c0] 264 - core 164 r3192 c24e06c - H.264/MPEG-4 AVC codec - Copyleft 2003-2024 - http://www.videolan.org/x264.html - options: cabac=1 ref=3 deblock=1:0:0 analyse=0x1:0x111 me=hex subme=7 psy=1 psy_rd=1.00:0.
+00 mixed_ref=1 me_range=16 chroma_me=1 trellis=1 8x8dct=0 cqm=0 deadzone=21,11 fast_pskip=1 chroma_qp_offset=-2 threads=22 lookahead_threads=3 sliced_threads=0 nr=0 decimate=1 interlaced=0 bluray_compat=0 constrained_intra=0 bframes
+=3 b_pyramid=2 b_adapt=1 b_bias=0 direct=1 weightb=1 open_gop=0 weightp=2 keyint=250 keyint_min=25 scenecut=40 intra_refresh=0 rc_lookahead=40 rc=crf mbtree=1 crf=23.0 qcomp=0.60 qpmin=0 qpmax=69 qpstep=4 ip_ratio=1.40 aq=1:1.00
+Output #0, matroska, to 'BBB_JapanTV_MPEG-2_960x720_30p_libx264.mkv':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: h264 (H264 / 0x34363248), yuv420p(tv, bt709, bottom coded first (swapped)), 960x720 [SAR 4:3 DAR 16:9], q=2-31, 29.97 fps, 1k tbn
+      Metadata:
+        encoder         : Lavc61.19.100 libx264
+      Side data:
+        cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+frame= 4474 fps=447 q=29.0 size=   21248KiB time=00:02:29.21 bitrate=1166.5kbits/s speed=14.9x
+frame= 8748 fps=437 q=29.0 size=   47616KiB time=00:04:51.82 bitrate=1336.7kbits/s speed=14.6x
+frame=13095 fps=436 q=29.0 size=   73984KiB time=00:07:16.86 bitrate=1387.3kbits/s speed=14.5x
+[out#0/matroska @ 00000258b8fd00c0] video:82770KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.127142%
+frame=14315 fps=438 q=-1.0 Lsize=   82875KiB time=00:07:57.57 bitrate=1421.6kbits/s speed=14.6x
+[libx264 @ 00000258b92942c0] frame I:147   Avg QP:18.61  size: 85612
+[libx264 @ 00000258b92942c0] frame P:4243  Avg QP:22.61  size: 12011
+[libx264 @ 00000258b92942c0] frame B:9925  Avg QP:28.30  size:  2137
+[libx264 @ 00000258b92942c0] consecutive B-frames:  4.8%  5.6%  8.4% 81.3%
+[libx264 @ 00000258b92942c0] mb I  I16..4: 23.6%  0.0% 76.4%
+[libx264 @ 00000258b92942c0] mb P  I16..4:  4.1%  0.0%  4.1%  P16..4: 30.5% 10.4%  7.0%  0.0%  0.0%    skip:43.9%
+[libx264 @ 00000258b92942c0] mb B  I16..4:  0.3%  0.0%  0.6%  B16..8: 24.3%  2.2%  0.5%  direct: 1.1%  skip:71.0%  L0:38.6% L1:55.9% BI: 5.5%
+[libx264 @ 00000258b92942c0] coded y,uvDC,uvAC intra: 54.3% 67.1% 39.6% inter: 6.8% 9.4% 1.4%
+[libx264 @ 00000258b92942c0] i16 v,h,dc,p: 41% 20%  9% 31%
+[libx264 @ 00000258b92942c0] i4 v,h,dc,ddl,ddr,vr,hd,vl,hu: 28% 14% 15%  7%  8% 10%  6%  8%  5%
+[libx264 @ 00000258b92942c0] i8c dc,h,v,p: 50% 18% 21% 11%
+[libx264 @ 00000258b92942c0] Weighted P-Frames: Y:4.9% UV:2.7%
+[libx264 @ 00000258b92942c0] ref P L0: 63.4% 16.9% 14.1%  5.4%  0.1%
+[libx264 @ 00000258b92942c0] ref B L0: 89.0%  8.9%  2.2%
+[libx264 @ 00000258b92942c0] ref B L1: 96.2%  3.8%
+[libx264 @ 00000258b92942c0] kb/s:1419.56
+
+
+[VMAF] libx264 960x720 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts" -i "BBB_JapanTV_MPEG-2_960x720_30p_libx264.mkv" -filter_complex "[1:v]scale=w=1440:h=1080[resize],[0:v][resize]libvmaf=model=version=vmaf_v
+0.6.1\\:pool=harmonic_mean:feature=name=psnr|name=float_ssim:n_threads=16:log_fmt=json:log_path=vmaf//BBB_JapanTV_MPEG-2_960x720_30p_libx264.json" -f null -
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 14380 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1440x1080 [SAR 4:3 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 20000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Input #1, matroska,webm, from 'BBB_JapanTV_MPEG-2_960x720_30p_libx264.mkv':
+  Metadata:
+    ENCODER         : Lavf61.7.100
+  Duration: 00:07:57.64, start: 0.000000, bitrate: 1421 kb/s
+  Stream #1:0: Video: h264 (Main), yuv420p(tv, bt709, bottom coded first (swapped)), 960x720 [SAR 4:3 DAR 16:9], 29.97 fps, 29.97 tbr, 1k tbn
+      Metadata:
+        ENCODER         : Lavc61.19.100 libx264
+        DURATION        : 00:07:57.643000000
+Stream mapping:
+  Stream #0:0 (mpeg2video) -> libvmaf
+  Stream #1:0 (h264) -> scale:default
+  libvmaf:default -> Stream #0:0 (wrapped_avframe)
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: wrapped_avframe, yuv420p(tv, bt709, bottom coded first (swapped)), 1440x1080 [SAR 4:3 DAR 16:9], q=2-31, 200 kb/s, 29.97 fps, 29.97 tbn
+      Metadata:
+        encoder         : Lavc61.19.100 wrapped_avframe
+frame= 1183 fps=118 q=-0.0 size=N/A time=00:00:39.47 bitrate=N/A speed=3.94x
+frame= 2374 fps=119 q=-0.0 size=N/A time=00:01:19.21 bitrate=N/A speed=3.95x
+frame= 3557 fps=118 q=-0.0 size=N/A time=00:01:58.68 bitrate=N/A speed=3.95x
+frame=11910 fps=119 q=-0.0 size=N/A time=00:06:37.39 bitrate=N/A speed=3.97x
+frame=13104 fps=119 q=-0.0 size=N/A time=00:07:17.23 bitrate=N/A speed=3.97x
+frame=14301 fps=119 q=-0.0 size=N/A time=00:07:57.17 bitrate=N/A speed=3.97x
+[Parsed_libvmaf_1 @ 00000194e3e6e6c0] VMAF score: 72.868639
+[out#0/null @ 00000194e18fa1c0] video:6151KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=14315 fps=118 q=-0.0 Lsize=N/A time=00:07:57.64 bitrate=N/A speed=3.95x
+[ENCODE] libx265 960x720 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts" -vcodec libx265  -profile:v main -vf scale=w=960:h=720 -f matroska "BBB_JapanTV_MPEG-2_960x720_30p_libx265.mkv"
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 14380 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1440x1080 [SAR 4:3 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 20000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Stream mapping:
+  Stream #0:0 -> #0:0 (mpeg2video (native) -> hevc (libx265))
+Press [q] to stop, [?] for help
+x265 [info]: HEVC encoder version 4.0+6-a069836f3
+x265 [info]: build info [Windows][GCC 14.2.0][64 bit] 8bit+10bit+12bit
+x265 [info]: using cpu capabilities: MMX2 SSE2Fast LZCNT SSSE3 SSE4.2 AVX FMA3 BMI2 AVX2
+x265 [info]: Main profile, Level-3.1 (Main tier)
+x265 [info]: Thread pool created using 16 threads
+x265 [info]: Slices                              : 1
+x265 [info]: frame threads / pool features       : 4 / wpp(12 rows)
+x265 [info]: Coding QT: max CU size, min CU size : 64 / 8
+x265 [info]: Residual QT: max TU size, max depth : 32 / 1 inter / 1 intra
+x265 [info]: ME / range / subpel / merge         : hex / 57 / 2 / 3
+x265 [info]: Keyframe min / max / scenecut / bias  : 25 / 250 / 40 / 5.00
+x265 [info]: Lookahead / bframes / badapt        : 20 / 4 / 2
+x265 [info]: b-pyramid / weightp / weightb       : 1 / 1 / 0
+x265 [info]: References / ref-limit  cu / depth  : 3 / off / on
+x265 [info]: AQ: mode / str / qg-size / cu-tree  : 2 / 1.0 / 32 / 1
+x265 [info]: Rate Control / qCompress            : CRF-28.0 / 0.60
+x265 [info]: tools: rd=3 psy-rd=2.00 early-skip rskip mode=1 signhide tmvp
+x265 [info]: tools: b-intra strong-intra-smoothing lslices=4 deblock sao
+Output #0, matroska, to 'BBB_JapanTV_MPEG-2_960x720_30p_libx265.mkv':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: hevc, yuv420p(tv, bt709, bottom coded first (swapped)), 960x720 [SAR 4:3 DAR 16:9], q=2-31, 29.97 fps, 1k tbn
+      Metadata:
+        encoder         : Lavc61.19.100 libx265
+      Side data:
+        cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+frame= 1702 fps=170 q=35.9 size=    4352KiB time=00:00:56.62 bitrate= 629.6kbits/s speed=5.65x
+frame= 3513 fps=175 q=33.6 size=    7936KiB time=00:01:57.15 bitrate= 554.9kbits/s speed=5.85x
+frame= 5108 fps=170 q=30.4 size=   11520KiB time=00:02:50.37 bitrate= 553.9kbits/s speed=5.67x
+frame= 6735 fps=168 q=27.5 size=   15360KiB time=00:03:44.65 bitrate= 560.1kbits/s speed=5.61x
+frame= 8309 fps=166 q=35.5 size=   19712KiB time=00:04:37.17 bitrate= 582.6kbits/s speed=5.53x
+frame=10008 fps=167 q=31.0 size=   24576KiB time=00:05:33.86 bitrate= 603.0kbits/s speed=5.56x
+frame=11422 fps=163 q=34.6 size=   29696KiB time=00:06:21.04 bitrate= 638.4kbits/s speed=5.44x
+frame=13323 fps=166 q=36.5 size=   35584KiB time=00:07:24.47 bitrate= 655.8kbits/s speed=5.55x
+[out#0/matroska @ 000001abdc8c00c0] video:37490KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:2KiB muxing overhead: 0.282321%
+frame=14315 fps=169 q=31.6 Lsize=   37596KiB time=00:07:57.57 bitrate= 644.9kbits/s speed=5.63x
+x265 [info]: frame I:    147, Avg QP:25.42  kb/s: 10193.55
+x265 [info]: frame P:   3834, Avg QP:29.30  kb/s: 1507.65
+x265 [info]: frame B:  10334, Avg QP:35.30  kb/s: 185.00
+x265 [info]: Weighted P-Frames: Y:5.4% UV:3.4%
+encoded 14315 frames in 84.85s (168.72 fps), 642.02 kb/s, Avg QP:33.59
+
+
+[VMAF] libx265 960x720 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts" -i "BBB_JapanTV_MPEG-2_960x720_30p_libx265.mkv" -filter_complex "[1:v]scale=w=1440:h=1080[resize],[0:v][resize]libvmaf=model=version=vmaf_v
+0.6.1\\:pool=harmonic_mean:feature=name=psnr|name=float_ssim:n_threads=16:log_fmt=json:log_path=vmaf//BBB_JapanTV_MPEG-2_960x720_30p_libx265.json" -f null -
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 14380 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1440x1080 [SAR 4:3 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 20000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Input #1, matroska,webm, from 'BBB_JapanTV_MPEG-2_960x720_30p_libx265.mkv':
+  Metadata:
+    ENCODER         : Lavf61.7.100
+  Duration: 00:07:57.64, start: 0.000000, bitrate: 644 kb/s
+  Stream #1:0: Video: hevc (Main), yuv420p(tv, bt709, bottom coded first (swapped)), 960x720 [SAR 4:3 DAR 16:9], 29.97 fps, 29.97 tbr, 1k tbn
+      Metadata:
+        ENCODER         : Lavc61.19.100 libx265
+        DURATION        : 00:07:57.643000000
+Stream mapping:
+  Stream #0:0 (mpeg2video) -> libvmaf
+  Stream #1:0 (hevc) -> scale:default
+  libvmaf:default -> Stream #0:0 (wrapped_avframe)
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: wrapped_avframe, yuv420p(tv, bt709, bottom coded first (swapped)), 1440x1080 [SAR 4:3 DAR 16:9], q=2-31, 200 kb/s, 29.97 fps, 29.97 tbn
+      Metadata:
+        encoder         : Lavc61.19.100 wrapped_avframe
+frame= 1175 fps=117 q=-0.0 size=N/A time=00:00:39.20 bitrate=N/A speed=3.91x
+frame= 2359 fps=118 q=-0.0 size=N/A time=00:01:18.71 bitrate=N/A speed=3.93x
+frame= 3546 fps=118 q=-0.0 size=N/A time=00:01:58.31 bitrate=N/A speed=3.94x
+frame=11881 fps=119 q=-0.0 size=N/A time=00:06:36.42 bitrate=N/A speed=3.96x
+frame=13070 fps=119 q=-0.0 size=N/A time=00:07:16.10 bitrate=N/A speed=3.96x
+frame=14262 fps=119 q=-0.0 size=N/A time=00:07:55.87 bitrate=N/A speed=3.96x
+[Parsed_libvmaf_1 @ 000002b3205ceec0] VMAF score: 71.388745
+[out#0/null @ 000002b31cb91d80] video:6151KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=14315 fps=118 q=-0.0 Lsize=N/A time=00:07:57.64 bitrate=N/A speed=3.94x
+
+
+[ENCODE] libaom-av1 960x720 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts" -vcodec libaom-av1 -cpu-used 5 -profile:v main -vf scale=w=960:h=720 -f matroska "BBB_JapanTV_MPEG-2_960x720_30p_libaom-av1.mkv"
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 14380 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1440x1080 [SAR 4:3 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 20000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Stream mapping:
+  Stream #0:0 -> #0:0 (mpeg2video (native) -> av1 (libaom-av1))
+Press [q] to stop, [?] for help
+[libaom-av1 @ 000002b4a9bc00c0] 3.10.0-110-g3817481261
+[libaom-av1 @ 000002b4a9bc00c0] Neither bitrate nor constrained quality specified, using default CRF of 32
+Output #0, matroska, to 'BBB_JapanTV_MPEG-2_960x720_30p_libaom-av1.mkv':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: av1 (Main) (AV01 / 0x31305641), yuv420p(tv, bt709, bottom coded first (swapped)), 960x720 [SAR 4:3 DAR 16:9], q=2-31, 29.97 fps, 1k tbn
+      Metadata:
+        encoder         : Lavc61.19.100 libaom-av1
+      Side data:
+        cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+frame=  319 fps= 32 q=0.0 size=     768KiB time=00:00:10.64 bitrate= 591.1kbits/s speed=1.06x
+frame=  588 fps= 29 q=0.0 size=    1280KiB time=00:00:19.61 bitrate= 534.5kbits/s speed=0.98x
+frame=  814 fps= 27 q=0.0 size=    1792KiB time=00:00:27.16 bitrate= 540.5kbits/s speed=0.904x
+frame=14008 fps= 14 q=0.0 size=   43264KiB time=00:07:47.40 bitrate= 758.3kbits/s speed=0.476x
+frame=14160 fps= 14 q=0.0 size=   43264KiB time=00:07:52.47 bitrate= 750.1kbits/s speed=0.476x
+frame=14252 fps= 14 q=0.0 size=   43520KiB time=00:07:55.54 bitrate= 749.7kbits/s speed=0.475x
+[out#0/matroska @ 000002b4a98ef480] video:43624KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.157591%
+frame=14315 fps= 14 q=0.0 Lsize=   43692KiB time=00:07:57.64 bitrate= 749.4kbits/s speed=0.474x
+
+
+[VMAF] libaom-av1 960x720 progressive
+Executing: ffmpeg -y -hide_banner -stats_period 10 -i "BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts" -i "BBB_JapanTV_MPEG-2_960x720_30p_libaom-av1.mkv" -filter_complex "[1:v]scale=w=1440:h=1080[resize],[0:v][resize]libvmaf=model=version=vma
+f_v0.6.1\\:pool=harmonic_mean:feature=name=psnr|name=float_ssim:n_threads=16:log_fmt=json:log_path=vmaf//BBB_JapanTV_MPEG-2_960x720_30p_libaom-av1.json" -f null -
+ffmpeg : ffmpeg stats and -progress period set to 10.
+Input #0, mpegts, from 'BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts':
+  Duration: 00:07:57.64, start: 1.433367, bitrate: 14380 kb/s
+  Program 1
+    Metadata:
+      service_name    : Service01
+      service_provider: FFmpeg
+  Stream #0:0[0x1011]: Video: mpeg2video (Main) ([2][0][0][0] / 0x0002), yuv420p(tv, bt709, bottom first), 1440x1080 [SAR 4:3 DAR 16:9], 29.97 fps, 29.97 tbr, 90k tbn
+      Side data:
+        cpb: bitrate max/min/avg: 20000000/0/0 buffer size: 9781248 vbv_delay: N/A
+Input #1, matroska,webm, from 'BBB_JapanTV_MPEG-2_960x720_30p_libaom-av1.mkv':
+  Metadata:
+    ENCODER         : Lavf61.7.100
+  Duration: 00:07:57.64, start: 0.000000, bitrate: 749 kb/s
+  Stream #1:0: Video: av1 (libaom-av1) (Main), yuv420p(tv, bt709, bottom coded first (swapped)), 960x720 [SAR 1:1 DAR 4:3], SAR 4:3 DAR 16:9, 29.97 fps, 29.97 tbr, 1k tbn
+      Metadata:
+        ENCODER         : Lavc61.19.100 libaom-av1
+        DURATION        : 00:07:57.643000000
+Stream mapping:
+  Stream #0:0 (mpeg2video) -> libvmaf
+  Stream #1:0 (libaom-av1) -> scale:default
+  libvmaf:default -> Stream #0:0 (wrapped_avframe)
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: wrapped_avframe, yuv420p(tv, bt709, bottom coded first (swapped)), 1440x1080 [SAR 4:3 DAR 16:9], q=2-31, 200 kb/s, 29.97 fps, 29.97 tbn
+      Metadata:
+        encoder         : Lavc61.19.100 wrapped_avframe
+frame= 1141 fps=114 q=-0.0 size=N/A time=00:00:38.07 bitrate=N/A speed= 3.8x
+frame= 2277 fps=114 q=-0.0 size=N/A time=00:01:15.97 bitrate=N/A speed=3.79x
+frame= 3404 fps=113 q=-0.0 size=N/A time=00:01:53.58 bitrate=N/A speed=3.78x
+frame=11282 fps=113 q=-0.0 size=N/A time=00:06:16.44 bitrate=N/A speed=3.76x
+frame=12417 fps=113 q=-0.0 size=N/A time=00:06:54.31 bitrate=N/A speed=3.76x
+frame=13533 fps=113 q=-0.0 size=N/A time=00:07:31.55 bitrate=N/A speed=3.76x
+[Parsed_libvmaf_1 @ 000001e4cd4fff00] VMAF score: 74.225463
+[out#0/null @ 000001e4cd360180] video:6151KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=14315 fps=112 q=-0.0 Lsize=N/A time=00:07:57.64 bitrate=N/A speed=3.74x
