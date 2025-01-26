@@ -1,0 +1,11 @@
+Decoder mpeg2video []:
+    General capabilities: horizband dr1 delay threads 
+    Threading capabilities: slice
+    Supported hardware devices: vaapi 
+MPEG-2 video AVOptions:
+  -cc_format         <int>        .D.V....... extract a specific Closed Captions format (from 0 to 3) (default auto)
+     auto            0            .D.V....... pick first seen CC substream
+     a53             1            .D.V....... pick A/53 Part 4 CC substream
+     scte20          2            .D.V....... pick SCTE-20 CC substream
+     dvd             3            .D.V....... pick DVD CC substream
+

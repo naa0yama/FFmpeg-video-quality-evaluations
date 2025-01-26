@@ -23,20 +23,13 @@ parser = argparse.ArgumentParser(description="FFmpeg video quality encoding qual
 parser.add_argument(
     "--config",
     help="config file path.",
-    default="./videos/source/encode_config.json",
+    default="./videos/source/settings.json",
 )
 
 parser.add_argument(
     "--dist",
     help="dist dir (default: /dist)",
     default="./videos/dist",
-)
-
-parser.add_argument(
-    "-cy",
-    "--conf-yes",
-    help="Overwrite settings.json. (default: False)",
-    action="store_true",
 )
 
 parser.add_argument(
@@ -64,136 +57,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-__configs: dict = {
-    "origfile": "./videos/source/BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts",
-    "basefile": "./videos/dist/base.mkv",
-    "patterns": [
-        {
-            "codec": "libx264",
-            "type": "libx264",
-            "presets": ["medium"],
-            "infile": {"options": []},
-            "outfile": {"options": []},
-            "hwaccels": [],
-        },
-        {
-            "codec": "libx265",
-            "type": "libx265",
-            "presets": ["medium"],
-            "infile": {"options": []},
-            "outfile": {"options": []},
-            "hwaccels": [],
-        },
-        {
-            "codec": "h264_qsv",
-            "type": "h264_qsv",
-            "presets": ["medium"],
-            "infile": {"options": []},
-            "outfile": {"options": []},
-            "hwaccels": [],
-        },
-        {
-            "codec": "h264_qsv",
-            "type": "h264_qsv_CQP",
-            "presets": ["medium"],
-            "infile": {"options": []},
-            "outfile": {"options": ["-q:v", "23"]},
-            "hwaccels": [],
-        },
-        {
-            "codec": "h264_qsv",
-            "type": "h264_qsv_ICQ",
-            "presets": ["medium"],
-            "infile": {"options": []},
-            "outfile": {"options": ["-global_quality", "23"]},
-            "hwaccels": [],
-        },
-        {
-            "codec": "h264_qsv",
-            "type": "h264_qsv_LA-ICQ",
-            "presets": ["medium"],
-            "infile": {
-                "options": [],
-            },
-            "outfile": {
-                "options": [
-                    "-look_ahead",
-                    "1",
-                    "-global_quality",
-                    "23",
-                ],
-            },
-            "hwaccels": [],
-        },
-        {
-            "codec": "hevc_qsv",
-            "type": "hevc_qsv_CQP",
-            "presets": ["medium"],
-            "infile": {"options": []},
-            "outfile": {"options": ["-q:v", "28"]},
-            "hwaccels": [],
-        },
-        {
-            "codec": "hevc_qsv",
-            "type": "hevc_qsv_ICQ",
-            "presets": ["medium"],
-            "infile": {"options": []},
-            "outfile": {"options": ["-global_quality", "28"]},
-            "hwaccels": [],
-        },
-        {
-            "codec": "hevc_qsv",
-            "type": "hevc_qsv_LA-ICQ",
-            "presets": ["medium"],
-            "infile": {
-                "options": [],
-            },
-            "outfile": {
-                "options": [
-                    "-look_ahead",
-                    "1",
-                    "-global_quality",
-                    "28",
-                ],
-            },
-            "hwaccels": [],
-        },
-        {
-            "codec": "av1_qsv",
-            "type": "av1_qsv_CQP",
-            "presets": ["medium"],
-            "infile": {"options": []},
-            "outfile": {"options": ["-q:v", "30"]},
-            "hwaccels": [],
-        },
-        {
-            "codec": "av1_qsv",
-            "type": "av1_qsv_ICQ",
-            "presets": ["medium"],
-            "infile": {"options": []},
-            "outfile": {"options": ["-global_quality", "30"]},
-            "hwaccels": [],
-        },
-        {
-            "codec": "av1_qsv",
-            "type": "av1_qsv_LA-ICQ",
-            "presets": ["medium"],
-            "infile": {
-                "options": [],
-            },
-            "outfile": {
-                "options": [
-                    "-look_ahead",
-                    "1",
-                    "-global_quality",
-                    "30",
-                ],
-            },
-            "hwaccels": [],
-        },
-    ],
-}
-
 
 def encoding(encode_cfg: dict, outputext: str) -> dict:
     """Encode."""
@@ -220,7 +83,7 @@ def encoding(encode_cfg: dict, outputext: str) -> dict:
         __ffmpege_cmd.append("{}".format(encode_cfg["codec"]))
 
         if encode_cfg["preset"] != "none":
-            __ffmpege_cmd.append("-preset")
+            __ffmpege_cmd.append("-preset:v")
             __ffmpege_cmd.append("{}".format(encode_cfg["preset"]))
 
         __ffmpege_cmd.append("{}{}".format(encode_cfg["outfile"]["filename"], outputext))
@@ -300,6 +163,8 @@ def getvmaf(encode_cfg: dict, outputext: str) -> dict:
     __ff_vmaf = FfmpegProgress(__ffmpege_cmd)
     with tqdm(
         desc="[VMAF   ] {}".format(encode_cfg["outfile"]["filename"]),
+        total=100,
+        position=1,
     ) as pbar:
         for progress in __ff_vmaf.run_command_with_progress():
             pbar.update(progress - pbar.n)
@@ -312,143 +177,108 @@ def getvmaf(encode_cfg: dict, outputext: str) -> dict:
     }
 
 
-def main() -> None:  # noqa: PLR0915, C901
+def main() -> None:  # noqa: PLR0915
     """Main."""
-    __origfile: str = __configs["origfile"]
-    __basefile: str = __configs["basefile"]
-    __baseext: str = Path(__configs["basefile"]).suffix
-
-    __results_list: list = []
-
-    for __pattern in __configs["patterns"]:
-        __presets: list = __pattern["presets"]
-        if __presets == []:
-            __presets.append("none")
-        for __preset in __presets:
-            __result_template: dict = {
-                "codec": __pattern["codec"],
-                "type": __pattern["type"],
-                "preset": __preset,
-                "threads": args.ffmpeg_threads,
-                "infile": {
-                    "filename": __basefile,
-                    "options": __pattern["infile"]["options"],
-                },
-                "outfile": {
-                    "filename": f"{args.dist}/{__pattern['type']}_{__pattern['codec']}_{__preset}",
-                    "hash": "",
-                    "size": 0,
-                    "options": __pattern["outfile"]["options"],
-                },
-                "commandline": [],
-                "hwaccels": __pattern["hwaccels"],
-                "elapsed": {
-                    "encode": {
-                        "second": 0,
-                        "time": "",
-                    },
-                    "vmaf": {
-                        "second": 0,
-                        "time": "",
-                    },
-                },
-                "results": {
-                    "compression": {
-                        "ratio_persent": 0,
-                        "speed": 0,
-                    },
-                    "vmaf": {},
-                },
-            }
-            __results_list.append(__result_template)
-
-    if not Path(f"{args.dist}/settings.json").exists() or args.conf_yes is True:
-        with Path(f"{args.dist}/settings.json").open("w") as file:
-            json.dump({"configs": __configs, "encodes": __results_list}, file, indent=2)
+    __configs: dict = load_config(configfile=args.config)
+    __origfile: str = __configs["configs"]["origfile"]
+    __basefile: str = __configs["configs"]["basefile"]
+    __basehash: str = __configs["configs"]["basehash"]
+    __baseext: str = Path(__basefile).suffix
 
     if args.encode is True:
-        __ffmpege_cmd: list = [
-            "ffmpeg",
-            "-y",
-            "-threads",
-            f"{args.ffmpeg_threads}",
-            "-i",
-            f"{__origfile}",
-            "-c:v",
-            "copy",
-            "-an",
-            f"{__basefile}",
-        ]
-
-        if args.ffmpeg_cattime is not None:
-            __ffmpege_cmd.insert(1, "-t")
-            __ffmpege_cmd.insert(2, f"{args.ffmpeg_cattime}")
-
-        if args.ffmpeg_starttime is not None:
-            __ffmpege_cmd.insert(1, "-ss")
-            __ffmpege_cmd.insert(2, f"{args.ffmpeg_starttime}")
-
-        __start = time.time()
-        __ff = FfmpegProgress(__ffmpege_cmd)
-        elapsed_time: float = 0
-        with tqdm(
-            desc=f"Create {__origfile} to {__basefile}",
-            total=100,
-            position=1,
-        ) as pbar:
-            for progress in __ff.run_command_with_progress():
-                elapsed_time = time.time() - __start
-                pbar.update(progress - pbar.n)
-
-        print(f"\nelapsed_time:{elapsed_time:>10.2f} sec")  # noqa: T201
-        print(f"[PROBE ] {__basefile}")  # noqa: T201
-        subprocess.run(
-            args=[
-                "ffprobe",
-                "-v",
-                "error",
-                "-hide_banner",
-                "-show_chapters",
-                "-show_format",
-                "-show_library_versions",
-                "-show_program_version",
-                "-show_programs",
-                "-show_streams",
-                "-print_format",
-                "json",
+        if __basehash == "":
+            __ffmpege_cmd: list = [
+                "ffmpeg",
+                "-y",
+                "-threads",
+                f"{args.ffmpeg_threads}",
                 "-i",
+                f"{__origfile}",
+                "-c:v",
+                "copy",
+                "-an",
                 f"{__basefile}",
-                "-o",
-                f"{__basefile.replace(__baseext, '_ffprobe.json', 1)}",
-            ],
-            timeout=10,
-            check=True,
-        )
+            ]
 
-        with Path(f"{__basefile.replace(__baseext, '_ffprobe.json', 1)}").open("r") as file:
-            __base_probe_log = json.load(file)
+            if args.ffmpeg_cattime is not None:
+                __ffmpege_cmd.insert(1, "-t")
+                __ffmpege_cmd.insert(2, f"{args.ffmpeg_cattime}")
 
-        with Path(f"{args.dist}/settings.json").open("r") as fin:
-            __encode_cfg = json.load(fin)
+            if args.ffmpeg_starttime is not None:
+                __ffmpege_cmd.insert(1, "-ss")
+                __ffmpege_cmd.insert(2, f"{args.ffmpeg_starttime}")
 
-        __encode_cfg["configs"]["ffmpege"] = {
-            "program_version": __base_probe_log["program_version"],
-            "library_versions": __base_probe_log["library_versions"],
-        }
+            __start = time.time()
+            __ff = FfmpegProgress(__ffmpege_cmd)
+            elapsed_time: float = 0
+            with tqdm(
+                desc=f"Create {__origfile} to {__basefile}",
+                total=100,
+                position=1,
+            ) as pbar:
+                for progress in __ff.run_command_with_progress():
+                    elapsed_time = time.time() - __start
+                    pbar.update(progress - pbar.n)
 
-        with Path(f"{args.dist}/settings.json").open("w") as file:
-            json.dump(
-                {"configs": __encode_cfg["configs"], "encodes": __encode_cfg["encodes"]},
-                file,
-                indent=2,
+            print(f"\nelapsed_time:{elapsed_time:>10.2f} sec")  # noqa: T201
+            print(f"[PROBE ] {__basefile}")  # noqa: T201
+            subprocess.run(
+                args=[
+                    "ffprobe",
+                    "-v",
+                    "error",
+                    "-hide_banner",
+                    "-show_chapters",
+                    "-show_format",
+                    "-show_library_versions",
+                    "-show_program_version",
+                    "-show_programs",
+                    "-show_streams",
+                    "-print_format",
+                    "json",
+                    "-i",
+                    f"{__basefile}",
+                    "-o",
+                    f"{__basefile.replace(__baseext, '_ffprobe.json', 1)}",
+                ],
+                timeout=10,
+                check=True,
             )
+
+            with Path(f"{__basefile.replace(__baseext, '_ffprobe.json', 1)}").open("r") as file:
+                __base_probe_log = json.load(file)
+
+            with Path(f"{args.config}").open("r") as file:
+                __encode_cfg = json.load(file)
+
+            with Path(f"{__basefile}").open("rb") as file:
+                __hasher = hashlib.sha256()
+                __hasher.update(file.read())
+                __encode_cfg["configs"]["basehash"] = f"{__hasher.hexdigest()}"
+
+            __encode_cfg["configs"]["ffmpege"] = {
+                "program_version": __base_probe_log["program_version"],
+                "library_versions": __base_probe_log["library_versions"],
+            }
+
+            with Path(f"{args.config}").open("w") as file:
+                json.dump(
+                    {"configs": __encode_cfg["configs"], "encodes": __encode_cfg["encodes"]},
+                    file,
+                    indent=2,
+                )
+        else:
+            print("base to skip encode")  # noqa: T201
+
+        with Path(f"{args.config}").open("r") as file:
+            __encode_cfg = json.load(file)
 
         files = Path(args.dist).glob(f"*{__baseext}")
         __dist_files: list = []
         for __dist_file in files:
-            with Path(__dist_file).open("rb") as hash_file:
+            with Path(__dist_file).open("rb") as file:
                 __hasher = hashlib.sha256()
-                __hasher.update(hash_file.read())
+                __hasher.update(file.read())
                 __dist_files.append(f"{__hasher.hexdigest()}")
 
         __length: int = len(__encode_cfg["encodes"])
@@ -496,6 +326,9 @@ def main() -> None:  # noqa: PLR0915, C901
                     )
 
                     """outfile"""
+                    __encode_cfg["encodes"][__index]["outfile"]["bit_rate_kbs"] = float(
+                        (int(__probe_log["format"]["bit_rate"]) / 1024),
+                    )
                     __encode_cfg["encodes"][__index]["outfile"]["duration"] = float(
                         __probe_log["format"]["duration"],
                     )
@@ -515,7 +348,7 @@ def main() -> None:  # noqa: PLR0915, C901
                         float(__probe_log["format"]["duration"]) / __encode_rep["elapsed_time"]
                     )
 
-                with Path(f"{args.dist}/settings.json").open("w") as file:
+                with Path(f"{args.config}").open("w") as file:
                     json.dump(
                         {"configs": __encode_cfg["configs"], "encodes": __encode_cfg["encodes"]},
                         file,
@@ -543,7 +376,7 @@ def main() -> None:  # noqa: PLR0915, C901
                         },
                     }
 
-            with Path(f"{args.dist}/settings.json").open("w") as file:
+            with Path(f"{args.config}").open("w") as file:
                 json.dump(
                     {"configs": __encode_cfg["configs"], "encodes": __encode_cfg["encodes"]},
                     file,
@@ -551,8 +384,133 @@ def main() -> None:  # noqa: PLR0915, C901
                 )
 
 
+def load_config(configfile: str) -> dict:
+    """Main."""
+    __configs: dict = {}
+
+    "configfile ディレクトリが存在しない場合は作成"
+    if not Path(configfile).parent.exists():
+        Path.mkdir(Path(configfile).parent, parents=True)
+
+    "settings.json があるか確認"
+    if Path(f"{configfile}").exists():
+        print(f"{configfile} file found.")  # noqa: T201
+        with Path(f"{configfile}").open("r") as file:
+            __configs = json.load(file)
+    else:
+        __configs = {
+            "configs": {
+                "origfile": "./videos/source/BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts",
+                "basefile": "./videos/dist/base.mkv",
+                "basehash": "",
+                "patterns": [
+                    {
+                        "codec": "libx264",
+                        "type": "libx264",
+                        "comments": "",
+                        "presets": ["medium"],
+                        "infile": {"options": []},
+                        "outfile": {
+                            "options": [
+                                ["-crf", "23"],
+                            ],
+                        },
+                        "hwaccels": [],
+                    },
+                ],
+            },
+            "encodes": [],
+        }
+
+    __origfile: str = __configs["configs"]["origfile"]
+    __basefile: str = __configs["configs"]["basefile"]
+    __results_list: list = []
+    __existing_encodes = {encode["id"]: encode for encode in __configs.get("encodes", [])}
+    __results_list.extend(__configs.get("encodes", []))
+
+    for __pattern in __configs["configs"]["patterns"]:
+        __presets: list = __pattern["presets"]
+        if __presets == []:
+            __presets.append("none")
+        for __preset in __presets:
+            for __out_option in __pattern["outfile"]["options"]:
+                __codec: str = __pattern["codec"]
+                __type: str = __pattern["type"]
+                __comments: str = __pattern["comments"]
+                __threads: str = args.ffmpeg_threads
+                __infile_opts: list = __pattern["infile"]["options"]
+                __hwaccels: list = __pattern["hwaccels"]
+                __out_option_hash: str = hashlib.sha256(
+                    str(
+                        [
+                            f"{__origfile}{__type}{__codec}{__preset}{__out_option}",
+                            f"{__basefile}{__threads}{__hwaccels}{__infile_opts}",
+                        ],
+                    ).encode(),
+                ).hexdigest()
+                __result_template: dict = {
+                    "id": f"{__out_option_hash}",
+                    "codec": __codec,
+                    "type": __type,
+                    "comments": __comments,
+                    "preset": __preset,
+                    "threads": __threads,
+                    "infile": {
+                        "filename": __basefile,
+                        "options": __infile_opts,
+                    },
+                    "outfile": {
+                        "filename": f"{args.dist}/{__type}_{__codec}_{__preset}_{__out_option_hash[:12]}",
+                        "bit_rate": 0.0,
+                        "duration": 0.0,
+                        "hash": "",
+                        "options": __out_option,
+                        "size": 0,
+                    },
+                    "commandline": [],
+                    "hwaccels": __hwaccels,
+                    "elapsed": {
+                        "encode": {
+                            "second": 0,
+                            "time": "",
+                        },
+                        "vmaf": {
+                            "second": 0,
+                            "time": "",
+                        },
+                    },
+                    "results": {
+                        "compression": {
+                            "ratio_persent": 0,
+                            "speed": 0,
+                        },
+                        "vmaf": {},
+                    },
+                }
+
+                # 既存の encodes と比較して削除または追加
+                if __result_template["id"] not in __existing_encodes:
+                    __results_list.append(__result_template)
+                    print(  # noqa: T201
+                        f"encode new ... {
+                            (
+                                __result_template['codec'],
+                                __result_template['type'],
+                                __result_template['outfile']['options'],
+                            )
+                        }",
+                    )
+
+    with Path(f"{configfile}").open("w") as file:
+        __configs["encodes"] = __results_list
+        json.dump(__configs, file, indent=2)
+
+    return __configs
+
+
 if __name__ == "__main__":
     main()
+    # print(load_config(configfile=args.config))
 
 # %%
 ""
