@@ -249,7 +249,5 @@ $RECYCLE.BIN/
 # AWS Lambda
 functions/
 
-**/*tmp\.json
-**/*tmp\.yml
-**/*tmp\.yaml
+**/*tmp/
 videos/source/

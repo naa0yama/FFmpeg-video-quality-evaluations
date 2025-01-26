@@ -128,27 +128,28 @@ curl https://get.docker.com | sh \
 エンコード速度については libx264 が軽量なため高速で処理される傾向があり、次に libx265, libaom-av1 と続く結果になった。 libaom-av1 はデフォルト設定では遅すぎため `-cpu-used 5` を追加しての計測だがそれでも早いとは言えない、せめて 1x で捌けるようにはなってほしいものだ。
 libx265 と libaom-av1 では圧縮比率はそこまで変わらないため、無理に libaom-av1 を使わなくても良さそうである。  
 
-| size                 | codec      | fps/s | File Size(KiB) | 圧縮率(%) |      VMAF | bitrate avg (kbits/s) | speed | 1時間で約(MB) | 年間容量(GB) |
-| :------------------- | :--------- | ----: | -------------: | --------: | --------: | --------------------: | ----: | ------------: | -----------: |
-| 1280x720             | mpeg2ts    |   156 |        148,542 |         - | 86.186533 |               10141.6 | 5.22x |               |              |
-|                      | libx264    |       |                |           |           |                       |       |               |              |
-|                      | libx265    |       |                |           |           |                       |       |               |              |
-|                      | libaom-av1 |       |                |           |           |                       |       |               |              |
-|                      |            |       |                |           |           |                       |       |               |              |
-| 1440x1080            | mpeg2ts    |   105 |        208,914 |           | 93.594580 |               14263.5 | 3.52x |               |              |
-|                      | libx264    |       |                |           |           |                       |       |               |              |
-|                      | libx265    |       |                |           |           |                       |       |               |              |
-|                      | libaom-av1 |       |                |           |           |                       |       |               |              |
-|                      |            |       |                |           |           |                       |       |               |              |
-| 1920x1080            | mpeg2ts    |   140 |        268,476 |           | 97.678510 |               18330.0 | 4.67x |               |              |
-|                      | libx264    |       |                |           |           |                       |       |               |              |
-|                      | libx265    |       |                |           |           |                       |       |               |              |
-|                      | libaom-av1 |       |                |           |           |                       |       |               |              |
-|                      |            |       |                |           |           |                       |       |               |              |
-| **番外編**           |            |       |                |           |           |                       |       |               |              |
-| 1440x1080 -> 960x720 | libx264    |       |                |           |           |                       |       |               |              |
-|                      | libx265    |       |                |           |           |                       |       |               |              |
-|                      | libaom-av1 |       |                |           |           |                       |       |               |              |
+| size                 | codec      | fps/s | File Size(KiB) | 圧縮率(%) |      VMAF | bitrate avg (kbits/s) |  speed |
+| :------------------- | :--------- | ----: | -------------: | --------: | --------: | --------------------: | -----: |
+| 1280x720             | mpeg2ts    |   157 |        148,542 |     ----- | 86.186533 |               10141.6 |  5.24x |
+|                      | libx264    |   281 |         58,001 |     39.04 | 82.002744 |                3961.1 |  9.37x |
+|                      | libx265    |    93 |         36,816 |     24.78 | 79.970688 |                2514.3 |  3.10x |
+|                      | libaom-av1 |   5.9 |         31,657 |     21.31 | 83.092612 |                2160.8 | 0.197x |
+|                      |            |       |                |           |           |                       |        |
+| 1440x1080            | mpeg2ts    |   123 |        208,914 |     ----- | 93.594580 |               14263.5 |  4.09x |
+|                      | libx264    |   175 |         83,357 |     39.90 | 90.300860 |                5692.7 |  5.84x |
+|                      | libx265    |    69 |         49,853 |     23.86 | 88.317820 |                3404.6 |  2.31x |
+|                      | libaom-av1 |   7.2 |         38,933 |     18.63 | 90.866412 |                2657.4 | 0.241x |
+|                      |            |       |                |           |           |                       |        |
+| 1920x1080            | mpeg2ts    |   149 |        268,476 |     ----- | 97.678510 |               18330.0 |  4.98x |
+|                      | libx264    |   131 |        106,758 |     39.76 | 94.863299 |                7290.9 |  4.38x |
+|                      | libx265    |    55 |         63,401 |     23.61 | 93.062256 |                4329.8 |  1.85x |
+|                      | libaom-av1 |   4.0 |         50,667 |     18.87 | 95.346336 |                3458.3 | 0.133x |
+|                      |            |       |                |           |           |                       |        |
+| **番外編**           |            |       |                |           |           |                       |        |
+| 1440x1080 -> 960x720 | mpeg2ts    |   200 |         90,744 |     ----- | 77.208454 |                6195.5 |  6.68x |
+|                      | libx264    |   366 |         47,579 |     52.43 | 73.318637 |                3249.3 |  12.2x |
+|                      | libx265    |   108 |         30,809 |     33.95 | 71.313107 |                2104.0 |  3.61x |
+|                      | libaom-av1 |   7.1 |         26,414 |     29.10 | 74.324002 |                1802.9 |  0.237 |
 
 * ログは [normal_sw_encode.log](docs/normal_sw_encode.log) にある
 * 960x720 の VMAF は解像度をリサイズフィルターで戻して計測している点に注意
@@ -185,7 +186,7 @@ docker run --user $(id -u):$(id -g) --rm -it \
 ```bash
 # /dist を初期化して、エンコードを開始
 bash -c 'rm -rfv ./videos/dist/*.*' && \
-python3 src/ffmpegvqe/entrypoint.py --ffmpeg-threads 0 --encode -fss 180 -ft 60 && \
+python3 src/ffmpegvqe/entrypoint.py --encode && \
 bash ./plotbitrate.sh
 
 ```
@@ -200,13 +201,25 @@ rm -rf *_vmaf.json
 
 ```
 
-|                   | libx264 | libx265 | libaom-av1 |
-| :---------------- | ------: | ------: | ---------: |
-| `-q:v`            |      23 |      28 |         32 |
-| `-global_quality` |      23 |      28 |         32 |
+|                    | type  | libx264 | libx265 | libaom-av1 | Description |
+| :----------------- | :---: | ------: | ------: | ---------: | :---------- |
+| **Global Options** |       |         |         |            |             |
+| `-q:v`             |       |      23 |      28 |         32 |             |
+| `-global_quality`  |       |      23 |      28 |         32 |             |
+|                    |       |         |         |            |             |
+
+### Encoder Options
+
+| h264_qsv                   |    type     |                                                                       | Description                                                                                        |
+| :------------------------- | :---------: | :-------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------- |
+| `-preset`                  |   `<int>`   | veryfast(7),faster(6),fast(5),medium(4),slow(3),slower(2),veryslow(1) |                                                                                                    |
+| `-look_ahead`              | `<boolean>` | 0, 1                                                                  | Use VBR algorithm with look ahead (default false)                                                  |
+| `-look_ahead_depth`        |   `<int>`   | 0-100                                                                 | Depth of look ahead in number frames (from 0 to 100) (default 0)                                   |
+| `-look_ahead_downsampling` |   `<int>`   | (auto)0,off(1),2x(2),(4x)3                                            | Downscaling factor for the frames saved for the lookahead analysis (from 0 to 3) (default unknown) |
 
 ### CQP (Constant Quantization Parameter)
 
+**Intel QSV のデフォルトモード**  
 一定品質を維持する設定のため、単調なシーンでは過剰、複雑なシーンではビットレート不足となる
 
 ```bash
@@ -242,7 +255,8 @@ ffmpeg -hwaccel qsv -i input.mp4 \
 
 ### VBR (Variable Bit Rate)
 
-平均ビットレートによる制御のため画質に関係なく、同容量のサイズにするには優れている
+平均ビットレートによる制御のため画質に関係なく、同容量のサイズにするには優れている  
+VBR は正直やる意味が無いので計測しない
 
 ```bash
 ffmpeg -hwaccel qsv -i input.mp4 \
@@ -294,18 +308,36 @@ ffmpeg -hwaccel qsv -i input.mp4 \
 
 [plotbitrate.sh](plotbitrate.sh) 後半に CSV で吐くようにした。
 
+### thread 数で画質に影響する?
+
+[FFmpeg Threads Command: 品質とパフォーマンスに与える影響 - ストリーミング ラーニング センター](https://streaminglearningcenter.com/blogs/ffmpeg-command-threads-how-it-affects-quality-and-performance.html)
+
+ffmpeg の `-threads X` でフレームあたりの VMAF 品質低下があると記事を見たので計測、結果全く誤差が無い
+完全一致なので thread による影響はない
+
+* ffmpeg 7.1
+* Lavc61.19.100
+* VMAF 3.0.0, vmaf_v0.6.1
+
+|            |            auto (min) |        thread 1 (min) |        thread 4 (min) |        thread 8 (min) |       thread 15 (min) |
+| :--------- | --------------------: | --------------------: | --------------------: | --------------------: | --------------------: |
+| mpeg2ts    | 93.594580 (66.704512) | 93.594580 (66.704512) | 93.594580 (66.704512) | 93.594580 (66.704512) | 93.594580 (66.704512) |
+| libx264    | 90.300860 (72.486087) | 90.300860 (66.067915) | 90.300860 (66.067915) | 90.300860 (66.067915) | 90.300860 (66.067915) |
+| libx265    | 88.317820 (71.885449) | 88.317820 (65.279336) | 88.317820 (65.279336) | 88.317820 (65.279336) | 88.317820 (65.279336) |
+| libaom-av1 | 90.866412 (72.324044) | 90.866412 (65.867695) | 90.866412 (65.867695) | 90.866412 (65.867695) | 90.866412 (65.867695) |
+
 ### マニュアル生成
 
 ```bash
-mkdir -p /source/{decoders,encoders,filters}
-for decoder in av1 av1_qsv h264 h264_qsv hevc hevc_qsv mpeg2_qsv vp9_qsv
+mkdir -p ./videos/source/{decoders,encoders,filters}
+for decoder in libaom-av1 libdav1d av1 av1_qsv h264 h264_qsv hevc hevc_qsv mpeg2video mpeg2_qsv vp9_qsv
 do
-  ffmpeg -hide_banner -h decoder=${decoder}    > /source/decoders/decoder_${decoder}.txt
+  ffmpeg -hide_banner -h decoder=${decoder}    > ./videos/source/decoders/decoder_${decoder}.txt
 done
 
-for encoder in libaom-av1 av1_qsv libx264 h264_qsv libx265 hevc_qsv mpeg2_qsv vp9_qsv
+for encoder in libaom-av1 libsvtav1 av1_qsv libx264 h264_qsv libx265 hevc_qsv mpeg2_qsv vp9_qsv
 do
-  ffmpeg -hide_banner -h encoder=${encoder}    > /source/encoders/encoder_${encoder}.txt
+  ffmpeg -hide_banner -h encoder=${encoder}    > ./videos/source/encoders/encoder_${encoder}.txt
 done
 
 for filter in \
@@ -319,7 +351,7 @@ for filter in \
   vpp_qsv \
   yadif
 do
-  ffmpeg -hide_banner -h filter=${filter}    > /source/filters/filter_${filter}.txt
+  ffmpeg -hide_banner -h filter=${filter}    > ./videos/source/filters/filter_${filter}.txt
 done
 
 ```
