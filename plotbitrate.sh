@@ -33,30 +33,6 @@ function plot {
 
 }
 
-function csv {
-  jq -r '
-    [
-      "codec",                                "type",                                          "preset",
-      "threads",                              "outfile_size_byte",                             "bit_rate_kbs",
-      "outfile_options",                      "elapsed_encode_second",                         "elapsed_encode_time",
-      "compression_ratio_persent",            "compression_speed",                             "ssim_mean",
-      "ssim_harmonic_mean",                                                                    "vmaf_mean",
-      "vmaf_harmonic_mean"
-    ],
-    (.encodes[] |
-    [
-      .codec,                                 .type,                                           .preset,
-      .threads,                               .outfile.size,                                   .outfile.bit_rate_kbs,
-      (.outfile.options | join(" ")),         .elapsed.encode.second,                          .elapsed.encode.time,
-      .results.compression.ratio_persent,     .results.compression.speed,                      .results.vmaf.pooled_metrics.float_ssim.mean,
-      .results.vmaf.pooled_metrics.float_ssim.harmonic_mean,                                   .results.vmaf.pooled_metrics.vmaf.mean,
-      .results.vmaf.pooled_metrics.vmaf.harmonic_mean
-    ]) |
-    @csv
-  ' "${__DIR}/dist/settings.json" > "${__DIR}/dist/summary.csv"
-  echo "output ${__DIR}/dist/summary.csv"
-}
-
 if [ $# -eq 0 ]; then
   # 引数がない場合
   plot
@@ -67,11 +43,8 @@ else
     plot)
       "${1}"
       ;;
-    csv)
-      "${1}"
-      ;;
     *)
-      echo "Invalid argument. Usage: \$0 [plot|csv]"
+      echo "Invalid argument. Usage: \$0 [plot]"
       ;;
   esac
 fi

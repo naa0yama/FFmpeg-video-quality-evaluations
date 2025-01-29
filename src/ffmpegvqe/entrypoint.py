@@ -6,6 +6,7 @@
 
 # Standard Library
 import argparse
+import csv
 import hashlib
 import os
 from pathlib import Path
@@ -159,7 +160,7 @@ def encoding(encode_cfg: dict, outputext: str) -> dict:
 
     print(f"\nelapsed_time: {strftime('%H:%M:%S', gmtime(elapsed_time))}")  # noqa: T201
     return {
-        "commandline": __ffmpege_cmd,
+        "commandline": " ".join(__ffmpege_cmd),
         "elapsed_time": elapsed_time,
     }
 
@@ -203,7 +204,7 @@ def getvmaf(encode_cfg: dict, outputext: str) -> dict:
 
     print(f"elapsed_time: {strftime('%H:%M:%S', gmtime(elapsed_time))}")  # noqa: T201
     return {
-        "commandline": __ffmpege_cmd,
+        "commandline": " ".join(__ffmpege_cmd),
         "elapsed_time": elapsed_time,
     }
 
@@ -295,9 +296,9 @@ def load_config(configfile: str) -> dict:
                         "duration": 0.0,
                         "hash": "",
                         "options": __out_option,
-                        "size": 0,
+                        "size_byte": 0,
                     },
-                    "commandline": [],
+                    "commandline": "",
                     "hwaccels": __hwaccels,
                     "elapsed": {
                         "encode": {
@@ -331,6 +332,7 @@ def load_config(configfile: str) -> dict:
                         }",
                     )
 
+    print(f"\n\n {len(__results_list)} pattern generate.\n\n")  # noqa: T201
     with Path(f"{configfile}").open("w") as file:
         __configs["encodes"] = __results_list
         yaml.dump(__configs, file)
@@ -338,9 +340,69 @@ def load_config(configfile: str) -> dict:
     return __configs
 
 
-def main() -> None:  # noqa: PLR0915
+def getcsv(configfile: str) -> None:
+    """Get csv."""
+    with Path(f"{configfile}").open("r") as file:
+        __configs = yaml.load(file)
+
+    __exports: list = [
+        [
+            "index",
+            "codec",
+            "type",
+            "preset",
+            "threads",
+            "infile_options",
+            "outfile_filename",
+            "outfile_size_byte",
+            "outfile_bit_rate_kbs",
+            "outfile_options",
+            "elapsed_encode_second",
+            "elapsed_encode_time",
+            "compression_ratio_persent",
+            "compression_speed",
+            "ssim_min",
+            "ssim_harmonic_mean",
+            "vmaf_min",
+            "vmaf_harmonic_mean",
+        ],
+    ]
+
+    for __index, __config in enumerate(__configs["encodes"]):
+        __exports.extend(
+            [
+                [
+                    __index,
+                    __config["codec"],
+                    __config["type"],
+                    __config["preset"],
+                    __config["threads"],
+                    __config["infile"]["option"],
+                    __config["outfile"]["filename"],
+                    __config["outfile"]["size_byte"],
+                    __config["outfile"]["bit_rate_kbs"],
+                    __config["outfile"]["options"],
+                    __config["elapsed"]["encode"]["second"],
+                    __config["elapsed"]["encode"]["time"],
+                    __config["results"]["compression"]["ratio_persent"],
+                    __config["results"]["compression"]["speed"],
+                    __config["results"]["vmaf"]["pooled_metrics"]["float_ssim"]["min"],
+                    __config["results"]["vmaf"]["pooled_metrics"]["float_ssim"]["harmonic_mean"],
+                    __config["results"]["vmaf"]["pooled_metrics"]["vmaf"]["min"],
+                    __config["results"]["vmaf"]["pooled_metrics"]["vmaf"]["harmonic_mean"],
+                ],
+            ],
+        )
+
+    with Path(configfile.replace(".yml", ".csv", 1)).open("w") as csvfile:
+        csvwriter = csv.writer(csvfile, delimiter=",", quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
+        for __export in __exports:
+            csvwriter.writerow(__export)
+
+
+def main(configfile: str) -> None:  # noqa: PLR0915
     """Main."""
-    __configs: dict = load_config(configfile=args.config)
+    __configs: dict = load_config(configfile)
     __origfile: str = __configs["configs"]["origfile"]
     __basefile: str = __configs["configs"]["basefile"]
     __basehash: str = __configs["configs"]["basehash"]
@@ -435,14 +497,6 @@ def main() -> None:  # noqa: PLR0915
         with Path(f"{args.config}").open("r") as file:
             __encode_cfg = yaml.load(file)
 
-        files = Path(args.dist).glob(f"*{__baseext}")
-        __dist_files: list = []
-        for __dist_file in files:
-            with Path(__dist_file).open("rb") as file:
-                __hasher = hashlib.sha256()
-                __hasher.update(file.read())
-                __dist_files.append(f"{__hasher.hexdigest()}")
-
         __length: int = len(__encode_cfg["encodes"])
         for __index, __encode in enumerate(__encode_cfg["encodes"]):
             print(  # noqa: T201
@@ -450,10 +504,7 @@ def main() -> None:  # noqa: PLR0915
                 + f"\n{__index + 1:0>4}/{__length:0>4} ({(__index + 1) / __length:>7.2%})\n",
             )
 
-            __encode_exec_flg: bool = (
-                __encode["outfile"]["hash"] == ""
-                or __encode["outfile"]["hash"] not in __dist_files
-            )
+            __encode_exec_flg: bool = __encode["outfile"]["hash"] == ""
             print(f"outfile hash:  {__encode['outfile']['hash']}")  # noqa: T201
             print(f"outfile cache: {not __encode_exec_flg}")  # noqa: T201
             if __encode_exec_flg:
@@ -480,7 +531,7 @@ def main() -> None:  # noqa: PLR0915
                 __encode_cfg["encodes"][__index]["infile"].update(
                     {
                         "duration": float(__base_probe_log["format"]["duration"]),
-                        "size": int(
+                        "size_byte": int(
                             __base_probe_log["format"]["size"],
                         ),
                     },
@@ -494,14 +545,14 @@ def main() -> None:  # noqa: PLR0915
                             __probe_log["format"]["duration"],
                         ),
                         "hash": __encode_hash,
-                        "size": int(
+                        "size_byte": int(
                             __probe_log["format"]["size"],
                         ),
                     },
                 )
-                __encode_cfg["encodes"][__index]["commandline"] = __encode_rep["commandline"]
                 __encode_cfg["encodes"][__index].update(
                     {
+                        "commandline": __encode_rep["commandline"],
                         "elapsed": {
                             "encode": {
                                 "second": __encode_rep["elapsed_time"],
@@ -550,4 +601,5 @@ def main() -> None:  # noqa: PLR0915
 
 
 if __name__ == "__main__":
-    main()
+    main(configfile=args.config)
+    getcsv(configfile=args.config)
