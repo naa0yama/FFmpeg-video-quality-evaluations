@@ -8,6 +8,7 @@
 import argparse
 import csv
 import hashlib
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -41,7 +42,7 @@ yaml = ruamel.yaml.YAML(typ="safe", pure=True)
 yaml.indent(mapping=2, sequence=4, offset=2)
 yaml.default_flow_style = False
 yaml.explicit_start = True
-yaml.width = 99
+yaml.width = 200
 yaml.Representer = NoAliasDumper
 parser = argparse.ArgumentParser(description="FFmpeg video quality encoding quality evaluation.")
 
@@ -90,7 +91,55 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-def encoding(encode_cfg: dict, outputext: str) -> dict:
+def getframeinfo(filename: str) -> dict:
+    """Get frame Information."""
+    __probe_log: dict = {}
+    __stream: dict = {"gop": 0, "has_b_frames": 0, "refs": 0, "frames": {"I": 0, "P": 0, "B": 0}}
+    # フレームのカウントを初期化
+    __gop_lengths = []
+    __current_gop_length = 0
+    __first_gop_length = 0
+
+    with Path(f"{filename}").open("r") as file:
+        __probe_log = json.load(file)
+
+    # フレーム情報をループしてカウント
+    for frame in __probe_log["frames"]:
+        frame_type = frame["pict_type"]
+        if frame_type in __stream["frames"]:
+            __stream["frames"][frame_type] += 1
+
+        # Iフレームが見つかったらGOPの長さを記録
+        if frame_type == "I":
+            if __current_gop_length > 0:
+                __gop_lengths.append(__current_gop_length)
+                if __first_gop_length == 0:
+                    __first_gop_length = __current_gop_length
+            __current_gop_length = 1  # Iフレーム自体をカウント
+        else:
+            __current_gop_length += 1
+
+    # 最後のGOPの長さを追加
+    if __current_gop_length > 0:
+        __gop_lengths.append(__current_gop_length)
+        if __first_gop_length == 0:
+            __first_gop_length = __current_gop_length
+
+    __stream["gop"] = int(__first_gop_length)
+    __stream["has_b_frames"] = int(__probe_log["streams"][0]["has_b_frames"])
+    __stream["refs"] = int(__probe_log["streams"][0]["refs"])
+
+    """ "frames" を削除"""
+    if "frames" in __probe_log:
+        del __probe_log["frames"]
+
+    with Path(f"{filename}").open("w") as file:
+        json.dump(__probe_log, file, indent=2)
+
+    return __stream
+
+
+def encoding(encode_cfg: dict, outputext: str, probe_timeout: int) -> dict:  # noqa: C901
     """Encode."""
     __ffmpege_cmd: list = [
         "ffmpeg",
@@ -133,35 +182,39 @@ def encoding(encode_cfg: dict, outputext: str) -> dict:
             pbar.update(progress - pbar.n)
     os.environ.pop("FFREPORT", None)
     elapsed_time = time.time() - __start
-
-    print(f"[PROBE ] {encode_cfg['outfile']['filename']}")  # noqa: T201
-    subprocess.run(
-        args=[
-            "ffprobe",
-            "-v",
-            "error",
-            "-hide_banner",
-            "-show_chapters",
-            "-show_format",
-            "-show_library_versions",
-            "-show_program_version",
-            "-show_programs",
-            "-show_streams",
-            "-print_format",
-            "json",
-            "-i",
-            f"{encode_cfg['outfile']['filename']}{outputext}",
-            "-o",
-            f"{encode_cfg['outfile']['filename']}_ffprobe.json",
-        ],
-        timeout=10,
-        check=True,
-    )
-
     print(f"\nelapsed_time: {strftime('%H:%M:%S', gmtime(elapsed_time))}")  # noqa: T201
+
+    __probe_filename: str = f"{encode_cfg['outfile']['filename']}_ffprobe.json"
+    __proble_cmd: list = [
+        "ffprobe",
+        "-v",
+        "error",
+        "-hide_banner",
+        "-show_streams",
+        "-show_format",
+        "-show_frames",
+        "-print_format",
+        "json",
+        "-i",
+        f"{encode_cfg['outfile']['filename']}{outputext}",
+        "-o",
+        __probe_filename,
+    ]
+    process = subprocess.Popen(
+        args=__proble_cmd,
+    )
+    for _timeout in tqdm(range(probe_timeout), desc=f"[PROBE ] {__probe_filename}", unit="s"):
+        time.sleep(1)
+        if process.poll() is not None:
+            break
+    if process.poll() is None:
+        process.terminate()
+        raise subprocess.TimeoutExpired(__proble_cmd, probe_timeout)
+
     return {
         "commandline": " ".join(__ffmpege_cmd),
         "elapsed_time": elapsed_time,
+        "stream": getframeinfo(f"{__probe_filename}"),
     }
 
 
@@ -194,7 +247,7 @@ def getvmaf(encode_cfg: dict, outputext: str) -> dict:
     __start = time.time()
     __ff_vmaf = FfmpegProgress(__ffmpege_cmd)
     with tqdm(
-        desc=f"[VMAF   ] {encode_cfg['outfile']['filename']}",
+        desc=f"[VMAF  ] {encode_cfg['outfile']['filename']}",
         total=100,
         position=1,
     ) as pbar:
@@ -296,7 +349,7 @@ def load_config(configfile: str) -> dict:
                         "duration": 0.0,
                         "hash": "",
                         "options": __out_option,
-                        "size_byte": 0,
+                        "size_kbyte": 0,
                     },
                     "commandline": "",
                     "hwaccels": __hwaccels,
@@ -354,7 +407,7 @@ def getcsv(configfile: str) -> None:
             "threads",
             "infile_options",
             "outfile_filename",
-            "outfile_size_byte",
+            "outfile_size_kbyte",
             "outfile_bit_rate_kbs",
             "outfile_options",
             "elapsed_encode_second",
@@ -379,7 +432,7 @@ def getcsv(configfile: str) -> None:
                     __config["threads"],
                     __config["infile"]["option"],
                     __config["outfile"]["filename"],
-                    __config["outfile"]["size_byte"],
+                    __config["outfile"]["size_kbyte"],
                     __config["outfile"]["bit_rate_kbs"],
                     __config["outfile"]["options"],
                     __config["elapsed"]["encode"]["second"],
@@ -469,7 +522,7 @@ def main(configfile: str) -> None:  # noqa: PLR0915
             )
 
             with Path(f"{__basefile.replace(__baseext, '_ffprobe.json', 1)}").open("r") as file:
-                __base_probe_log = yaml.load(file)
+                __base_probe_log = json.load(file)
 
             with Path(f"{args.config}").open("r") as file:
                 __encode_cfg = yaml.load(file)
@@ -492,7 +545,7 @@ def main(configfile: str) -> None:  # noqa: PLR0915
         else:
             print("base to skip encode")  # noqa: T201
             with Path(f"{__basefile.replace(__baseext, '_ffprobe.json', 1)}").open("r") as file:
-                __base_probe_log = yaml.load(file)
+                __base_probe_log = json.load(file)
 
         with Path(f"{args.config}").open("r") as file:
             __encode_cfg = yaml.load(file)
@@ -508,7 +561,11 @@ def main(configfile: str) -> None:  # noqa: PLR0915
             print(f"outfile hash:  {__encode['outfile']['hash']}")  # noqa: T201
             print(f"outfile cache: {not __encode_exec_flg}")  # noqa: T201
             if __encode_exec_flg:
-                __encode_rep = encoding(encode_cfg=__encode, outputext=__baseext)
+                __encode_rep = encoding(
+                    encode_cfg=__encode,
+                    outputext=__baseext,
+                    probe_timeout=int(float(__base_probe_log["format"]["duration"])),
+                )
                 __vmaf_rsp = getvmaf(encode_cfg=__encode, outputext=__baseext)
 
                 """load filehash."""
@@ -521,18 +578,21 @@ def main(configfile: str) -> None:  # noqa: PLR0915
 
                 """Load ffproble."""
                 with Path(f"{__encode['outfile']['filename']}_ffprobe.json").open("r") as file:
-                    __probe_log = yaml.load(file)
+                    __probe_log = json.load(file)
 
                 """Load VMAF."""
                 with Path(f"{__encode['outfile']['filename']}_vmaf.json").open("r") as file:
-                    __vmaf_log = yaml.load(file)
+                    __vmaf_log = json.load(file)
 
                 """Write parameters."""
                 __encode_cfg["encodes"][__index]["infile"].update(
                     {
                         "duration": float(__base_probe_log["format"]["duration"]),
-                        "size_byte": int(
-                            __base_probe_log["format"]["size"],
+                        "size_kbyte": (
+                            int(
+                                __base_probe_log["format"]["size"],
+                            )
+                            / 1024
                         ),
                     },
                 )
@@ -545,9 +605,13 @@ def main(configfile: str) -> None:  # noqa: PLR0915
                             __probe_log["format"]["duration"],
                         ),
                         "hash": __encode_hash,
-                        "size_byte": int(
-                            __probe_log["format"]["size"],
+                        "size_kbyte": (
+                            int(
+                                __probe_log["format"]["size"],
+                            )
+                            / 1024
                         ),
+                        "stream": __encode_rep["stream"],
                     },
                 )
                 __encode_cfg["encodes"][__index].update(
