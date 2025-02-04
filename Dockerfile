@@ -21,7 +21,6 @@ RUN set -eux && \
     btop \
     ca-certificates \
     curl \
-    fish \
     git \
     gpg-agent \
     jq \
@@ -62,8 +61,6 @@ USER vscode
 RUN set -eux && \
     git clone https://github.com/asdf-vm/asdf.git ~/.asdf \
     --depth 1 --branch ${ASDF_VERSION} && \
-    mkdir -p ~/.config/fish && \
-    echo "source ~/.asdf/asdf.fish" > ~/.config/fish/config.fish && \
     echo ". \"\$HOME/.asdf/asdf.sh\"" >> ~/.bashrc && \
     echo ". \"\$HOME/.asdf/completions/asdf.bash\"" >> ~/.bashrc
 
