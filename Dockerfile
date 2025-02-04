@@ -65,9 +65,11 @@ RUN set -eux && \
     echo ". \"\$HOME/.asdf/completions/asdf.bash\"" >> ~/.bashrc
 
 # asdf update
-RUN set -eux && \
-    source $HOME/.asdf/asdf.sh && \
-    asdf update
+# Broken stable release
+# Ref: https://github.com/asdf-vm/asdf/issues/1821
+# RUN set -eux && \
+#     source $HOME/.asdf/asdf.sh && \
+#     asdf update
 
 # Dependencies Python
 USER root
