@@ -43,8 +43,8 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument(
     "--config",
-    help="config file path.",
-    default="./videos/source/settings.yml",
+    help="config file path. (e.g): ./videos/source/settings.yml",
+    required=True,
 )
 args = parser.parse_args()
 

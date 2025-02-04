@@ -13,7 +13,9 @@ from os import cpu_count
 from os import environ
 from os import fsync
 from pathlib import Path
+import shutil
 import subprocess
+import tarfile
 import time
 from time import gmtime
 from time import strftime
@@ -49,15 +51,15 @@ yaml.Representer = NoAliasDumper
 parser = argparse.ArgumentParser(description="FFmpeg video quality encoding quality evaluation.")
 
 parser.add_argument(
-    "--config",
-    help="config file path.",
-    default="./videos/source/settings.yml",
+    "--archive",
+    help="Archives bench data.",
+    action="store_true",
 )
 
 parser.add_argument(
-    "--data",
-    help="Data file (default: ./videos/source/data.json)",
-    default="./videos/source/data.json",
+    "--config",
+    help="config file path. (e.g): ./videos/source/settings.yml",
+    required=True,
 )
 
 parser.add_argument(
@@ -280,6 +282,7 @@ def createbase(config: dict) -> dict:
     __origfile: str = config["configs"]["origfile"]
     __basefile: str = config["configs"]["basefile"]
     __baseext: str = Path(__basefile).suffix
+    Path(__basefile).parent.mkdir(parents=True, exist_ok=True)
 
     __ffmpege_cmd: list = [
         "ffmpeg",
@@ -359,6 +362,7 @@ def load_config(configfile: str) -> dict:  # noqa: C901, PLR0915, PLR0912
     """Load config."""
     __configs: dict = {}
     __encode_cfg: dict = {}
+    __distdir: Path = Path(f"{args.dist}/{Path(configfile).name.replace('.yml', '')}")
 
     "configfile ディレクトリが存在しない場合は作成"
     if not Path(configfile).parent.exists():
@@ -373,7 +377,7 @@ def load_config(configfile: str) -> dict:  # noqa: C901, PLR0915, PLR0912
         __configs = {
             "configs": {
                 "origfile": "./videos/source/BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts",
-                "basefile": "./videos/dist/base.mkv",
+                "basefile": f"{__distdir}/base.mkv",
                 "basehash": "",
                 "datafile": "",
                 "patterns": [
@@ -408,11 +412,7 @@ def load_config(configfile: str) -> dict:  # noqa: C901, PLR0915, PLR0912
 
     """__datafile が設定されてなく、"""
     if __configs["configs"]["datafile"] == "":
-        __datafile = f"{args.data}".replace(
-            "data.json",
-            f"data{__configs['configs']['basehash'][:12]}.json",
-            1,
-        )
+        __datafile = f"data{__configs['configs']['basehash'][:12]}.json"
         __configs["configs"]["datafile"] = __datafile
 
     elif Path(__datafile).exists():
@@ -459,7 +459,7 @@ def load_config(configfile: str) -> dict:  # noqa: C901, PLR0915, PLR0912
                         "option": __infile_opts,
                     },
                     "outfile": {
-                        "filename": f"{args.dist}/{__type}_{__codec}_{__preset}_{__out_option_hash[:12]}",
+                        "filename": f"{__distdir}/{__out_option_hash[:12]}",
                         "bit_rate_kbs": 0.0,
                         "duration": 0.0,
                         "hash": "",
@@ -589,6 +589,52 @@ def getcsv(datafile: dict) -> None:
             )
             for __export in __exports:
                 csvwriter.writerow(__export)
+
+
+def compress_files(dst: Path, files: list) -> None:
+    """Create Tar Archive."""
+    if not files:
+        print("Compress file not found.")  # noqa: T201
+        return
+    archive_name = f"{dst}/vmaf_archive.tar.xz"
+
+    print(f"\n\nCreate archive file: {archive_name}")  # noqa: T201
+    with tarfile.open(archive_name, "w:xz") as tar:
+        for file_path in files:
+            tar.add(file_path, arcname=file_path.name)
+            print(f"Add compress file: {file_path.name}")  # noqa: T201
+    print("Create archive file done.")  # noqa: T201
+
+    for file in files:
+        Path(file).unlink()
+        print(f"remove : {file}")  # noqa: T201
+
+
+def archive() -> None:
+    """Archives."""
+    __configs: dict = load_config(configfile=args.config)
+    __basedir: Path = Path(f"{__configs['configs']['basefile']}").parent
+    __configfile: Path = Path(args.config)
+    __datafile: Path = Path(f"{__configs['configs']['datafile']}")
+    __datafilecsv: Path = Path(f"{__datafile}".replace(".json", ".csv"))
+    __assetdir: Path = Path(f"assets/{__basedir.name}/logs")
+    __assetdir.mkdir(parents=True, exist_ok=True)
+
+    """move to __assetdir"""
+    for ext in [".json", ".log"]:
+        for file_path in __basedir.glob(f"*{ext}"):
+            if file_path.is_file():
+                shutil.move(f"{file_path}", f"{__assetdir}/{file_path.name}")
+                print(f"move: {file_path} to {__assetdir}/{file_path.name}")  # noqa: T201
+
+    """archive vmaf files"""
+    __archives: list = [__file for __file in __assetdir.glob("*_vmaf.json") if __file.is_file()]
+    compress_files(dst=__assetdir, files=__archives)
+
+    """move to configfile, csv datafile"""
+    for file in [__configfile, __datafile, __datafilecsv]:
+        shutil.move(f"{file}", f"{__assetdir.parent}/{file.name}")
+        print(f"move: {file} to {__assetdir.parent}/{file.name}")  # noqa: T201
 
 
 def main(config: dict) -> None:
@@ -735,3 +781,6 @@ if __name__ == "__main__":
     __configs: dict = load_config(configfile=args.config)
     main(config=__configs)
     getcsv(datafile=__configs["configs"]["datafile"])
+
+    if args.archive:
+        archive()
