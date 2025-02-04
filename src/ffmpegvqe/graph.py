@@ -4,7 +4,9 @@
 # %%
 """graph."""
 
+import argparse
 from collections.abc import Sequence
+import json
 from pathlib import Path
 from time import sleep
 from typing import Any
@@ -36,13 +38,25 @@ class DataTypeError(TypeError):
         super().__init__(message)
 
 
-def load_data(yaml_file_path: str) -> dict[str, Any]:
+parser = argparse.ArgumentParser(
+    description="FFmpeg video quality encoding quality evaluation for Graph.",
+)
+parser.add_argument(
+    "--config",
+    help="config file path.",
+    default="./videos/source/settings.yml",
+)
+args = parser.parse_args()
+
+
+def load_data(datafile: str) -> dict[str, Any]:
     """Load data."""
-    with Path(yaml_file_path).open("r", encoding="utf-8") as file:
-        _data = yaml.load(file)
-        if not isinstance(_data, dict):
-            raise DataTypeError
-        return _data
+    with Path(datafile).open("r") as file:
+        _data = json.load(file)
+
+    if not isinstance(_data, dict):
+        raise DataTypeError
+    return _data
 
 
 # データの抽出
@@ -63,9 +77,9 @@ def extract_data(data: dict[str, Any]) -> dict[str, Sequence[Any]]:
     _stream_frames_b: list = []
 
     for __encode in data["encodes"]:
-        _bit_rate.append(__encode["outfile"].get("bit_rate_kbs", 0) / 1000)
+        _bit_rate.append(__encode["outfile"].get("bit_rate_kbs", 0.0) / 1000)
         _options.append(__encode["outfile"]["options"])
-        _size_mbyte.append(__encode["outfile"].get("size_kbyte", 0) / 1024)
+        _size_mbyte.append(__encode["outfile"].get("size_kbyte", 0.0) / 1024)
         _codec.append(__encode["codec"])
         _type.append(__encode["type"])
         _vmaf_min.append(
@@ -97,7 +111,7 @@ def extract_data(data: dict[str, Any]) -> dict[str, Sequence[Any]]:
         )
 
     index = list(range(len(_bit_rate)))  # x 軸の値はインデックス
-    print(f"\n\nload index {_bit_rate.index(0.0)}.")  # noqa: T201
+    print(f"\n\nload index {_bit_rate.index(0.0) if 0.0 in _bit_rate else len(index)}.")  # noqa: T201
     return {
         "index": index,
         "bit_rate": _bit_rate,
@@ -117,8 +131,12 @@ def extract_data(data: dict[str, Any]) -> dict[str, Sequence[Any]]:
 
 
 # 初期データの準備
-yaml_file_path = "videos/source/settings.yml"
-data = load_data(yaml_file_path)
+configfile = f"{args.config}"
+with Path(configfile).open("r") as file:
+    __configs = yaml.load(file)
+datafile: str = f"{__configs['configs']['datafile']}"
+
+data = load_data(datafile)
 source = ColumnDataSource(data=extract_data(data))
 
 # 定義するx_rangeを共有するために作成
@@ -325,15 +343,15 @@ def update_data() -> None:
     """Update data if the YAML file has been modified."""
     global last_mod_time  # noqa: PLW0603
     try:
-        current_mod_time = Path(yaml_file_path).stat().st_mtime
+        current_mod_time = Path(datafile).stat().st_mtime
     except FileNotFoundError:
         # Handle the case where the file does not exist
-        print(f"File not found: {yaml_file_path}")  # noqa: T201
+        print(f"File not found: {datafile}")  # noqa: T201
         return
 
     if current_mod_time > last_mod_time:
         sleep(15)
-        _new_data = load_data(yaml_file_path)
+        _new_data = load_data(datafile)
         source.data = cast(dict[str, Any], extract_data(_new_data))
         last_mod_time = current_mod_time
         print(f"Data updated at {current_mod_time}")  # noqa: T201

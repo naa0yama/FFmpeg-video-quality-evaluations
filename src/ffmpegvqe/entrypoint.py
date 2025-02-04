@@ -9,7 +9,9 @@ import argparse
 import csv
 import hashlib
 import json
-import os
+from os import cpu_count
+from os import environ
+from os import fsync
 from pathlib import Path
 import subprocess
 import time
@@ -53,6 +55,12 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "--data",
+    help="Data file (default: ./videos/source/data.json)",
+    default="./videos/source/data.json",
+)
+
+parser.add_argument(
     "--dist",
     help="dist dir (default: ./videos/dist)",
     default="./videos/dist",
@@ -87,6 +95,11 @@ parser.add_argument(
     help="Set the number of threads to be used (default: 4)",
     type=int,
     default=4,
+)
+parser.add_argument(
+    "--dist-rm-video",
+    help="Automatically delete transcoded videos in Dist folder. (default: False)",
+    action="store_true",
 )
 args = parser.parse_args()
 
@@ -170,7 +183,7 @@ def encoding(encode_cfg: dict, outputext: str, probe_timeout: int) -> dict:  # n
         __ffmpege_cmd.append(f"{encode_cfg['outfile']['filename']}{outputext}")
 
     print(f"__ffmpege_cmd: {__ffmpege_cmd}")  # noqa: T201
-    os.environ["FFREPORT"] = f"file={encode_cfg['outfile']['filename']}.log:level=32"
+    environ["FFREPORT"] = f"file={encode_cfg['outfile']['filename']}.log:level=32"
     __start = time.time()
     __ff_encode = FfmpegProgress(__ffmpege_cmd)
     with tqdm(
@@ -180,9 +193,9 @@ def encoding(encode_cfg: dict, outputext: str, probe_timeout: int) -> dict:  # n
     ) as pbar:
         for progress in __ff_encode.run_command_with_progress():
             pbar.update(progress - pbar.n)
-    os.environ.pop("FFREPORT", None)
+    environ.pop("FFREPORT", None)
     elapsed_time = time.time() - __start
-    print(f"\nelapsed_time: {strftime('%H:%M:%S', gmtime(elapsed_time))}")  # noqa: T201
+    print(f"\nelapsed_time: {strftime('%H:%M:%S', gmtime(elapsed_time))}\n")  # noqa: T201
 
     __probe_filename: str = f"{encode_cfg['outfile']['filename']}_ffprobe.json"
     __proble_cmd: list = [
@@ -233,7 +246,7 @@ def getvmaf(encode_cfg: dict, outputext: str) -> dict:
             "[Distorted][Reference]libvmaf=eof_action=endall:"
             "log_fmt=json:"
             f"log_fmt=json:log_path={encode_cfg['outfile']['filename']}_vmaf.json:"
-            f"n_threads={os.cpu_count()}:"
+            f"n_threads={cpu_count()}:"
             "pool=harmonic_mean:"
             "feature=name=psnr|name=float_ssim:"
             "model=version=vmaf_v0.6.1"
@@ -255,16 +268,97 @@ def getvmaf(encode_cfg: dict, outputext: str) -> dict:
             pbar.update(progress - pbar.n)
     elapsed_time = time.time() - __start
 
-    print(f"elapsed_time: {strftime('%H:%M:%S', gmtime(elapsed_time))}")  # noqa: T201
+    print(f"\nelapsed_time: {strftime('%H:%M:%S', gmtime(elapsed_time))}\n")  # noqa: T201
     return {
         "commandline": " ".join(__ffmpege_cmd),
         "elapsed_time": elapsed_time,
     }
 
 
-def load_config(configfile: str) -> dict:
+def createbase(config: dict) -> dict:
+    """Create base."""
+    __origfile: str = config["configs"]["origfile"]
+    __basefile: str = config["configs"]["basefile"]
+    __baseext: str = Path(__basefile).suffix
+
+    __ffmpege_cmd: list = [
+        "ffmpeg",
+        "-y",
+        "-threads",
+        f"{args.ffmpeg_threads}",
+        "-i",
+        f"{__origfile}",
+        "-c:v",
+        "copy",
+        "-an",
+        f"{__basefile}",
+    ]
+
+    if args.ffmpeg_cattime is not None:
+        __ffmpege_cmd.insert(1, "-t")
+        __ffmpege_cmd.insert(2, f"{args.ffmpeg_cattime}")
+
+    if args.ffmpeg_starttime is not None:
+        __ffmpege_cmd.insert(1, "-ss")
+        __ffmpege_cmd.insert(2, f"{args.ffmpeg_starttime}")
+
+    __start = time.time()
+    __ff = FfmpegProgress(__ffmpege_cmd)
+    elapsed_time: float = 0
+    with tqdm(
+        desc=f"Create {__origfile} to {__basefile}",
+        total=100,
+        position=1,
+    ) as pbar:
+        for progress in __ff.run_command_with_progress():
+            elapsed_time = time.time() - __start
+            pbar.update(progress - pbar.n)
+
+    print(f"\nelapsed_time:{elapsed_time:>10.2f} sec")  # noqa: T201
+    print(f"[PROBE ] {__basefile}")  # noqa: T201
+    subprocess.run(
+        args=[
+            "ffprobe",
+            "-v",
+            "error",
+            "-hide_banner",
+            "-show_chapters",
+            "-show_format",
+            "-show_library_versions",
+            "-show_program_version",
+            "-show_programs",
+            "-show_streams",
+            "-print_format",
+            "json",
+            "-i",
+            f"{__basefile}",
+            "-o",
+            f"{__basefile.replace(__baseext, '_ffprobe.json', 1)}",
+        ],
+        timeout=10,
+        check=True,
+    )
+
+    with Path(f"{__basefile.replace(__baseext, '_ffprobe.json', 1)}").open("r") as file:
+        __base_probe_log = json.load(file)
+
+    with Path(f"{__basefile}").open("rb") as file:
+        __hasher = hashlib.sha256()
+        __hasher.update(file.read())
+        config["configs"]["basehash"] = f"{__hasher.hexdigest()}"
+
+    config["configs"]["ffmpege"] = {
+        "program_version": __base_probe_log["program_version"],
+        "library_versions": __base_probe_log["library_versions"],
+    }
+
+    return config
+
+
+def load_config(configfile: str) -> dict:  # noqa: C901, PLR0915, PLR0912
     """Load config."""
     __configs: dict = {}
+    __encode_cfg: dict = {}
 
     "configfile ディレクトリが存在しない場合は作成"
     if not Path(configfile).parent.exists():
@@ -281,6 +375,7 @@ def load_config(configfile: str) -> dict:
                 "origfile": "./videos/source/BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts",
                 "basefile": "./videos/dist/base.mkv",
                 "basehash": "",
+                "datafile": "",
                 "patterns": [
                     {
                         "codec": "libx264",
@@ -298,14 +393,34 @@ def load_config(configfile: str) -> dict:
                     },
                 ],
             },
-            "encodes": [],
         }
 
     __origfile: str = __configs["configs"]["origfile"]
     __basefile: str = __configs["configs"]["basefile"]
+    __basehash: str = __configs["configs"]["basehash"]
+    __datafile: str = __configs["configs"]["datafile"]
     __results_list: list = []
-    __existing_encodes = {encode["id"]: encode for encode in __configs.get("encodes", [])}
-    __results_list.extend(__configs.get("encodes", []))
+
+    if __basehash == "":
+        __configs = createbase(config=__configs)
+    else:
+        print("Base to skip encode")  # noqa: T201
+
+    """__datafile が設定されてなく、"""
+    if __configs["configs"]["datafile"] == "":
+        __datafile = f"{args.data}".replace(
+            "data.json",
+            f"data{__configs['configs']['basehash'][:12]}.json",
+            1,
+        )
+        __configs["configs"]["datafile"] = __datafile
+
+    elif Path(__datafile).exists():
+        with Path(__datafile).open("r") as file:
+            __encode_cfg = json.load(file)
+
+    __existing_encodes = {encode["id"]: encode for encode in __encode_cfg.get("encodes", [])}
+    __results_list.extend(__encode_cfg.get("encodes", []))
 
     for __pattern in __configs["configs"]["patterns"]:
         __presets: list = __pattern["presets"]
@@ -376,27 +491,36 @@ def load_config(configfile: str) -> dict:
                 if __result_template["id"] not in __existing_encodes:
                     __results_list.append(__result_template)
                     print(  # noqa: T201
-                        f"encode new ... {
-                            (
-                                __result_template['codec'],
-                                __result_template['type'],
-                                __result_template['outfile']['options'],
-                            )
-                        }",
+                        "encode new ...",
+                        f"preset: {__result_template['preset']},",
+                        f"codec: {__result_template['codec']},",
+                        f"type: {__result_template['type']},",
+                        f"options: {__result_template['outfile']['options']},",
                     )
 
-    print(f"\n\n {len(__results_list)} pattern generate.\n\n")  # noqa: T201
-    with Path(f"{configfile}").open("w") as file:
-        __configs["encodes"] = __results_list
+    print(f"\n\n{len(__results_list)} pattern generate.\n\n")  # noqa: T201
+    with Path(configfile).open("w") as file:
         yaml.dump(__configs, file)
 
-    return __configs
+    if len(__existing_encodes) == len(__results_list):
+        print(f"Exitst {__datafile} no updated.")  # noqa: T201
+    else:
+        print(f"{len(__results_list)} pattern is {__datafile} write.")  # noqa: T201
+        with Path(__datafile).open("w") as file:
+            __encode_cfg["encodes"] = __results_list
+            json.dump(__encode_cfg, file)
+
+    return {
+        "configs": __configs["configs"],
+        "encodes": __encode_cfg,
+        "datafile": __datafile,
+    }
 
 
-def getcsv(configfile: str) -> None:
+def getcsv(datafile: dict) -> None:
     """Get csv."""
-    with Path(f"{configfile}").open("r") as file:
-        __configs = yaml.load(file)
+    with Path(f"{datafile}").open("r") as file:
+        __data = json.load(file)
 
     __exports: list = [
         [
@@ -421,134 +545,64 @@ def getcsv(configfile: str) -> None:
         ],
     ]
 
-    for __index, __config in enumerate(__configs["encodes"]):
-        __exports.extend(
-            [
+    __hashs: list = [
+        encode["outfile"]["hash"]
+        for encode in __data["encodes"]
+        if encode["outfile"]["hash"] != ""
+    ]
+
+    if __hashs != []:
+        for __index, __config in enumerate(__data["encodes"]):
+            __exports.extend(
                 [
-                    __index,
-                    __config["codec"],
-                    __config["type"],
-                    __config["preset"],
-                    __config["threads"],
-                    __config["infile"]["option"],
-                    __config["outfile"]["filename"],
-                    __config["outfile"]["size_kbyte"],
-                    __config["outfile"]["bit_rate_kbs"],
-                    __config["outfile"]["options"],
-                    __config["elapsed"]["encode"]["second"],
-                    __config["elapsed"]["encode"]["time"],
-                    __config["results"]["compression"]["ratio_persent"],
-                    __config["results"]["compression"]["speed"],
-                    __config["results"]["vmaf"]["pooled_metrics"]["float_ssim"]["min"],
-                    __config["results"]["vmaf"]["pooled_metrics"]["float_ssim"]["harmonic_mean"],
-                    __config["results"]["vmaf"]["pooled_metrics"]["vmaf"]["min"],
-                    __config["results"]["vmaf"]["pooled_metrics"]["vmaf"]["harmonic_mean"],
+                    [
+                        __index,
+                        __config["codec"],
+                        __config["type"],
+                        __config["preset"],
+                        __config["threads"],
+                        __config["infile"]["option"],
+                        __config["outfile"]["filename"],
+                        __config["outfile"]["size_kbyte"],
+                        __config["outfile"]["bit_rate_kbs"],
+                        __config["outfile"]["options"],
+                        __config["elapsed"]["encode"]["second"],
+                        __config["elapsed"]["encode"]["time"],
+                        __config["results"]["compression"]["ratio_persent"],
+                        __config["results"]["compression"]["speed"],
+                        __config["results"]["vmaf"]["pooled_metrics"]["float_ssim"]["min"],
+                        __config["results"]["vmaf"]["pooled_metrics"]["float_ssim"][
+                            "harmonic_mean"
+                        ],
+                        __config["results"]["vmaf"]["pooled_metrics"]["vmaf"]["min"],
+                        __config["results"]["vmaf"]["pooled_metrics"]["vmaf"]["harmonic_mean"],
+                    ],
                 ],
-            ],
-        )
+            )
 
-    with Path(configfile.replace(".yml", ".csv", 1)).open("w") as csvfile:
-        csvwriter = csv.writer(csvfile, delimiter=",", quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
-        for __export in __exports:
-            csvwriter.writerow(__export)
+        with Path(f"{datafile}".replace(".json", ".csv", 1)).open("w") as csvfile:
+            csvwriter = csv.writer(
+                csvfile,
+                delimiter=",",
+                quotechar='"',
+                quoting=csv.QUOTE_NONNUMERIC,
+            )
+            for __export in __exports:
+                csvwriter.writerow(__export)
 
 
-def main(configfile: str) -> None:  # noqa: PLR0915
+def main(config: dict) -> None:
     """Main."""
-    __configs: dict = load_config(configfile)
-    __origfile: str = __configs["configs"]["origfile"]
-    __basefile: str = __configs["configs"]["basefile"]
-    __basehash: str = __configs["configs"]["basehash"]
+    __basefile: str = config["configs"]["basefile"]
+    __datafile: str = config["configs"]["datafile"]
     __baseext: str = Path(__basefile).suffix
 
     if args.encode is True:
-        if __basehash == "":
-            __ffmpege_cmd: list = [
-                "ffmpeg",
-                "-y",
-                "-threads",
-                f"{args.ffmpeg_threads}",
-                "-i",
-                f"{__origfile}",
-                "-c:v",
-                "copy",
-                "-an",
-                f"{__basefile}",
-            ]
+        with Path(f"{__basefile.replace(__baseext, '_ffprobe.json', 1)}").open("r") as file:
+            __base_probe_log = json.load(file)
 
-            if args.ffmpeg_cattime is not None:
-                __ffmpege_cmd.insert(1, "-t")
-                __ffmpege_cmd.insert(2, f"{args.ffmpeg_cattime}")
-
-            if args.ffmpeg_starttime is not None:
-                __ffmpege_cmd.insert(1, "-ss")
-                __ffmpege_cmd.insert(2, f"{args.ffmpeg_starttime}")
-
-            __start = time.time()
-            __ff = FfmpegProgress(__ffmpege_cmd)
-            elapsed_time: float = 0
-            with tqdm(
-                desc=f"Create {__origfile} to {__basefile}",
-                total=100,
-                position=1,
-            ) as pbar:
-                for progress in __ff.run_command_with_progress():
-                    elapsed_time = time.time() - __start
-                    pbar.update(progress - pbar.n)
-
-            print(f"\nelapsed_time:{elapsed_time:>10.2f} sec")  # noqa: T201
-            print(f"[PROBE ] {__basefile}")  # noqa: T201
-            subprocess.run(
-                args=[
-                    "ffprobe",
-                    "-v",
-                    "error",
-                    "-hide_banner",
-                    "-show_chapters",
-                    "-show_format",
-                    "-show_library_versions",
-                    "-show_program_version",
-                    "-show_programs",
-                    "-show_streams",
-                    "-print_format",
-                    "json",
-                    "-i",
-                    f"{__basefile}",
-                    "-o",
-                    f"{__basefile.replace(__baseext, '_ffprobe.json', 1)}",
-                ],
-                timeout=10,
-                check=True,
-            )
-
-            with Path(f"{__basefile.replace(__baseext, '_ffprobe.json', 1)}").open("r") as file:
-                __base_probe_log = json.load(file)
-
-            with Path(f"{args.config}").open("r") as file:
-                __encode_cfg = yaml.load(file)
-
-            with Path(f"{__basefile}").open("rb") as file:
-                __hasher = hashlib.sha256()
-                __hasher.update(file.read())
-                __encode_cfg["configs"]["basehash"] = f"{__hasher.hexdigest()}"
-
-            __encode_cfg["configs"]["ffmpege"] = {
-                "program_version": __base_probe_log["program_version"],
-                "library_versions": __base_probe_log["library_versions"],
-            }
-
-            with Path(f"{args.config}").open("w") as file:
-                yaml.dump(
-                    {"configs": __encode_cfg["configs"], "encodes": __encode_cfg["encodes"]},
-                    file,
-                )
-        else:
-            print("base to skip encode")  # noqa: T201
-            with Path(f"{__basefile.replace(__baseext, '_ffprobe.json', 1)}").open("r") as file:
-                __base_probe_log = json.load(file)
-
-        with Path(f"{args.config}").open("r") as file:
-            __encode_cfg = yaml.load(file)
+        with Path(__datafile).open("r") as file:
+            __encode_cfg = json.load(file)
 
         __length: int = len(__encode_cfg["encodes"])
         for __index, __encode in enumerate(__encode_cfg["encodes"]):
@@ -560,13 +614,25 @@ def main(configfile: str) -> None:  # noqa: PLR0915
             __encode_exec_flg: bool = __encode["outfile"]["hash"] == ""
             print(f"outfile hash:  {__encode['outfile']['hash']}")  # noqa: T201
             print(f"outfile cache: {not __encode_exec_flg}")  # noqa: T201
+
+            """Batch encode start."""
             if __encode_exec_flg:
-                __encode_rep = encoding(
-                    encode_cfg=__encode,
-                    outputext=__baseext,
-                    probe_timeout=int(float(__base_probe_log["format"]["duration"])),
-                )
-                __vmaf_rsp = getvmaf(encode_cfg=__encode, outputext=__baseext)
+                try:
+                    __encode_rep = encoding(
+                        encode_cfg=__encode,
+                        outputext=__baseext,
+                        probe_timeout=int(float(__base_probe_log["format"]["duration"])),
+                    )
+                    __vmaf_rsp = getvmaf(encode_cfg=__encode, outputext=__baseext)
+                except KeyboardInterrupt:
+                    """__datafile write."""
+                    print(f"\n\nKeyboardInterrupt: datafile writeing to {__datafile}\n\n")  # noqa: T201
+                    with Path(__datafile).open("w") as file:
+                        json.dump({"encodes": __encode_cfg["encodes"]}, file)
+                        file.flush()
+                        fsync(file.fileno())
+                    print("done.")  # noqa: T201
+                    break
 
                 """load filehash."""
                 with Path(f"{__encode['outfile']['filename']}{__baseext}").open(
@@ -575,6 +641,10 @@ def main(configfile: str) -> None:  # noqa: PLR0915
                     __hasher = hashlib.sha256()
                     __hasher.update(file_hash_encode.read())
                     __encode_hash = f"{__hasher.hexdigest()}"
+
+                if args.dist_rm_video is True:
+                    Path(f"{__encode['outfile']['filename']}{__baseext}").unlink()
+                    print(f"Automatically delete: {__encode['outfile']['filename']}{__baseext}")  # noqa: T201
 
                 """Load ffproble."""
                 with Path(f"{__encode['outfile']['filename']}_ffprobe.json").open("r") as file:
@@ -656,14 +726,12 @@ def main(configfile: str) -> None:  # noqa: PLR0915
                     },
                 )
 
-                "settings.yml 書き込み"
-                with Path(f"{args.config}").open("w") as file:
-                    yaml.dump(
-                        {"configs": __encode_cfg["configs"], "encodes": __encode_cfg["encodes"]},
-                        file,
-                    )
+                "__datafile 書き込み"
+                with Path(__datafile).open("w") as file:
+                    json.dump({"encodes": __encode_cfg["encodes"]}, file)
 
 
 if __name__ == "__main__":
-    main(configfile=args.config)
-    getcsv(configfile=args.config)
+    __configs: dict = load_config(configfile=args.config)
+    main(config=__configs)
+    getcsv(datafile=__configs["configs"]["datafile"])
