@@ -1,0 +1,297 @@
+---
+configs:
+  origfile: ./videos/source/BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts
+  basefile: videos/dist/h264_qsv_bf_refs/base.mkv
+  basehash: c79c12f5af0d36c866081021731ae61c042eec83786379d612622fc1b1c21f95
+  datafile: assets/h264_qsv_bf_refs/datac79c12f5af0d.json
+  patterns:
+    - codec: h264_qsv
+      type: h264_qsv_LA-ICQ
+      comments: ''
+      presets:
+        - veryslow
+      infile:
+        option: -hwaccel qsv -c:v mpeg2_qsv
+      outfile:
+        options:
+          - -global_quality 25 -look_ahead 1
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 1
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 2
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 3
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 4
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 5
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 6
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 7
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 8
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 9
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 10
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 11
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 12
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 13
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 14
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 15
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 16
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 17
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 18
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 19
+          - -global_quality 25 -look_ahead 1 -bf 1 -refs 20
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 1
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 2
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 3
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 4
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 5
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 6
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 7
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 8
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 9
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 10
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 11
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 12
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 13
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 14
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 15
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 16
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 17
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 18
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 19
+          - -global_quality 25 -look_ahead 1 -bf 2 -refs 20
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 1
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 2
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 3
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 4
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 5
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 6
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 7
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 8
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 9
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 10
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 11
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 12
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 13
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 14
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 15
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 16
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 17
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 18
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 19
+          - -global_quality 25 -look_ahead 1 -bf 4 -refs 20
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 1
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 2
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 3
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 4
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 5
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 6
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 7
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 8
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 9
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 10
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 11
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 12
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 13
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 14
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 15
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 16
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 17
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 18
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 19
+          - -global_quality 25 -look_ahead 1 -bf 6 -refs 20
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 1
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 2
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 3
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 4
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 5
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 6
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 7
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 8
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 9
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 10
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 11
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 12
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 13
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 14
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 15
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 16
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 17
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 18
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 19
+          - -global_quality 25 -look_ahead 1 -bf 8 -refs 20
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 1
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 2
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 3
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 4
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 5
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 6
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 7
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 8
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 9
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 10
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 11
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 12
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 13
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 14
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 15
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 16
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 17
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 18
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 19
+          - -global_quality 25 -look_ahead 1 -bf 10 -refs 20
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 1
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 2
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 3
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 4
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 5
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 6
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 7
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 8
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 9
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 10
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 11
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 12
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 13
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 14
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 15
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 16
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 17
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 18
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 19
+          - -global_quality 25 -look_ahead 1 -bf 12 -refs 20
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 1
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 2
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 3
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 4
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 5
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 6
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 7
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 8
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 9
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 10
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 11
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 12
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 13
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 14
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 15
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 16
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 16
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 17
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 18
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 19
+          - -global_quality 25 -look_ahead 1 -bf 14 -refs 20
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 1
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 2
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 3
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 4
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 5
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 6
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 7
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 8
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 9
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 10
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 11
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 12
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 13
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 14
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 15
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 16
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 17
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 18
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 19
+          - -global_quality 25 -look_ahead 1 -bf 16 -refs 20
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 1
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 2
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 3
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 4
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 5
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 6
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 7
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 8
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 9
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 10
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 11
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 12
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 13
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 14
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 15
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 16
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 17
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 18
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 19
+          - -global_quality 25 -look_ahead 1 -bf 18 -refs 20
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 1
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 2
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 3
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 4
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 5
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 6
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 7
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 8
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 9
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 10
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 11
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 12
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 13
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 14
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 15
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 16
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 17
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 18
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 19
+          - -global_quality 25 -look_ahead 1 -bf 20 -refs 20
+      hwaccels: -hwaccel_output_format qsv
+  ffmpege:
+    program_version:
+      version: '7.1'
+      copyright: Copyright (c) 2007-2024 the FFmpeg developers
+      compiler_ident: gcc 13 (Ubuntu 13.3.0-6ubuntu2~24.04)
+      configuration: --enable-avisynth --enable-libaom --enable-libaribb24 --enable-libass --enable-libdav1d --enable-libfreetype --enable-libmp3lame --enable-libopus --enable-libsvtav1 --enable-libvmaf
+        --enable-libvpl --enable-libvpx --enable-libx264 --enable-libx265 --enable-vaapi --enable-gpl --enable-nonfree --enable-version3 --disable-debug --disable-doc --disable-ffplay --disable-shared --enable-small
+        --enable-static --enable-stripping --extra-libs='-lpthread -lm' --pkg-config-flags=--static --extra-cflags=-fopenmp --extra-ldflags='-fopenmp -Wl,--allow-multiple-definition -Wl,-z,stack-size=2097152'
+        --toolchain=hardened
+    library_versions:
+      - name: libavutil
+        major: 59
+        minor: 39
+        micro: 100
+        version: 3876708
+        ident: Lavu59.39.100
+      - name: libavcodec
+        major: 61
+        minor: 19
+        micro: 100
+        version: 4002660
+        ident: Lavc61.19.100
+      - name: libavformat
+        major: 61
+        minor: 7
+        micro: 100
+        version: 3999588
+        ident: Lavf61.7.100
+      - name: libavdevice
+        major: 61
+        minor: 3
+        micro: 100
+        version: 3998564
+        ident: Lavd61.3.100
+      - name: libavfilter
+        major: 10
+        minor: 4
+        micro: 100
+        version: 656484
+        ident: Lavfi10.4.100
+      - name: libswscale
+        major: 8
+        minor: 3
+        micro: 100
+        version: 525156
+        ident: SwS8.3.100
+      - name: libswresample
+        major: 5
+        minor: 3
+        micro: 100
+        version: 328548
+        ident: SwR5.3.100
+      - name: libpostproc
+        major: 58
+        minor: 3
+        micro: 100
+        version: 3801956
+        ident: postproc58.3.100
