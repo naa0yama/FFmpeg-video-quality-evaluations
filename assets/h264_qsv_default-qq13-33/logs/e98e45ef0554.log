@@ -1,0 +1,118 @@
+ffmpeg started on 2025-02-05 at 18:32:16
+Report written to "videos/dist/h264_default-qq13-33/e98e45ef0554.log"
+Log level: 40
+Command line:
+ffmpeg -progress - -nostats -y -threads 4 -hwaccel_output_format qsv -hwaccel qsv -c:v mpeg2_qsv -i videos/dist/h264_default-qq13-33/base.mkv -global_quality 26 -look_ahead 1 -c:v h264_qsv -preset:v veryslow videos/dist/h264_default-qq13-33/e98e45ef0554.mkv
+ffmpeg version 7.1 Copyright (c) 2000-2024 the FFmpeg developers
+  built with gcc 13 (Ubuntu 13.3.0-6ubuntu2~24.04)
+  configuration: --enable-avisynth --enable-libaom --enable-libaribb24 --enable-libass --enable-libdav1d --enable-libfreetype --enable-libmp3lame --enable-libopus --enable-libsvtav1 --enable-libvmaf --enable-libvpl --enable-libvpx --enable-libx264 --enable-libx265 --enable-vaapi --enable-gpl --enable-nonfree --enable-version3 --disable-debug --disable-doc --disable-ffplay --disable-shared --enable-small --enable-static --enable-stripping --extra-libs='-lpthread -lm' --pkg-config-flags=--static --extra-cflags=-fopenmp --extra-ldflags='-fopenmp -Wl,--allow-multiple-definition -Wl,-z,stack-size=2097152' --toolchain=hardened
+  libavutil      59. 39.100 / 59. 39.100
+  libavcodec     61. 19.100 / 61. 19.100
+  libavformat    61.  7.100 / 61.  7.100
+  libavdevice    61.  3.100 / 61.  3.100
+  libavfilter    10.  4.100 / 10.  4.100
+  libswscale      8.  3.100 /  8.  3.100
+  libswresample   5.  3.100 /  5.  3.100
+  libpostproc    58.  3.100 / 58.  3.100
+Input #0, matroska,webm, from 'videos/dist/h264_default-qq13-33/base.mkv':
+  Metadata:
+    ENCODER         : Lavf61.7.100
+  Duration: 00:02:00.02, start: 0.000000, bitrate: 17503 kb/s
+  Stream #0:0: Video: mpeg2video, yuv420p(tv, bt709/unknown/unknown, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 1k tbn
+      Metadata:
+        DURATION        : 00:02:00.020000000
+      Side data:
+        cpb: bitrate max/min/avg: 24000000/0/0 buffer size: 9781248 vbv_delay: N/A
+[out#0/matroska @ 0x6248529f7b40] No explicit maps, mapping streams automatically...
+[vost#0:0/h264_qsv @ 0x6248529f36c0] Created video stream from input stream 0:0
+[AVHWDeviceContext @ 0x6248529f7080] Trying to use DRM render node for device 0, with matching vendor id (0x8086).
+[AVHWDeviceContext @ 0x6248529f7080] libva: VA-API version 1.22.0
+[AVHWDeviceContext @ 0x6248529f7080] libva: User requested driver 'iHD'
+[AVHWDeviceContext @ 0x6248529f7080] libva: Trying to open /opt/ffmpeg/lib/dri/iHD_drv_video.so
+[AVHWDeviceContext @ 0x6248529f7080] libva: Found init function __vaDriverInit_1_22
+[AVHWDeviceContext @ 0x6248529f7080] libva: va_openDriver() returns 0
+[AVHWDeviceContext @ 0x6248529f7080] Initialised VAAPI connection: version 1.22
+[AVHWDeviceContext @ 0x6248529f7080] VAAPI driver: Intel iHD driver for Intel(R) Gen Graphics - 24.3.4 (081fc57).
+[AVHWDeviceContext @ 0x6248529f7080] Driver not found in known nonstandard list, using standard behaviour.
+[AVHWDeviceContext @ 0x6248529f8040] Use Intel(R) oneVPL to create MFX session, API version is 2.14, the required implementation version is 1.3
+[AVHWDeviceContext @ 0x6248529f8040] Initialize MFX session: implementation version is 2.13
+Stream mapping:
+  Stream #0:0 -> #0:0 (mpeg2video (mpeg2_qsv) -> h264 (h264_qsv))
+[vost#0:0/h264_qsv @ 0x6248529f36c0] Starting thread...
+[vf#0:0 @ 0x6248529f4480] Starting thread...
+[vist#0:0/mpeg2video @ 0x6248529f87c0] [dec:mpeg2_qsv @ 0x6248529f6000] Starting thread...
+[in#0/matroska,webm @ 0x6248529e6f80] Starting thread...
+Press [q] to stop, [?] for help
+[AVHWDeviceContext @ 0x78978c0028c0] VAAPI driver: Intel iHD driver for Intel(R) Gen Graphics - 24.3.4 (081fc57).
+[AVHWDeviceContext @ 0x78978c0028c0] Driver not found in known nonstandard list, using standard behaviour.
+[mpeg2_qsv @ 0x6248529f6840] Decoder: output is video memory surface
+[mpeg2_qsv @ 0x6248529f6840] Use Intel(R) oneVPL to create MFX session with the specified MFX loader
+[AVHWDeviceContext @ 0x78978c005a80] VAAPI driver: Intel iHD driver for Intel(R) Gen Graphics - 24.3.4 (081fc57).
+[AVHWDeviceContext @ 0x78978c005a80] Driver not found in known nonstandard list, using standard behaviour.
+[mpeg2_qsv @ 0x6248529f6840] Decoder: output is video memory surface
+[mpeg2_qsv @ 0x6248529f6840] Use Intel(R) oneVPL to create MFX session with the specified MFX loader
+[graph -1 input from stream 0:0 @ 0x78979c002c40] w:1920 h:1080 pixfmt:qsv tb:1/1000 fr:30000/1001 sar:1/1 csp:bt709 range:tv
+[graph -1 input from stream 0:0 @ 0x78979c002c40] video frame properties congruent with link at pts_time: 0
+[h264_qsv @ 0x6248529f2200] Using input frames context (format qsv) with h264_qsv encoder.
+[h264_qsv @ 0x6248529f2200] Encoder: input is video memory surface
+[h264_qsv @ 0x6248529f2200] Use Intel(R) oneVPL to create MFX session with the specified MFX loader
+[h264_qsv @ 0x6248529f2200] Using the intelligent constant quality with lookahead (LA_ICQ) ratecontrol method
+[h264_qsv @ 0x6248529f2200] profile: avc high; level: 40
+[h264_qsv @ 0x6248529f2200] GopPicSize: 256; GopRefDist: 4; GopOptFlag: closed; IdrInterval: 0
+[h264_qsv @ 0x6248529f2200] TargetUsage: 1; RateControlMethod: ICQ
+[h264_qsv @ 0x6248529f2200] ICQQuality: 26
+[h264_qsv @ 0x6248529f2200] NumSlice: 1; NumRefFrame: 3
+[h264_qsv @ 0x6248529f2200] RateDistortionOpt: OFF
+[h264_qsv @ 0x6248529f2200] RecoveryPointSEI: OFF
+[h264_qsv @ 0x6248529f2200] VDENC: ON
+[h264_qsv @ 0x6248529f2200] Entropy coding: CABAC; MaxDecFrameBuffering: 3
+[h264_qsv @ 0x6248529f2200] NalHrdConformance: OFF; SingleSeiNalUnit: ON; VuiVclHrdParameters: OFF VuiNalHrdParameters: OFF
+[h264_qsv @ 0x6248529f2200] FrameRateExtD: 1001; FrameRateExtN: 30000 
+[h264_qsv @ 0x6248529f2200] IntRefType: 0; IntRefCycleSize: 0; IntRefQPDelta: 0
+[h264_qsv @ 0x6248529f2200] MaxFrameSize: 783360; MaxSliceSize: 0
+[h264_qsv @ 0x6248529f2200] BitrateLimit: OFF; MBBRC: ON; ExtBRC: OFF
+[h264_qsv @ 0x6248529f2200] Trellis: auto
+[h264_qsv @ 0x6248529f2200] RepeatPPS: OFF; NumMbPerSlice: 0; LookAheadDS: 2x
+[h264_qsv @ 0x6248529f2200] AdaptiveI: OFF; AdaptiveB: OFF; BRefType:pyramid
+[h264_qsv @ 0x6248529f2200] MinQPI: 0; MaxQPI: 0; MinQPP: 0; MaxQPP: 0; MinQPB: 0; MaxQPB: 0
+[h264_qsv @ 0x6248529f2200] DisableDeblockingIdc: 0 
+[h264_qsv @ 0x6248529f2200] SkipFrame: no_skip
+[h264_qsv @ 0x6248529f2200] PRefType: default
+[h264_qsv @ 0x6248529f2200] TransformSkip: unknown 
+[h264_qsv @ 0x6248529f2200] IntRefCycleDist: 0
+[h264_qsv @ 0x6248529f2200] LowDelayBRC: OFF
+[h264_qsv @ 0x6248529f2200] MaxFrameSizeI: 0; MaxFrameSizeP: 0
+[h264_qsv @ 0x6248529f2200] ScenarioInfo: 0
+Output #0, matroska, to 'videos/dist/h264_default-qq13-33/e98e45ef0554.mkv':
+  Metadata:
+    encoder         : Lavf61.7.100
+  Stream #0:0: Video: h264 (H264 / 0x34363248), qsv(tv, bt709/unknown/unknown, progressive), 1920x1080 [SAR 1:1 DAR 16:9], q=2-31, 29.97 fps, 1k tbn
+      Metadata:
+        DURATION        : 00:02:00.020000000
+        encoder         : Lavc61.19.100 h264_qsv
+      Side data:
+        cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+[out#0/matroska @ 0x6248529f7b40] Starting thread...
+[in#0/matroska,webm @ 0x6248529e6f80] EOF while reading input
+[in#0/matroska,webm @ 0x6248529e6f80] Terminating thread with return code 0 (success)
+[vist#0:0/mpeg2video @ 0x6248529f87c0] [dec:mpeg2_qsv @ 0x6248529f6000] Decoder thread received EOF packet
+[vist#0:0/mpeg2video @ 0x6248529f87c0] [dec:mpeg2_qsv @ 0x6248529f6000] Decoder returned EOF, finishing
+[vist#0:0/mpeg2video @ 0x6248529f87c0] [dec:mpeg2_qsv @ 0x6248529f6000] Terminating thread with return code 0 (success)
+[vf#0:0 @ 0x6248529f4480] Filtergraph returned EOF, finishing
+[vf#0:0 @ 0x6248529f4480] All consumers returned EOF
+[vf#0:0 @ 0x6248529f4480] Terminating thread with return code 0 (success)
+[vost#0:0/h264_qsv @ 0x6248529f36c0] Encoder thread received EOF
+[vost#0:0/h264_qsv @ 0x6248529f36c0] Terminating thread with return code 0 (success)
+[out#0/matroska @ 0x6248529f7b40] All streams finished
+[out#0/matroska @ 0x6248529f7b40] Terminating thread with return code 0 (success)
+[AVIOContext @ 0x6248529f2d80] Statistics: 116514113 bytes written, 2 seeks, 446 writeouts
+[out#0/matroska @ 0x6248529f7b40] Output file #0 (videos/dist/h264_default-qq13-33/e98e45ef0554.mkv):
+[out#0/matroska @ 0x6248529f7b40]   Output stream #0:0 (video): 3597 frames encoded; 3597 packets muxed (116481630 bytes); 
+[out#0/matroska @ 0x6248529f7b40]   Total: 3597 packets (116481630 bytes) muxed
+[out#0/matroska @ 0x6248529f7b40] video:113752KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: 0.027407%
+frame= 3597 fps=301 q=29.0 Lsize=  113783KiB time=00:01:59.91 bitrate=7772.8kbits/s speed=  10x    
+[AVIOContext @ 0x6248529e6d40] Statistics: 4943 bytes written, 0 seeks, 24 writeouts
+[in#0/matroska,webm @ 0x6248529e6f80] Input file #0 (videos/dist/h264_default-qq13-33/base.mkv):
+[in#0/matroska,webm @ 0x6248529e6f80]   Input stream #0:0 (video): 3597 packets read (262560438 bytes); 3597 frames decoded; 0 decode errors; 
+[in#0/matroska,webm @ 0x6248529e6f80]   Total: 3597 packets (262560438 bytes) demuxed
+[AVIOContext @ 0x6248529f8a80] Statistics: 262601028 bytes read, 0 seeks
