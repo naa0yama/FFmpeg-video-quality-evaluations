@@ -15,6 +15,7 @@ from os import fsync
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tarfile
 import time
 from time import gmtime
@@ -60,18 +61,12 @@ parser.add_argument(
     "--config",
     help="config file path. (e.g): ./videos/source/settings.yml",
     required=True,
+    type=str,
 )
 
 parser.add_argument(
-    "--dist",
-    help="dist dir (default: ./videos/dist)",
-    default="./videos/dist",
-)
-
-parser.add_argument(
-    "-cy",
-    "--config-overwrite",
-    help="Overriding config with defaults. (default: False)",
+    "--overwrite",
+    help="Overriding datafile. (default: False)",
     action="store_true",
 )
 
@@ -85,11 +80,13 @@ parser.add_argument(
     "-fss",
     "--ffmpeg-starttime",
     help="-ss <time_off>  start transcoding at specified time (default: None)",
+    type=int,
 )
 parser.add_argument(
     "-ft",
     "--ffmpeg-cattime",
     help="-t <duration>  stop transcoding after specified duration (default: None)",
+    type=int,
 )
 parser.add_argument(
     "-fthreads",
@@ -99,7 +96,7 @@ parser.add_argument(
     default=4,
 )
 parser.add_argument(
-    "--dist-rm-video",
+    "--dist-save-video",
     help="Automatically delete transcoded videos in Dist folder. (default: False)",
     action="store_true",
 )
@@ -185,7 +182,7 @@ def encoding(encode_cfg: dict, outputext: str, probe_timeout: int) -> dict:  # n
         __ffmpege_cmd.append(f"{encode_cfg['outfile']['filename']}{outputext}")
 
     print(f"__ffmpege_cmd: {__ffmpege_cmd}")  # noqa: T201
-    environ["FFREPORT"] = f"file={encode_cfg['outfile']['filename']}.log:level=32"
+    environ["FFREPORT"] = f"file={encode_cfg['outfile']['filename']}.log:level=40"
     __start = time.time()
     __ff_encode = FfmpegProgress(__ffmpege_cmd)
     with tqdm(
@@ -361,19 +358,21 @@ def createbase(config: dict) -> dict:
 def load_config(configfile: str) -> dict:  # noqa: C901, PLR0915, PLR0912
     """Load config."""
     __configs: dict = {}
+    __config_flag: bool = False
     __encode_cfg: dict = {}
-    __distdir: Path = Path(f"{args.dist}/{Path(configfile).name.replace('.yml', '')}")
+    __distdir: Path = Path(f"./videos/dist/{Path(configfile).name.replace('.yml', '')}")
 
     "configfile ディレクトリが存在しない場合は作成"
     if not Path(configfile).parent.exists():
         Path.mkdir(Path(configfile).parent, parents=True)
 
-    "settings.json があるか、 --config-overwite が付いている"
-    if Path(f"{configfile}").exists() and not args.config_overwrite:
+    "settings.yml がある"
+    if Path(f"{configfile}").exists():
         print(f"{configfile} file found.")  # noqa: T201
         with Path(f"{configfile}").open("r") as file:
             __configs = yaml.load(file)
     else:
+        __config_flag = True
         __configs = {
             "configs": {
                 "origfile": "./videos/source/BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts",
@@ -412,10 +411,11 @@ def load_config(configfile: str) -> dict:  # noqa: C901, PLR0915, PLR0912
 
     """__datafile が設定されてなく、"""
     if __configs["configs"]["datafile"] == "":
-        __datafile = f"data{__configs['configs']['basehash'][:12]}.json"
+        __datafile = f"{Path(configfile).parent}/data{__configs['configs']['basehash'][:12]}.json"
         __configs["configs"]["datafile"] = __datafile
 
-    elif Path(__datafile).exists():
+    elif Path(__datafile).exists() and not args.overwrite:
+        """__datafile がある and --overwrite フラグがない."""
         with Path(__datafile).open("r") as file:
             __encode_cfg = json.load(file)
 
@@ -504,7 +504,11 @@ def load_config(configfile: str) -> dict:  # noqa: C901, PLR0915, PLR0912
 
     if len(__existing_encodes) == len(__results_list):
         print(f"Exitst {__datafile} no updated.")  # noqa: T201
-    else:
+    elif __config_flag is True:
+        print(f"Create datafile is {__datafile} write.")  # noqa: T201
+        with Path(__datafile).open("w") as file:
+            json.dump({"encodes": []}, file)
+    elif __config_flag is False:
         print(f"{len(__results_list)} pattern is {__datafile} write.")  # noqa: T201
         with Path(__datafile).open("w") as file:
             __encode_cfg["encodes"] = __results_list
@@ -521,6 +525,7 @@ def getcsv(datafile: dict) -> None:
     """Get csv."""
     with Path(f"{datafile}").open("r") as file:
         __data = json.load(file)
+    __csvfile: str = f"{datafile}".replace(".json", ".csv", 1)
 
     __exports: list = [
         [
@@ -580,7 +585,8 @@ def getcsv(datafile: dict) -> None:
                 ],
             )
 
-        with Path(f"{datafile}".replace(".json", ".csv", 1)).open("w") as csvfile:
+        print(f"Export csv ..... {__csvfile}")  # noqa: T201
+        with Path(__csvfile).open("w") as csvfile:
             csvwriter = csv.writer(
                 csvfile,
                 delimiter=",",
@@ -589,6 +595,7 @@ def getcsv(datafile: dict) -> None:
             )
             for __export in __exports:
                 csvwriter.writerow(__export)
+        print("Export csv done.")  # noqa: T201
 
 
 def compress_files(dst: Path, files: list) -> None:
@@ -620,6 +627,24 @@ def archive() -> None:
     __assetdir: Path = Path(f"assets/{__basedir.name}/logs")
     __assetdir.mkdir(parents=True, exist_ok=True)
 
+    with Path(f"{__datafile}").open("r") as __file:
+        __data = json.load(__file)
+
+    __hashs: int = len(
+        [
+            encode["outfile"]["hash"]
+            for encode in __data["encodes"]
+            if encode["outfile"]["hash"] != ""
+        ],
+    )
+
+    if (__hashs) != len(__data["encodes"]):
+        print(  # noqa: T201
+            f"\n\ndatafile {__datafile} is hashs {__hashs} to encodes {len(__data['encodes'])}.\n"
+            "archive process stop.",
+        )
+        return
+
     """move to __assetdir"""
     for ext in [".json", ".log"]:
         for file_path in __basedir.glob(f"*{ext}"):
@@ -635,6 +660,14 @@ def archive() -> None:
     for file in [__configfile, __datafile, __datafilecsv]:
         shutil.move(f"{file}", f"{__assetdir.parent}/{file.name}")
         print(f"move: {file} to {__assetdir.parent}/{file.name}")  # noqa: T201
+
+    with Path(f"{__assetdir.parent}/{__configfile.name}").open("r") as __file:
+        ____data = yaml.load(__file)
+    ____data["configs"]["datafile"] = f"{__assetdir.parent}/{__datafile.name}"
+
+    print(f"dataset name overwrite file: {__assetdir.parent}/{__datafile.name}")  # noqa: T201
+    with Path(f"{__assetdir.parent}/{__configfile.name}").open("w") as ___file:
+        yaml.dump(____data, ___file)
 
 
 def main(config: dict) -> None:
@@ -672,13 +705,13 @@ def main(config: dict) -> None:
                     __vmaf_rsp = getvmaf(encode_cfg=__encode, outputext=__baseext)
                 except KeyboardInterrupt:
                     """__datafile write."""
-                    print(f"\n\nKeyboardInterrupt: datafile writeing to {__datafile}\n\n")  # noqa: T201
+                    print(f"\n\nKeyboardInterrupt: datafile writeing to {__datafile}")  # noqa: T201
                     with Path(__datafile).open("w") as file:
                         json.dump({"encodes": __encode_cfg["encodes"]}, file)
                         file.flush()
                         fsync(file.fileno())
-                    print("done.")  # noqa: T201
-                    break
+                    print("done.\n\n")  # noqa: T201
+                    raise
 
                 """load filehash."""
                 with Path(f"{__encode['outfile']['filename']}{__baseext}").open(
@@ -688,7 +721,7 @@ def main(config: dict) -> None:
                     __hasher.update(file_hash_encode.read())
                     __encode_hash = f"{__hasher.hexdigest()}"
 
-                if args.dist_rm_video is True:
+                if args.dist_save_video is False:
                     Path(f"{__encode['outfile']['filename']}{__baseext}").unlink()
                     print(f"Automatically delete: {__encode['outfile']['filename']}{__baseext}")  # noqa: T201
 
@@ -778,9 +811,13 @@ def main(config: dict) -> None:
 
 
 if __name__ == "__main__":
-    __configs: dict = load_config(configfile=args.config)
-    main(config=__configs)
-    getcsv(datafile=__configs["configs"]["datafile"])
+    if args.archive is True and args.encode is True:
+        sys.exit("\n\nCannot be specified together with '--encode' and '--archive'.")
 
     if args.archive:
         archive()
+
+    else:
+        __configs: dict = load_config(configfile=args.config)
+        main(config=__configs)
+        getcsv(datafile=__configs["configs"]["datafile"])
