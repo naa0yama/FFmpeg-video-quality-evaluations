@@ -45,6 +45,7 @@ parser.add_argument(
     "--config",
     help="config file path. (e.g): ./videos/source/settings.yml",
     required=True,
+    type=str,
 )
 args = parser.parse_args()
 

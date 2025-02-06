@@ -8,6 +8,37 @@ Video encoding quality evaluation project using VMAF and SSIM
 * FFmpeg
 * FFprobe
 
+## 暫定利用方法
+
+レポジトリーを clone して devcontainer で起動する
+
+* 設定ファイルを作成
+  * `--config` は設定ファイル名でフォルダーを切り管理しやすくするため必須
+  * `patterns` と `presets` のリストをループで処理する
+    * その時、パラメータとして `outfile.options` の list を分解し `encodes` として生成する。
+    * 生成したデータを `datafile` のファイルに保存する
+
+  ```bash
+  python src/ffmpegvqe/entrypoint.py --config videos/source/h264_default-qq13-14.yml
+
+  ```
+
+* エンコードテスト
+  * `--encode` をつける事で設定ファイルの pattern 分エンコードし、 VMAF を計測後、 datafile に書き込む
+
+  ```bash
+  python src/ffmpegvqe/entrypoint.py --config videos/source/h264_default-qq13-14.yml --encode
+
+  ```
+
+* グラフを表示
+  * `--args --config videos/source/h264_default-qq13-14.yml` を設定する事で config を読み込ませる
+
+  ```bash
+  bokeh serve src/ffmpegvqe/graph.py --show --args --config videos/source/h264_default-qq13-14.yml
+
+  ```
+
 ## 準備
 
 ### Device settings
