@@ -158,7 +158,7 @@ size_plot = figure(
     sizing_mode="scale_both",
     min_width=400,
     min_height=300,
-    title="Bit Rate (Mbs) and File Size (MB)",
+    title=f"Bit Rate (Mbs) and File Size (MB) from {configfile}",
     x_range=x_shared,
     x_axis_label="Index",
     y_axis_label="File Size (MB)",
@@ -222,7 +222,7 @@ vmaf_plot = figure(
     sizing_mode="scale_both",
     min_width=400,
     min_height=300,
-    title="VMAF",
+    title=f"VMAF from {configfile}",
     x_range=x_shared,
     x_axis_label="Index",
     y_axis_label="VMAF Mean",
@@ -271,7 +271,7 @@ frame_plot = figure(
     sizing_mode="scale_both",
     min_width=400,
     min_height=300,
-    title="Frames",
+    title=f"Frames from {configfile}",
     x_range=x_shared,
     x_axis_label="Index",
     y_axis_label="Frame",
@@ -336,7 +336,6 @@ layout = column(
 
 curdoc().add_root(layout)
 curdoc().title = "VQE from FFmpeg"
-
 last_mod_time: float = 0
 
 

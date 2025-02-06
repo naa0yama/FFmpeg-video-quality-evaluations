@@ -2,8 +2,8 @@
 
 # パラメータの範囲を定義
 CMD="${1}"
-START=20
-END=30
+START=23
+END=33
 
 # min_qp_iのループ
 for min_qp_i in $(seq ${START} ${END}); do
