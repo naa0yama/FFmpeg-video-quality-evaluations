@@ -1,0 +1,96 @@
+---
+configs:
+  origfile: ./videos/source/BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts
+  basefile: videos/dist/libx264_default-crf-13-33/base.mkv
+  basehash: eddf510ff069d21279b0f74dad032bc67063b8ddaf31361390b788d35f595d0a
+  datafile: assets/libx264_default-crf-13-33/dataeddf510ff069.json
+  patterns:
+    - codec: libx264
+      type: libx264
+      comments: ''
+      presets:
+        - medium
+      infile:
+        option: ''
+      outfile:
+        options:
+          - -crf 13
+          - -crf 14
+          - -crf 15
+          - -crf 16
+          - -crf 17
+          - -crf 18
+          - -crf 19
+          - -crf 20
+          - -crf 21
+          - -crf 22
+          - -crf 23
+          - -crf 24
+          - -crf 25
+          - -crf 26
+          - -crf 27
+          - -crf 28
+          - -crf 29
+          - -crf 30
+          - -crf 31
+          - -crf 32
+          - -crf 33
+      hwaccels: ''
+  ffmpege:
+    program_version:
+      version: '7.1'
+      copyright: Copyright (c) 2007-2024 the FFmpeg developers
+      compiler_ident: gcc 13 (Ubuntu 13.3.0-6ubuntu2~24.04)
+      configuration: --enable-avisynth --enable-libaom --enable-libaribb24 --enable-libass --enable-libdav1d --enable-libfreetype --enable-libmp3lame --enable-libopus --enable-libsvtav1 --enable-libvmaf
+        --enable-libvpl --enable-libvpx --enable-libx264 --enable-libx265 --enable-vaapi --enable-gpl --enable-nonfree --enable-version3 --disable-debug --disable-doc --disable-ffplay --disable-shared --enable-small
+        --enable-static --enable-stripping --extra-libs='-lpthread -lm' --pkg-config-flags=--static --extra-cflags=-fopenmp --extra-ldflags='-fopenmp -Wl,--allow-multiple-definition -Wl,-z,stack-size=2097152'
+        --toolchain=hardened
+    library_versions:
+      - name: libavutil
+        major: 59
+        minor: 39
+        micro: 100
+        version: 3876708
+        ident: Lavu59.39.100
+      - name: libavcodec
+        major: 61
+        minor: 19
+        micro: 100
+        version: 4002660
+        ident: Lavc61.19.100
+      - name: libavformat
+        major: 61
+        minor: 7
+        micro: 100
+        version: 3999588
+        ident: Lavf61.7.100
+      - name: libavdevice
+        major: 61
+        minor: 3
+        micro: 100
+        version: 3998564
+        ident: Lavd61.3.100
+      - name: libavfilter
+        major: 10
+        minor: 4
+        micro: 100
+        version: 656484
+        ident: Lavfi10.4.100
+      - name: libswscale
+        major: 8
+        minor: 3
+        micro: 100
+        version: 525156
+        ident: SwS8.3.100
+      - name: libswresample
+        major: 5
+        minor: 3
+        micro: 100
+        version: 328548
+        ident: SwR5.3.100
+      - name: libpostproc
+        major: 58
+        minor: 3
+        micro: 100
+        version: 3801956
+        ident: postproc58.3.100
