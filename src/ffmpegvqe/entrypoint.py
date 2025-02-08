@@ -7,6 +7,7 @@
 # Standard Library
 import argparse
 import csv
+from functools import partial
 import hashlib
 import json
 from os import cpu_count
@@ -24,7 +25,7 @@ from typing import Any
 
 from ffmpeg_progress_yield import FfmpegProgress
 import ruamel.yaml
-from tqdm import tqdm
+from tqdm import tqdm as std_tqdm
 
 
 class NoAliasDumper(ruamel.yaml.representer.RoundTripRepresenter):
@@ -101,6 +102,12 @@ parser.add_argument(
     action="store_true",
 )
 args = parser.parse_args()
+
+tqdm = partial(
+    std_tqdm,
+    bar_format="{desc}{percentage:5.0f}%|{bar:40}{r_bar}",
+    dynamic_ncols=True,
+)
 
 
 def getframeinfo(filename: str) -> dict:
@@ -186,7 +193,7 @@ def encoding(encode_cfg: dict, outputext: str, probe_timeout: int) -> dict:  # n
     __start = time.time()
     __ff_encode = FfmpegProgress(__ffmpege_cmd)
     with tqdm(
-        desc=f"[ENCODE] {encode_cfg['outfile']['filename']}",
+        desc=f"[ENCODE] {encode_cfg['outfile']['filename']}.log\t\t",
         total=100,
         position=1,
     ) as pbar:
@@ -259,7 +266,7 @@ def getvmaf(encode_cfg: dict, outputext: str) -> dict:
     __start = time.time()
     __ff_vmaf = FfmpegProgress(__ffmpege_cmd)
     with tqdm(
-        desc=f"[VMAF  ] {encode_cfg['outfile']['filename']}",
+        desc=f"[VMAF  ] {encode_cfg['outfile']['filename']}_vmaf.json\t",
         total=100,
         position=1,
     ) as pbar:
@@ -306,7 +313,7 @@ def createbase(config: dict) -> dict:
     __ff = FfmpegProgress(__ffmpege_cmd)
     elapsed_time: float = 0
     with tqdm(
-        desc=f"Create {__origfile} to {__basefile}",
+        desc=f"Create {__origfile} to {__basefile}\t\t",
         total=100,
         position=1,
     ) as pbar:
@@ -607,9 +614,13 @@ def compress_files(dst: Path, files: list) -> None:
 
     print(f"\n\nCreate archive file: {archive_name}")  # noqa: T201
     with tarfile.open(archive_name, "w:xz") as tar:
-        for file_path in files:
+        __length: int = len(files)
+        for __index, file_path in enumerate(files):
             tar.add(file_path, arcname=file_path.name)
-            print(f"Add compress file: {file_path.name}")  # noqa: T201
+            print(  # noqa: T201
+                f"{__index + 1:0>4}/{__length:0>4} ({(__index + 1) / __length:>7.2%})"
+                f" Add compress file: {file_path.name}",
+            )
     print("Create archive file done.")  # noqa: T201
 
     for file in files:
@@ -686,7 +697,7 @@ def main(config: dict) -> None:
         __length: int = len(__encode_cfg["encodes"])
         for __index, __encode in enumerate(__encode_cfg["encodes"]):
             print(  # noqa: T201
-                "=" * 80
+                "=" * 155
                 + f"\n{__index + 1:0>4}/{__length:0>4} ({(__index + 1) / __length:>7.2%})\n",
             )
 
@@ -703,9 +714,9 @@ def main(config: dict) -> None:
                         probe_timeout=int(float(__base_probe_log["format"]["duration"])),
                     )
                     __vmaf_rsp = getvmaf(encode_cfg=__encode, outputext=__baseext)
-                except KeyboardInterrupt:
+                except (KeyboardInterrupt, Exception) as err:
                     """__datafile write."""
-                    print(f"\n\nKeyboardInterrupt: datafile writeing to {__datafile}")  # noqa: T201
+                    print(f"\n\n{err}: datafile writeing to {__datafile}")  # noqa: T201
                     with Path(__datafile).open("w") as file:
                         json.dump({"encodes": __encode_cfg["encodes"]}, file)
                         file.flush()
