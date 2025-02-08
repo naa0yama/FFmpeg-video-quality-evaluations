@@ -4,6 +4,57 @@ h264_qsv, hevc_qsv, av1_qsv のエンコードパラメータで容量が小さ�
 
 ## Environment
 
+## 現状のベスト
+
+### h264_qsv
+
+```bash
+>  File size, bitrate, compress_rate, ssim_harmonic_mean,vmaf_min, vmaf_harmonic_mean
+> 128,750.08, 8581.91,          0.50,                  1,   76.40,              96.61 (default)
+> 108,452.88, 7228.99,          0.58,               0.99,   73.42,              95.70 本設定
+
+ffmpeg -y -threads 4 -hide_banner -ignore_unknown -fflags +discardcorrupt+genpts -analyzeduration 30M -probesize 100M \
+    -hwaccel_output_format qsv \
+    -map 0:v -hwaccel qsv -c:v mpeg2_qsv -i base.mkv \
+    -c:v h264_qsv -preset:v veryslow \
+    -global_quality 25 -look_ahead 1 -look_ahead_depth 60 -look_ahead_downsampling off \
+    -aspect 16:9 -gop 256 -bf 16 -refs 9 -b_strategy 1 \
+    -color_range tv -color_primaries bt709 -color_trc bt709 -colorspace bt709 -max_muxing_queue_size 4000 \
+    -movflags faststart -f mkv \
+    -map 0:a -c:a aac -ar 48000 -ab 256k -ac 2 -bsf:a aac_adtstoasc \
+    \
+    out.mkv
+
+```
+
+### hevc_qsv
+
+```bash
+  -c:v hevc_nvenc -preset slow -profile:v main10 -pix_fmt yuv420p10le 
+  -bf 3 -refs 9
+  -color_range tv -color_primaries bt709 -color_trc bt709 -colorspace bt709
+  -vf yadif=mode=send_frame:parity=auto:deint=all,scale=w=-2:h=720 -max_muxing_queue_size 4000
+  -movflag faststart -f mp4
+  -map 0:a -c:a aac -ar 48000 -ab 256k -ac 2 -bsf:a aac_adtstoasc
+
+  '-hide_banner', '-ignore_unknown',
+  '-fflags', '+discardcorrupt+genpts', '-analyzeduration', '30M', '-probesize', '100M',
+  '-map', '0:v', '-aspect', '16:9', '-c:v', 'hevc_nvenc', '-preset', 'slow', '-profile:v', 'main10',
+  '-pix_fmt', 'yuv420p10le', '-rc:v', 'constqp', '-rc-lookahead', 20, '-spatial-aq', 0, '-temporal-aq', 1,
+  '-multipass', 'qres', '-g', 250, '-b_ref_mode', 'each', '-bf', 3, '-refs', 9,
+  '-color_range', 'tv', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709',
+  '-vf', 'yadif=mode=send_frame:parity=auto:deint=all,scale=w=-2:h=720',
+  '-max_muxing_queue_size', 4000,
+  '-tag:v', 'hvc1', '-movflags', 'faststart', '-f', 'mp4',
+
+  '-map', '0:a'
+  '-c:a', 'aac', '-ar', '48000', '-ab', '256k', '-ac', '2'
+  '-bsf:a', 'aac_adtstoasc'
+
+```
+
+### av1_qsv
+
 ## 画質探索の極意
 
 私の知識で、簡単に動画ファイルの圧縮について記述します。  
@@ -49,42 +100,20 @@ Intel QSV のエンコードの特性として、 `libx264` でよく利用さ�
 | Hardware | `-hwaccel_output_format qsv`              |                           | 出力フォーマットを Hardware QSV にする                                            |
 |          |                                           |                           |                                                                                   |
 | Input    | `-hwaccel qsv -c:v mpeg2_qsv -i base.mkv` |                           | Intel QSV の decoder を指定し Input を読み込む                                    |
-|          |                                           |                           |                                                                                   |
-|          |                                           |                           |                                                                                   |
-|          |                                           |                           |                                                                                   |
-|          |                                           |                           |                                                                                   |
-|          |                                           |                           |                                                                                   |
-|          | `-global_quality <int>` `-look_ahead 1`   |                           |                                                                                   |
-|          | `-look_ahead_depth`                       | 0, 0-100                  |                                                                                   |
-|          | `-look_ahead_downsampling`                | unknown, (auto,off,2x,4x) |                                                                                   |
-|          | `-gop`                                    | 256                       | GOP長、Iフレーム間の距離                                                          |
-|          | `-bf`                                     | 2                         | I-Frame と P-Frame 間の B-Frame の数                                              |
-|          | `-refs`                                   | 3                         | B-Frame 動き補正を考慮する参照フレーム数                                          |
-|          | `-min_qp_i`                               | -1 - 51                   | Maximum video quantizer scale for I frame                                         |
-|          | `-min_qp_p`                               | -1 - 51                   | Maximum video quantizer scale for P frame                                         |
-|          | `-min_qp_b`                               | -1 - 51                   | Maximum video quantizer scale for B frame                                         |
-|          |                                           |                           |                                                                                   |
-|          |                                           |                           |                                                                                   |
+|          | `-map 0:v`                                |                           | 映像を input からマッピング                                                       |
 |          | `-c:v h264_qsv`                           |                           |                                                                                   |
 |          | `-preset:v veryslow`                      |                           | preset                                                                            |
-|          | `-rdo`                                    | `-1`, 0, 1                | レート歪みの最適化を有効にする                                                    |
-|          | `-mbbrc`                                  | `-1`, 0, 1                | マクロビットレベルのビットレート制御                                              |
-|          | `-extbrc`                                 | `-1`, 0, 1                | 拡張ビットレート制御                                                              |
-|          | `-b_strategy`                             | `-1`, 0, 1                | B-Frame を 参照 B-Frame として使用することを制御します。                          |
-|          |                                           |                           |                                                                                   |
-|          |                                           |                           |                                                                                   |
-|          |                                           |                           |                                                                                   |
-|          |                                           |                           |                                                                                   |
+|          | `-global_quality 25 -look_ahead 1`        |                           | LA-ICQ でエンコードする                                                           |
+|          | `-look_ahead_depth 60`                    | 0, 0-100                  | 先行読み込みフレームを 60 枚(約2秒)にする                                         |
+|          | `-look_ahead_downsampling off`            | unknown, (auto,off,2x,4x) | 先行読み込み時にダウンサンプリングをしない                                        |
+|          | `-gop`                                    | 256                       | GOP長、Iフレーム間の距離                                                          |
+|          | `-bf 16`                                  | 2                         | I-Frame と P-Frame 間の B-Frame の数                                              |
+|          | `-refs 9`                                 | 3                         | B-Frame 動き補正を考慮する参照フレーム数                                          |
+|          | `-b_strategy 1`                           | `-1`, 0, 1                | B-Frame を 参照 B-Frame として使用することを制御します。                          |
+|          | `-aspect:v 16:9`                          |                           | アスペクト比を 16:9 に設定                                                        |
 |          | `-movflags faststart`                     |                           | メタデータをファイルの先頭にする                                                  |
-|          | `-tag:v hvc1`                             |                           | Apple 製品で再生出来ないため `hvc1` 方式であることを明示する                      |
+|          | `-tag:v hvc1`                             |                           | Apple 製品で再生出来ないため `hvc1` 方式であることを明示する (HEVC の時のみ)      |
 |          | `-f mkv`                                  |                           | ファイルフォーマットは MKV にする                                                 |
-|          | `-map 0:v`                                |                           | 映像を input からマッピング                                                       |
-|          |                                           |                           |                                                                                   |
-| Video    | `-aspect:v 16:9`                          |                           | アスペクト比を 16:9 に設定                                                        |
-|          | `-c:v hevc_nvenc`                         |                           | エンコーダーを NVENC HEVC (x265) に設定                                           |
-|          | `-preset:v p4`                            |                           | preset を指定                                                                     |
-|          | `-profile:v main10`                       |                           | 10-bit 4:2:0 プロファイル                                                         |
-|          | `-tune hq`                                |                           | 画質最適化指定                                                                    |
 |          |                                           |                           |                                                                                   |
 | Audio    | `-c:a aac`                                |                           | AAC に変換                                                                        |
 |          | `-ar 48000`                               |                           | サンプリングレート 48kHz                                                          |
@@ -247,6 +276,29 @@ ffmpeg -hwaccel qsv -i input.mp4 \
 
 ```
 
+また、今回採用した `-bf 16 -refs 9` を設定すると `q=33.0` になるためこの後 `qp` を設定する場合は考慮が必要
+
+```text
+-global_quality 25 -look_ahead 1                 ICQQuality: 25, q=28.0
+-global_quality 25 -look_ahead 1 -bf 16 -refs 9, ICQQuality: 25, q=33.0
+-global_quality   q=
+13                21
+14                22
+15-16             24
+17                25
+18                26
+19                27
+20-23             26
+24-25             28
+26                29
+27                30
+28                31
+29-31             33
+32                34
+33                35
+
+```
+
 ### -b_strategy
 
 Strategy to choose between I/P/B-frames (from -1 to 1) (default -1)  
@@ -258,7 +310,7 @@ B-Frame の挿入位置を適応補完で決定する
 - -global_quality 25 -look_ahead 1 -bf 16 -refs 9 -b_strategy 1
 
 > -b_strategy,  File size, bitrate, compress_rate, ssim_harmonic_mean,vmaf_min, vmaf_harmonic_mean
->              128,750.08, 8581.91,          0.50,                  1,   76.40,              96.61 (default)
+>              128,750.08, 8581.91,          0.50,                  1,   76.40,              96.61 (normal)
 >           0, 143,151.53, 9541.84,          0.44,               0.99,   74.70,              95.80
 >           1, 108,452.88, 7228.99,          0.58,               0.99,   73.42,              95.70
 
@@ -266,33 +318,45 @@ B-Frame の挿入位置を適応補完で決定する
 
 ### -min_qp_i, -min_qp_p, -min_qp_b
 
+* `-min_qp_i`: Maximum video quantizer scale for I frame
+* `-min_qp_p`: Maximum video quantizer scale for P frame
+* `-min_qp_b`: Maximum video quantizer scale for B frame
+
 `-min_qp_i`, `-min_qp_p`, `-min_qp_b` を設定する  
-デフォルトの設定で出力した、データだと `-global_quality 20` までは VMAF mean の数値がブレないためそのあたりが品質の上限が良さそう
+デフォルトの設定で出力した、データだと `-global_quality 20` までは VMAF mean の数値がブレないためそのあたりが品質の上限が良さそう。  
+qp は `-global_quality 25` を下回って設定しても効果が無いようである。また、 `-global_quality 25 -look_ahead 1 -bf 16 -refs 9` を使った場合。 q=33.0 となるため q=28 - q=38 をターゲットに試験した。  
+結果は、下記の通りだが、 `-min_qp_i` の上下のみで VMAF min, VMAF mean の変化があるため `-min_qp_p`, `-min_qp_b` の効果を確認出来なかった。また、I25 - I29 でのファイルサイズ差は 約10MBで、そこまで頑張って設定しても旨味がなさそう
 
-[ ] -global_quality 25 で min_qp 23 など指定が効果あるのか調査
-   効果無いなら、 -global_quality 23 など下げて再試験
+```text
+>               File size, bitrate, compress_rate, ssim_harmonic_mean,vmaf_min, vmaf_harmonic_mean
+>              128,750.08, 8581.91,          0.50,                  1,   76.40,              96.61 (normal)
+>              108,452.88, 7228.99,          0.58,               0.99,   73.42,              95.70 (default)
 
-```bash
-> global_quality,  File size,  bitrate, compress_rate, ssim_harmonic_mean,vmaf_min, vmaf_harmonic_mean
->             20, 175,850.31, 11721.40,          0.31,               1.00,   80.67,              97.76
->             21, 174,661.38, 11642.15,          0.32,               1.00,   81.10,              97.74
->             22, 173,709.93, 11578.73,          0.32,               1.00,   80.93,              97.72
->             23, 165,299.69, 11018.14,          0.36,               1.00,   81.02,              97.54
->             24, 146,122.22,  9739.86,          0.43,               1.00,   78.51,              97.13
->             25, 128,750.08,  8581.91,          0.50,               1.00,   76.40,              96.61 (default)
->             26, 113,782.77,  7584.25,          0.56,               1.00,   74.74,              96.04
->             27,  96,814.24,  6453.21,          0.62,               0.99,   72.59,              95.33
->             28,  83,567.23,  5570.22,          0.67,               0.99,   70.38,              94.56
->             29,  71,028.50,  4734.44,          0.72,               0.99,   67.06,              93.55
->             30,  63,764.11,  4250.23,          0.75,               0.99,   64.69,              92.58
+> I25:P25:B25  108,438.35, 7228.02,          0.58,               0.99,   73.42,              95.70
+> I26:P26:B26  108,310.00, 7219.46,          0.58,               0.99,   73.14,              95.68
+> I27:P27:B27  107,448.87, 7162.06,          0.58,               0.99,   72.88,              95.50
+> I28:P28:B28  102,625.93, 6840.59,          0.60,               0.99,   71.42,              95.15
+> I29:P29:B29   98,810.38, 6586.26,          0.61,               0.99,   70.16,              94.69
+
+ここから下は使えないだろう...
+> I30:P30:B30   90,632.87, 6041.18,          0.65,               0.99,   68.60,              93.94
+> I31:P31:B31   82,588.07, 5504.95,          0.68,               0.99,   67.26,              93.05
+> I32:P32:B32   73,254.13, 4882.79,          0.71,               0.99,   64.29,              91.99
+> I33:P33:B33   63,608.83, 4239.88,          0.75,               0.99,   59.49,              90.55
+> I34:P34:B34   51,465.86, 3430.49,          0.80,               0.98,   55.26,              88.75
+> I35:P35:B35   43,258.03, 2883.39,          0.83,               0.98,   51.50,              87.05
+> I36:P36:B36   35,406.80, 2360.06,          0.86,               0.98,   47.29,              84.96
+> I37:P37:B37   28,417.56, 1894.19,          0.89,               0.98,   43.52,              82.69
+> I38:P38:B38   23,438.38, 1562.30,          0.91,               0.97,   39.65,              80.15
 
 ```
 
 ### `-look_ahead_depth`, `-look_ahead_downsampling`
 
-### `-profile:v high`
+* `-look_ahead_depth` は LA-ICQ で適切な bitrate 割当のために設定する、が `-preset:v veryslow` の場合は設定されているようで、動作に変更が無い
+* `-look_ahead_downsampling` こちらも同じ、でサンプルでは効果がなかった
 
-main10
+全くのズレがない、横一列
 
 ### -threads
 
@@ -326,21 +390,3 @@ ffmpeg の `-threads X` でフレームあたりの VMAF 品質低下がある�
   * `-max_frame_size_p`
   * `-max_slice_size`
   * `-bitrate_limit`
-
-## h264_qsv
-
-h264_qsv では標準設定で、下記に設定されているようだった。
-そのため、 `-g` は十分であり、 `-bf`, `-refs` のいい感じの場所を模索したところ、旨味は `-bf 16 -refs 9` あたりが最も効率が良い、 `-preset` での変化がなかったことから h264_qsv のデフォルトだと思われる。
-
-* `-g 256`
-* `-bf 2`
-* `-refs 3`
-
-```bash
-# テストしたコマンド
-ffmpeg -y -threads 4 -hwaccel_output_format qsv \
-  -hwaccel qsv -c:v mpeg2_qsv -i ./videos/dist/base.mkv \
-  -global_quality 13 -look_ahead 1 -c:v h264_qsv \
-  -preset:v veryslow ./videos/dist/<outfile.mkv>
-
-```
