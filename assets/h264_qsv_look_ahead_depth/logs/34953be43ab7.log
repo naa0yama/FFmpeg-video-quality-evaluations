@@ -1,0 +1,33 @@
+ffmpeg started on 2025-02-07 at 21:41:37
+Report written to "videos/dist/h264_qsv_look_ahead_depth/34953be43ab7.log"
+Log level: 40
+Command line:
+ffmpeg -progress - -nostats -y -threads 4 -hwaccel_output_format qsv -hwaccel qsv -c:v mpeg2_qsv -i videos/dist/h264_qsv_look_ahead_depth/base.mkv -global_quality 25 -look_ahead 1 -bf 16 -refs 9 -look_ahead_depth 125 -c:v h264_qsv -preset:v veryslow videos/dist/h264_qsv_look_ahead_depth/34953be43ab7.mkv
+ffmpeg version 7.1 Copyright (c) 2000-2024 the FFmpeg developers
+  built with gcc 13 (Ubuntu 13.3.0-6ubuntu2~24.04)
+  configuration: --enable-avisynth --enable-libaom --enable-libaribb24 --enable-libass --enable-libdav1d --enable-libfreetype --enable-libmp3lame --enable-libopus --enable-libsvtav1 --enable-libvmaf --enable-libvpl --enable-libvpx --enable-libx264 --enable-libx265 --enable-vaapi --enable-gpl --enable-nonfree --enable-version3 --disable-debug --disable-doc --disable-ffplay --disable-shared --enable-small --enable-static --enable-stripping --extra-libs='-lpthread -lm' --pkg-config-flags=--static --extra-cflags=-fopenmp --extra-ldflags='-fopenmp -Wl,--allow-multiple-definition -Wl,-z,stack-size=2097152' --toolchain=hardened
+  libavutil      59. 39.100 / 59. 39.100
+  libavcodec     61. 19.100 / 61. 19.100
+  libavformat    61.  7.100 / 61.  7.100
+  libavdevice    61.  3.100 / 61.  3.100
+  libavfilter    10.  4.100 / 10.  4.100
+  libswscale      8.  3.100 /  8.  3.100
+  libswresample   5.  3.100 /  5.  3.100
+  libpostproc    58.  3.100 / 58.  3.100
+Input #0, matroska,webm, from 'videos/dist/h264_qsv_look_ahead_depth/base.mkv':
+  Metadata:
+    ENCODER         : Lavf61.7.100
+  Duration: 00:02:00.02, start: 0.000000, bitrate: 17503 kb/s
+  Stream #0:0: Video: mpeg2video, yuv420p(tv, bt709/unknown/unknown, progressive), 1920x1080 [SAR 1:1 DAR 16:9], 29.97 fps, 29.97 tbr, 1k tbn
+      Metadata:
+        DURATION        : 00:02:00.020000000
+      Side data:
+        cpb: bitrate max/min/avg: 24000000/0/0 buffer size: 9781248 vbv_delay: N/A
+[out#0/matroska @ 0x5627a4899a40] No explicit maps, mapping streams automatically...
+[vost#0:0/h264_qsv @ 0x5627a4895500] Created video stream from input stream 0:0
+[h264_qsv @ 0x5627a4894200] Value 125.000000 for parameter 'look_ahead_depth' out of range [0 - 100]
+[h264_qsv @ 0x5627a4894200] Error setting option look_ahead_depth to value 125.
+[vost#0:0/h264_qsv @ 0x5627a4895500] Error applying encoder options: Numerical result out of range
+Error opening output file videos/dist/h264_qsv_look_ahead_depth/34953be43ab7.mkv.
+Error opening output files: Numerical result out of range
+[AVIOContext @ 0x5627a489ac40] Statistics: 835485 bytes read, 0 seeks
