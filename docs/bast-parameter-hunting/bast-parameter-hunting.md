@@ -2,6 +2,10 @@
 
 h264_qsv, hevc_qsv, av1_qsv のエンコードパラメータで容量が小さく、 VMAF が優れているパラメータを模索する方法。
 
+[ ] `--archive` にする時 codec でフォルダを切るようにする
+[ ] 複数評価映像に対応する
+[ ] codec 事にデフォルトテンプレになるようにする
+
 ## Environment
 
 ## 現状のベスト
@@ -28,6 +32,44 @@ ffmpeg -y -threads 4 -hide_banner -ignore_unknown -fflags +discardcorrupt+genpts
 ```
 
 ### hevc_qsv
+
+hevc_qsv は VMAF min/mean の値から h264_qsv と同程度にすると `-global_quality 22` が基準になりそうためこれを使ってテストする  
+それでも h264 に比べて 38% 圧縮されるのは優秀と思う。
+
+```bash
+h264_qsv -global_quality 25 128,750kB, VMAF min/mean 76.400/96.610
+hevc_qsv -global_quality 22  78,567kB, VMAF min/mean 77.739/96.204
+
+ffmpeg -y -threads 4 -hide_banner -ignore_unknown -fflags +discardcorrupt+genpts -analyzeduration 30M -probesize 100M \
+    -hwaccel_output_format qsv \
+    -map 0:v -hwaccel qsv -c:v mpeg2_qsv -i videos/source/BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts \
+    -c:v hevc_qsv -preset:v veryslow \
+    -global_quality 22 -look_ahead 1 -bf 14 -refs 8 -extbrc 1 -look_ahead_depth 60 \
+    -aspect 16:9 -gop 256 -bf 14 -refs 8 -b_strategy 1 \
+    -color_range tv -color_primaries bt709 -color_trc bt709 -colorspace bt709 -max_muxing_queue_size 4000 \
+    -movflags faststart -f mkv \
+    -map 0:a -c:a aac -ar 48000 -ab 256k -ac 2 -bsf:a aac_adtstoasc \
+    \
+    out.mkv
+
+```
+
+```bash
+# LA-ICQ
+ffmpeg -loglevel verbose -y -threads 4 -hwaccel_output_format qsv -hwaccel qsv \
+  -c:v mpeg2_qsv -i videos/dist/hevc_qsv-bf-refs/base.mkv \
+  -global_quality 22 -look_ahead 1 -bf 14 -refs 8 \
+  -extbrc 1 -look_ahead_depth 40 -c:v hevc_qsv -preset:v veryslow -f null -
+
+
+
+
+ffmpeg -loglevel verbose -y -threads 4 -hwaccel_output_format qsv -hwaccel qsv \
+  -c:v mpeg2_qsv -i videos/dist/hevc_qsv-bf-refs/base.mkv \
+  -global_quality 22 -look_ahead_depth 40 -bf 14 -refs 8 \
+  -c:v hevc_qsv -preset:v veryslow -f null -
+
+```
 
 ```bash
   -c:v hevc_nvenc -preset slow -profile:v main10 -pix_fmt yuv420p10le 
@@ -299,6 +341,33 @@ ffmpeg -hwaccel qsv -i input.mp4 \
 
 ```
 
+#### hevc_qsv
+
+```text
+>  File size, bitrate, compress_rate, ssim_harmonic_mean,vmaf_min, vmaf_harmonic_mean
+>  80,452.69, 5362.62,          0.69,                  1,   77.74,               96.20 (default)
+>  76,031.02, 5067.89,          0.70,                  1,   76.75,               95.93 -bf 14 -refs 8 (-bf 16 -refs 9 の比率に近い)
+
+```
+
+hevc_qsv では `-bf 16` 以上は `-refs 3` 以上には出来ない、 `-bf 15 -refs 20` は通る
+
+```bash
+$ ffmpeg -y -threads 4 -hwaccel_output_format qsv \
+    -hwaccel qsv -c:v mpeg2_qsv -i videos/dist/hevc_qsv-bf-refs/base.mkv \
+    -global_quality 22 -look_ahead 1 -bf 16 -refs 4 -c:v hevc_qsv -preset:v veryslow -f null -
+
+[hevc_qsv @ 0x59894042fec0] Invalid FrameType:0.
+[vost#0:0/hevc_qsv @ 0x5989404311c0] Error submitting video frame to the encoder
+[vost#0:0/hevc_qsv @ 0x5989404311c0] Error encoding a frame: Invalid data found when processing input
+[vost#0:0/hevc_qsv @ 0x5989404311c0] Task finished with error code: -1094995529 (Invalid data found when processing input)
+[vost#0:0/hevc_qsv @ 0x5989404311c0] Terminating thread with return code -1094995529 (Invalid data found when processing input)
+[out#0/null @ 0x598940435800] video:8024KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=   67 fps=0.0 q=-0.0 Lsize=N/A time=00:00:02.16 bitrate=N/A speed=6.04x    
+Conversion failed!
+
+```
+
 ### -b_strategy
 
 Strategy to choose between I/P/B-frames (from -1 to 1) (default -1)  
@@ -355,6 +424,7 @@ qp は `-global_quality 25` を下回って設定しても効果が無いよう�
 
 * `-look_ahead_depth` は LA-ICQ で適切な bitrate 割当のために設定する、が `-preset:v veryslow` の場合は設定されているようで、動作に変更が無い
 * `-look_ahead_downsampling` こちらも同じ、でサンプルでは効果がなかった
+* hevc_qsv の場合は `-extbrc 1 -look_ahead_depth 60` としているするひつよがあった
 
 全くのズレがない、横一列
 
@@ -390,3 +460,10 @@ ffmpeg の `-threads X` でフレームあたりの VMAF 品質低下がある�
   * `-max_frame_size_p`
   * `-max_slice_size`
   * `-bitrate_limit`
+
+* 数値に違いがないため、効果がわからず
+  * `hevc_qsv`
+    * `-rdo`
+    * `-mbbrc`
+    * `-extbrc`
+    * `-b_strategy`
