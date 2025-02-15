@@ -19,7 +19,7 @@ Video encoding quality evaluation project using VMAF and SSIM
     * 生成したデータを `datafile` のファイルに保存する
 
   ```bash
-  python src/ffmpegvqe/entrypoint.py --config videos/source/h264_default-qq13-14.yml
+  python src/ffmpegvqe/entrypoint.py --config videos/h264_default-qq13-14.yml
 
   ```
 
@@ -27,15 +27,15 @@ Video encoding quality evaluation project using VMAF and SSIM
   * `--encode` をつける事で設定ファイルの pattern 分エンコードし、 VMAF を計測後、 datafile に書き込む
 
   ```bash
-  python src/ffmpegvqe/entrypoint.py --config videos/source/h264_default-qq13-14.yml --encode
+  python src/ffmpegvqe/entrypoint.py --config videos/h264_default-qq13-14.yml --encode
 
   ```
 
 * グラフを表示
-  * `--args --config videos/source/h264_default-qq13-14.yml` を設定する事で config を読み込ませる
+  * `--args --config videos/h264_default-qq13-14.yml` を設定する事で config を読み込ませる
 
   ```bash
-  bokeh serve src/ffmpegvqe/graph.py --show --args --config videos/source/h264_default-qq13-14.yml
+  bokeh serve src/ffmpegvqe/graph.py --show --args --config videos/h264_default-qq13-14.yml
 
   ```
 

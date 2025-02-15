@@ -64,6 +64,7 @@ def load_data(datafile: str) -> dict[str, Any]:
 def extract_data(data: dict[str, Any]) -> dict[str, Sequence[Any]]:
     """Extract data."""
     _bit_rate: list = []
+    _name: list = []
     _options: list = []
     _size_mbyte: list = []
     _codec: list = []
@@ -79,6 +80,7 @@ def extract_data(data: dict[str, Any]) -> dict[str, Sequence[Any]]:
 
     for __encode in data["encodes"]:
         _bit_rate.append(__encode["outfile"].get("bit_rate_kbs", 0.0) / 1000)
+        _name.append(__encode["infile"]["name"])
         _options.append(__encode["outfile"]["options"])
         _size_mbyte.append(__encode["outfile"].get("size_kbyte", 0.0) / 1024)
         _codec.append(__encode["codec"])
@@ -119,6 +121,7 @@ def extract_data(data: dict[str, Any]) -> dict[str, Sequence[Any]]:
         "size_mbyte": _size_mbyte,
         "codec": _codec,
         "type": _type,
+        "name": _name,
         "options": _options,
         "vmaf_min": _vmaf_min,
         "vmaf_mean": _vmaf_mean,
@@ -166,6 +169,7 @@ size_plot = figure(
         ("Index", "@index"),
         ("Bit Rate (Mbs)", "@bit_rate"),
         ("File Size(MB)", "@size_mbyte"),
+        ("name", "@name"),
         ("Codec", "@codec"),
         ("Type", "@type"),
         ("Options", "@options"),
@@ -232,6 +236,7 @@ vmaf_plot = figure(
         ("VMAF mean", "@vmaf_mean"),
         ("Codec", "@codec"),
         ("Type", "@type"),
+        ("name", "@name"),
         ("Options", "@options"),
     ],
 )
@@ -285,6 +290,7 @@ frame_plot = figure(
         ("B", "@stream_frames_b"),
         ("Codec", "@codec"),
         ("Type", "@type"),
+        ("name", "@name"),
         ("Options", "@options"),
     ],
 )
