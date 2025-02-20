@@ -224,6 +224,24 @@ done
 
 [FFmpeg Filters Documentation](https://ffmpeg.org/ffmpeg-filters.html#Examples-91)
 
+### assets の初期化
+
+```bash
+$ du -sh .git
+263M    .git
+
+```
+
+```bash
+git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch -r assets/' -- --all
+git gc --aggressive --prune=now
+git push --all --force origin
+
+mkdir -p assets
+touch assets/.gitkeep
+
+```
+
 ### 生データのダウンロード
 
 今回は CC-BY で配布されている [Films - Blender Studio](https://studio.blender.org/films/) を利用する。  
