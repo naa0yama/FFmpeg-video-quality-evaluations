@@ -226,8 +226,46 @@ done
 
 ### 生データのダウンロード
 
-今回は、 CC-BY 4.0 で配布されている [Big Buck Bunny](http://www.bigbuckbunny.org) を利用する。  
+今回は CC-BY で配布されている [Films - Blender Studio](https://studio.blender.org/films/) を利用する。  
 ミラーとして [Xiph.org :: Test Media](https://media.xiph.org/) で配布されているのでこちらから元 png 画像をダウンロードした。
 
 スクリプトにまとめてあるため `videos/source/bbb_download.sh` を参照。  
 エンコードした、Reference 動画のダウンロードは `videos/source/reference_downloads.sh` を参照。
+
+| Name                                          |           aspect | License                                                                 | Description    |
+| :-------------------------------------------- | ---------------: | :---------------------------------------------------------------------- | :------------- |
+| [Big Buck Bunny](http://www.bigbuckbunny.org) |   16:9 1920x1080 | [CC BY 3.0](https://peach.blender.org/about/)                           | 明るめのアニメ |
+| [Sintel](https://durian.blender.org/)         | 2.35:1 1920x 818 | [CC BY 3.0](https://durian.blender.org/sharing/)                        | 暗めのアニメ   |
+| [Tears of Steel](https://mango.blender.org/)  | 2.40:1 1920x 800 | [CC BY 3.0](https://mango.blender.org/sharing/)                         | SF系           |
+| Army                                          |   16:9 1920x1080 | [Pixabay Content License](https://pixabay.com/service/license-summary/) | 自然 陸 実写   |
+| Navy                                          |   16:9 1920x1080 | [Pixabay Content License](https://pixabay.com/service/license-summary/) | 自然 海 実写   |
+| Air                                           |   16:9 1920x1080 | [Pixabay Content License](https://pixabay.com/service/license-summary/) | 自然 空 実写   |
+
+実写の映像については Pixabay で提供されている再配布可能な映像に 解像度, fps, フレーム番号 を記載することでオリジナリティがあると思う
+
+* Army Edition ～ Special Thanks to the creators on Pixabay ～
+  * [0:00.00 - 0:14.45](https://pixabay.com/videos/canyon-river-mist-early-morning-226762/)
+  * [0:14.48 - 0:24.46](https://pixabay.com/videos/trees-lake-fall-reflection-water-186405/)
+  * [0:24.49 - 0:39.44](https://pixabay.com/videos/grand-canyon-river-mountains-nature-185678/)
+  * [0:39.47 - 0:54.45](https://pixabay.com/videos/poppy-violet-blossoms-flower-field-167027/)
+  * [0:54.49 - 1:09.47](https://pixabay.com/videos/canyon-water-fluent-rock-fall-94005/)
+  * [1:09.50 - 1:24.48](https://pixabay.com/videos/lava-volcano-lava-flow-fire-crater-219833/)
+  * [1:24.52 - 1:39.50](https://pixabay.com/videos/lava-volcano-lava-flow-fire-crater-219834/)
+  * [1:39.53 - 1:49.94](https://pixabay.com/videos/mountains-sea-of-clouds-hotakadake-232408/)
+
+* Navy ～ Special Thanks to the creators on Pixabay ～
+  * [0:00.00 - 0:14.98](https://pixabay.com/videos/beach-secluded-sand-bay-ocean-sea-10884/)
+  * [0:15.02 - 0:26.99](https://pixabay.com/videos/lake-fireworks-night-view-city-225661/)
+  * [0:27.03 - 0.42.01](https://pixabay.com/videos/sea-ocean-animal-wild-wildlife-13704/)
+  * [0:42.04 - 0:57.02](https://pixabay.com/videos/sea-ocean-seagulls-birds-sunset-140111/)
+  * [0:57.06 - 1:09.87](https://pixabay.com/videos/nature-waves-ocean-sea-rock-31377/)
+  * [1:09.90 - 1:19.88](https://pixabay.com/videos/jellyfish-sea-dangerous-underwater-26818/)
+  * [1:19.91 - 1:34.93](https://pixabay.com/videos/sea-ocean-nhatrang-vietnam-173374/)
+  * [1:34.96 - 1:49.94](https://pixabay.com/videos/sea-lion-wildlife-ocean-sea-life-139246/)
+
+* Air Edition ～ Special Thanks to the creators on Pixabay ～
+  * [0:00.00 - 0:09.91](https://pixabay.com/videos/volcano-nature-iceland-landscape-253436/)
+  * [0:09.94 - 0:34.90](https://pixabay.com/videos/crane-heron-bird-path-flying-27279/)
+  * [0:34.93 - 0:53.69](https://pixabay.com/videos/clouds-cumulus-weather-blue-sky-68254/)
+  * [0:53.72 - 1:19.98](https://pixabay.com/videos/hot-air-balloon-ballooning-start-167/)
+  * [1:20.01 - 1:49.94](https://pixabay.com/videos/volcano-sea-active-volcano-danger-200214/)

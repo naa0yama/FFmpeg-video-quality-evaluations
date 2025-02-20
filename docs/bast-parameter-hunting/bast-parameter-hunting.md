@@ -209,6 +209,61 @@ Intel QSV では下記のエンコードモードに対応している
 libx265 でおなじみ CRF(Constant Rate Factor) は QSV には存在しない  
 画質は、 LA-ICQ が最も良く ICQ、CQP、VBR の順になる
 
+* q / CRF は手元の環境でテストし VMAF min/mean が下限 70/93 を超えるパラメーターを採用する
+* VBR はアーカイブ目的では用途に合わないためテストしていない
+* `hevc_qsv`, `av1_qsv` では 2025/02 現在では LA_ICQ の実装はない
+  * [[Bug]: VA_RC_ICQ not available in AV1 encoder on DG2 · Issue #1597 · intel/media-driver](https://github.com/intel/media-driver/issues/1597)
+* [Encode Features for Intel® Discrete Graphics](https://www.intel.com/content/www/us/en/docs/onevpl/developer-reference-media-intel-hardware/1-0/features-and-formats.html#ENCODE-DISCRETE)
+* MSSIM(Mean SSIM / 構造的類似性) 画像の類似性を計測する値、1に近いほうが元画像に近い
+
+* [VMAF - Video Multi-Method Assessment Fusion](https://github.com/Netflix/vmaf/tree/master)
+  * Netflix が配信映像の主観的品質評価を目的に開発したライブラリー
+  * 機械学習を利用して人間の映像品質の識別を教師データとして学習しているため、人間の知覚に近い
+  * 0-100 で算出され一般に 93-96 は元映像の見分けが付かず、 95 以上はオリジナルより余剰容量(Bitrate)となる
+    * スコア差 2 は人間では見分けが付かず、3を超えると知覚が鋭敏な人は気づく (18人のテストで半分が気づく)
+
+| codev       | BRC modes     | BBB / Nature | q / CRF |  File size |   bitrate | encode time | compress_rate | MSSIM | VMAF min/mean | Options            |
+| :---------- | :------------ | :----------: | ------: | ---------: | --------: | ----------: | ------------: | ----: | ------------: | :----------------- |
+| `libx264`   | CRF (default) |     BBB      |     *23 | 111,602.92 |  7,438.95 |    00:00:39 |          0.58 |  1.00 | 81.79 / 96.49 |                    |
+|             |               |    Nature    |     *23 | 139,559.08 |  9,305.02 |    00:00:41 |          0.42 |  1.00 | 86.39 / 93.64 |                    |
+|             |               |     BBB      |      27 |  57,195.14 |  3,812.37 |    00:00:37 |          0.79 |  1.00 | 74.89 / 93.24 |                    |
+|             |               |    Nature    |      23 | 139,559.08 |  9,305.02 |    00:00:41 |          0.42 |  1.00 | 86.39 / 93.64 |                    |
+|             |               |              |         |            |           |             |               |       |               |                    |
+| `libx265`   | CRF (default) |     BBB      |     *28 | 129,002.66 |  8,598.74 |    00:02:45 |          0.52 |  1.00 | 80.72 / 96.82 |                    |
+|             |               |    Nature    |     *28 | 141,539.03 |  9,437.04 |    00:03:13 |          0.41 |  1.00 | 81.82 / 92.88 |                    |
+|             |               |     BBB      |      28 |  62,748.73 |  4,182.55 |    00:02:16 |          0.77 |  0.99 | 73.75 / 93.76 |                    |
+|             |               |    Nature    |      22 | 159,526.35 | 10,636.33 |    00:03:22 |          0.33 |  1.00 | 83.54 / 93.73 |                    |
+|             |               |              |         |            |           |             |               |       |               |                    |
+| `libsvtav1` | CRF (default) |     BBB      |     *35 |  52,693.30 |  3,512.30 |    00:01:16 |          0.80 |  1.00 | 79.60 / 96.01 | -preset:v 6        |
+|             |               |    Nature    |     *35 |  80,559.35 |  5,371.25 |    00:01:37 |          0.66 |  1.00 | 81.53 / 90.81 | -preset:v 6        |
+|             |               |     BBB      |      47 |  15,252.00 |  1,016.63 |    00:01:17 |          0.94 |  0.99 | 73.09 / 93.10 | -preset:v 6        |
+|             |               |    Nature    |      30 | 126,206.23 |  8,414.73 |    00:01:39 |          0.47 |  1.00 | 84.66 / 93.45 | -preset:v 6        |
+|             |               |              |         |            |           |             |               |       |               |                    |
+| `h264_qsv`  | CQP (default) |     BBB      |     *23 | 108,539.71 |  7,234.77 |    00:00:11 |          0.60 |  1.00 | 74.14 / 96.42 | -q:v 23            |
+|             |               |    Nature    |     *23 | 132,860.40 |  8,858.39 |    00:00:11 |          0.44 |  1.00 | 83.08 / 92.77 | -q:v 23            |
+|             |               |     BBB      |      27 |  57,243.75 |  3,815.61 |    00:00:11 |          0.79 |  0.99 | 62.90 / 93.67 | -q:v 27            |
+|             |               |    Nature    |      22 | 160,570.95 | 10,705.98 |    00:00:11 |          0.33 |  1.00 | 85.55 / 94.18 | -q:v 22            |
+|             | ICQ           |     BBB      |     *23 |            |           |             |               |       |               |                    |
+|             |               |    Nature    |     *23 |            |           |             |               |       |               |                    |
+|             | LA_ICQ        |     BBB      |     *23 |            |           |             |               |       |               |                    |
+|             |               |    Nature    |     *23 |            |           |             |               |       |               |                    |
+|             |               |              |         |            |           |             |               |       |               |                    |
+| `hevc_qsv`  | CQP (default) |     BBB      |     *28 |            |           |             |               |       |               |                    |
+|             |               |    Nature    |     *28 |            |           |             |               |       |               |                    |
+|             | ICQ           |     BBB      |     *28 |            |           |             |               |       |               |                    |
+|             |               |    Nature    |     *28 |            |           |             |               |       |               |                    |
+|             |               |              |         |            |           |             |               |       |               |                    |
+| `av1_qsv`   | CQP (default) |     BBB      |      97 |  36,428.38 |  2,428.15 |    00:00:11 |          0.86 |  0.99 | 70.21 / 93.27 | -q:v 97            |
+|             |               |    Nature    |      57 | 140,222.14 |  9,349.23 |    00:00:11 |          0.41 |  1.00 | 84.96 / 93.06 | -q:v 57            |
+|             | ICQ           |     BBB      |      28 |  51,367.01 |  3,423.90 |    00:00:12 |          0.81 |  0.99 | 71.60 / 93.76 | -global_quality 28 |
+|             |               |    Nature    |      23 | 142,999.55 |  9,534.42 |    00:00:12 |          0.40 |  1.00 | 84.01 / 93.42 | -global_quality 23 |
+
+* `h264_qsv`
+  * CQP `bbb` VMAF min/mean 70/93 としようとしたら `-q:v 27` だが、 VMAF min が足りないため調整
+* `av1_qsv`
+  * CQP `bbb` はまだ `-q:v` を下げても行けるがサンプルに合わせた設定になりそうなため参考値
+  * ICQ `nature` でも VMAF 値が足りないが、これ以上品質を高くしてもファイルサイズだけ嵩むためここで中止
+
 ```bash
 CQP     -q:v 25
 ICQ     -global_quality 25
@@ -227,12 +282,12 @@ libx264 111,973.04, 7463.63,    00:00:40,          0.56,               1.00,   8
 
 #### CQP (Constant Quantization Parameter)
 
-**Intel QSV のデフォルトモード**  
+**Intel QSV での h264_qsv, hevc_qsv, av1_qsv のデフォルトモード**  
 一定品質を維持する設定のため、単調なシーンでは過剰、複雑なシーンではビットレート不足となる
 
 ```bash
 ffmpeg -hwaccel qsv -i input.mp4 \
-    -c:v hevc_qsv -preset veryslow \
+    -c:v h264_qsv -preset veryslow \
     -q:v 25 \
     output.mp4
 
@@ -244,7 +299,7 @@ ffmpeg -hwaccel qsv -i input.mp4 \
 
 ```bash
 ffmpeg -hwaccel qsv -i input.mp4 \
-  -c:v hevc_qsv -preset veryslow \
+  -c:v h264_qsv -preset veryslow \
   -global_quality 25 \
   output.mp4
 
@@ -252,11 +307,12 @@ ffmpeg -hwaccel qsv -i input.mp4 \
 
 #### LA-ICQ (Look-Ahead Intelligent Constant Quality)
 
-先読み解析により画質制御がされ適切なビットレートを割り当てることで、画質と容量のバランスを取ります
+先読み解析により画質制御がされ適切なビットレートを割り当てることで、画質と容量のバランスを取ります  
+**`hevc_qsv`, `av1_qsv` では未実装のため利用出来ない**
 
 ```bash
 ffmpeg -hwaccel qsv -i input.mp4 \
-  -c:v hevc_qsv -preset veryslow \
+  -c:v h264_qsv -preset veryslow \
   -look_ahead 1 -global_quality 25 \
   output.mp4
 
@@ -269,7 +325,7 @@ VBR は正直やる意味が無いので計測しない
 
 ```bash
 ffmpeg -hwaccel qsv -i input.mp4 \
-  -c:v hevc_qsv -preset veryslow \
+  -c:v h264_qsv -preset veryslow \
   -b:v 8.5M -maxrate 10M \
   output.mp4
 

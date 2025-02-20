@@ -54,6 +54,7 @@ yaml.Representer = NoAliasDumper
 parser = argparse.ArgumentParser(description="FFmpeg video quality encoding quality evaluation.")
 
 parser.add_argument(
+    "-a",
     "--archive",
     help="Archives bench data.",
     action="store_true",
@@ -61,6 +62,12 @@ parser.add_argument(
 parser.add_argument(
     "--codec",
     help='Template codec. (defualt="all")',
+    type=str,
+    default="all",
+)
+parser.add_argument(
+    "--type",
+    help='Template Bitrate control modes. (CRF | CQP | ICQ) (defualt="all")',
     type=str,
     default="all",
 )
@@ -96,8 +103,9 @@ args = parser.parse_args()
 
 tqdm = partial(
     std_tqdm,
-    bar_format="{desc}{percentage:5.0f}%|{bar:40}{r_bar}",
+    bar_format="{desc:92}{percentage:5.0f}%|{bar:20}{r_bar}",
     dynamic_ncols=True,
+    ncols=155,
 )
 
 
@@ -184,18 +192,18 @@ def encoding(encode_cfg: dict, probe_timeout: int) -> dict:  # noqa: C901
 
     print(f"__ffmpege_cmd: {__ffmpege_cmd}")  # noqa: T201
     environ["FFREPORT"] = f"file={encode_cfg['outfile']['filename']}.log:level=40"
-    __start = time.time()
+    __enct = time.time()
     __ff_encode = FfmpegProgress(__ffmpege_cmd)
     with tqdm(
-        desc=f"[ENCODE] {encode_cfg['outfile']['filename']}.log\t\t",
+        desc=f"[ENCODE] {encode_cfg['outfile']['filename']}.log",
         total=100,
         position=1,
     ) as pbar:
         for progress in __ff_encode.run_command_with_progress():
             pbar.update(progress - pbar.n)
     environ.pop("FFREPORT", None)
-    elapsed_time = time.time() - __start
-    print(f"\nelapsed_time: {strftime('%H:%M:%S', gmtime(elapsed_time))}\n")  # noqa: T201
+    __elapsed_time_enc = time.time() - __enct
+    print(f"\nelapsed_time: {format_seconds(int(__elapsed_time_enc))}\n")  # noqa: T201
 
     __probe_filename: str = f"{encode_cfg['outfile']['filename']}_ffprobe.json"
     __proble_cmd: list = [
@@ -213,20 +221,27 @@ def encoding(encode_cfg: dict, probe_timeout: int) -> dict:  # noqa: C901
         "-o",
         __probe_filename,
     ]
+    __prbt = time.time()
     process = subprocess.Popen(
         args=__proble_cmd,
     )
-    for _timeout in tqdm(range(probe_timeout), desc=f"[PROBE ] {__probe_filename}", unit="s"):
+    for _timeout in tqdm(
+        range(probe_timeout),
+        desc=f"[PROBE ] {__probe_filename}",
+        unit="s",
+    ):
         time.sleep(1)
         if process.poll() is not None:
             break
+    __elapsed_time_prbt = time.time() - __prbt
     if process.poll() is None:
         process.terminate()
         raise subprocess.TimeoutExpired(__proble_cmd, probe_timeout)
 
     return {
         "commandline": " ".join(__ffmpege_cmd),
-        "elapsed_time": elapsed_time,
+        "elapsed_time": __elapsed_time_enc,
+        "elapsed_prbt": __elapsed_time_prbt,
         "stream": getframeinfo(f"{__probe_filename}"),
     }
 
@@ -264,7 +279,7 @@ def getvmaf(encode_cfg: dict) -> dict:
     __start = time.time()
     __ff_vmaf = FfmpegProgress(__ffmpege_cmd)
     with tqdm(
-        desc=f"[VMAF  ] {encode_cfg['outfile']['filename']}_vmaf.json\t",
+        desc=f"[VMAF  ] {encode_cfg['outfile']['filename']}_vmaf.json",
         total=100,
         position=1,
     ) as pbar:
@@ -272,7 +287,7 @@ def getvmaf(encode_cfg: dict) -> dict:
             pbar.update(progress - pbar.n)
     elapsed_time = time.time() - __start
 
-    print(f"\nelapsed_time: {strftime('%H:%M:%S', gmtime(elapsed_time))}\n")  # noqa: T201
+    print(f"\nelapsed_time: {format_seconds(int(elapsed_time))}\n")  # noqa: T201
     return {
         "commandline": " ".join(__ffmpege_cmd),
         "elapsed_time": elapsed_time,
@@ -319,8 +334,8 @@ def getffmpeg_versions(configfile: str) -> dict:
     }
 
 
-def getproble(videofile: str) -> None:
-    """Get ffmpge versions."""
+def getprobe(videofile: str) -> None:
+    """Get probe."""
     __probe_file: Path = Path(
         f"{videofile}".replace(Path(videofile).suffix, "_ffprobe.json", 1),
     )
@@ -355,7 +370,7 @@ def load_config(configfile: str) -> dict:  # noqa: PLR0915, PLR0912, C901
     __patterns: list = [
         {
             "codec": "libx264",
-            "type": "libx264",
+            "type": "CRF",
             "comments": "",
             "presets": ["medium"],
             "infile": {"option": ""},
@@ -368,7 +383,7 @@ def load_config(configfile: str) -> dict:  # noqa: PLR0915, PLR0912, C901
         },
         {
             "codec": "libx265",
-            "type": "libx265",
+            "type": "CRF",
             "comments": "",
             "presets": ["medium"],
             "infile": {"option": ""},
@@ -380,8 +395,47 @@ def load_config(configfile: str) -> dict:  # noqa: PLR0915, PLR0912, C901
             "hwaccels": "",
         },
         {
+            "codec": "libsvtav1",
+            "type": "CRF",
+            "comments": "",
+            "presets": ["6"],
+            "infile": {"option": ""},
+            "outfile": {
+                "options": [
+                    "-crf 35",
+                ],
+            },
+            "hwaccels": "",
+        },
+        {
             "codec": "h264_qsv",
-            "type": "h264_qsv_LA-ICQ",
+            "type": "CQP",
+            "comments": "",
+            "presets": ["veryslow"],
+            "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
+            "outfile": {
+                "options": [
+                    "-q:v 25",
+                ],
+            },
+            "hwaccels": "-hwaccel_output_format qsv",
+        },
+        {
+            "codec": "h264_qsv",
+            "type": "ICQ",
+            "comments": "",
+            "presets": ["veryslow"],
+            "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
+            "outfile": {
+                "options": [
+                    "-global_quality 25",
+                ],
+            },
+            "hwaccels": "-hwaccel_output_format qsv",
+        },
+        {
+            "codec": "h264_qsv",
+            "type": "LA_ICQ",
             "comments": "",
             "presets": ["veryslow"],
             "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
@@ -394,7 +448,46 @@ def load_config(configfile: str) -> dict:  # noqa: PLR0915, PLR0912, C901
         },
         {
             "codec": "hevc_qsv",
-            "type": "hevc_qsv_ICQ",
+            "type": "CQP",
+            "comments": "",
+            "presets": ["veryslow"],
+            "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
+            "outfile": {
+                "options": [
+                    "-q:v 22",
+                ],
+            },
+            "hwaccels": "-hwaccel_output_format qsv",
+        },
+        {
+            "codec": "hevc_qsv",
+            "type": "ICQ",
+            "comments": "",
+            "presets": ["veryslow"],
+            "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
+            "outfile": {
+                "options": [
+                    "-global_quality 22",
+                ],
+            },
+            "hwaccels": "-hwaccel_output_format qsv",
+        },
+        {
+            "codec": "av1_qsv",
+            "type": "CQP",
+            "comments": "",
+            "presets": ["veryslow"],
+            "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
+            "outfile": {
+                "options": [
+                    "-q:v 22",
+                ],
+            },
+            "hwaccels": "-hwaccel_output_format qsv",
+        },
+        {
+            "codec": "av1_qsv",
+            "type": "ICQ",
             "comments": "",
             "presets": ["veryslow"],
             "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
@@ -407,7 +500,14 @@ def load_config(configfile: str) -> dict:  # noqa: PLR0915, PLR0912, C901
         },
     ]
     if args.codec != "all":
-        __patterns = [d for d in __patterns if args.codec == d.get("codec")]
+        if args.type == "all":
+            __patterns = [d for d in __patterns if args.codec == d.get("codec")]
+        else:
+            __patterns = [
+                d
+                for d in __patterns
+                if args.codec == d.get("codec") and args.type == d.get("type")
+            ]
 
     "configfile ディレクトリが存在しない場合は作成"
     if not Path(configfile).parent.exists():
@@ -445,7 +545,10 @@ def load_config(configfile: str) -> dict:  # noqa: PLR0915, PLR0912, C901
     """reference filehash を埋める."""
     for _index, _ref in enumerate(__configs["configs"]["references"]):
         __configs["configs"]["references"][_index]["basehash"] = getfilehash(_ref["basefile"])
-        getproble(videofile=_ref["basefile"])
+        if not Path(
+            f"{_ref['basefile'].replace(Path(_ref['basefile']).suffix, '_ffprobe.json', 1)}",
+        ).exists():
+            getprobe(videofile=_ref["basefile"])
 
     """__datafile が設定されてなく、"""
     if __configs["configs"]["datafile"] == "":
@@ -576,10 +679,12 @@ def getcsv(datafile: dict) -> None:
     __exports: list = [
         [
             "index",
+            "id_opt",
             "codec",
             "type",
             "preset",
             "threads",
+            "name",
             "infile_options",
             "outfile_filename",
             "outfile_size_kbyte",
@@ -608,10 +713,12 @@ def getcsv(datafile: dict) -> None:
                 [
                     [
                         __index,
+                        __config["id_opt"],
                         __config["codec"],
                         __config["type"],
                         __config["preset"],
                         __config["threads"],
+                        __config["infile"]["name"],
                         __config["infile"]["option"],
                         __config["outfile"]["filename"],
                         __config["outfile"]["size_kbyte"],
@@ -670,11 +777,11 @@ def compress_files(dst: Path, files: list) -> None:
 def archive() -> None:
     """Archives."""
     __configs: dict = load_config(configfile=args.config)
-    __basedir: Path = Path(f"{__configs['configs']['basefile']}").parent
     __configfile: Path = Path(args.config)
+    __basedir: Path = Path(f"./videos/dist/{__configfile.name.replace('.yml', '')}")
     __datafile: Path = Path(f"{__configs['configs']['datafile']}")
     __datafilecsv: Path = Path(f"{__datafile}".replace(".json", ".csv"))
-    __assetdir: Path = Path(f"assets/{__basedir.name}/logs")
+    __assetdir: Path = Path(f"./assets/{__basedir.name}/logs")
     __assetdir.mkdir(parents=True, exist_ok=True)
 
     with Path(f"{__datafile}").open("r") as __file:
@@ -719,6 +826,18 @@ def archive() -> None:
     with Path(f"{__assetdir.parent}/{__configfile.name}").open("w") as ___file:
         yaml.dump(____data, ___file)
 
+    if __basedir.exists():
+        print(f"remove dist directory: {__basedir}")  # noqa: T201
+        __basedir.rmdir()
+
+
+def format_seconds(seconds: int) -> str:
+    """Format seconds to d%d%Hh%Mm%Ss."""
+    days, remainder = divmod(seconds, 86400)
+    hours, remainder = divmod(remainder, 3600)
+    minutes, secs = divmod(remainder, 60)
+    return f"{days:02d}d, {hours:02d}h{minutes:02d}m{secs:02d}s"
+
 
 def main(config: dict) -> None:
     """Main."""
@@ -728,10 +847,13 @@ def main(config: dict) -> None:
             __encode_cfg = json.load(file)
 
         __length: int = len(__encode_cfg["encodes"])
+        __rapt: int = 0
         for __index, __encode in enumerate(__encode_cfg["encodes"]):
             print(  # noqa: T201
                 "=" * 155
-                + f"\n{__index + 1:0>4}/{__length:0>4} ({(__index + 1) / __length:>7.2%})\n",
+                + f"\n{__index + 1:0>4}/{__length:0>4} ({(__index + 1) / __length:>7.2%})\t"
+                + f"Lap time: {format_seconds(int(__rapt))} ({int(__rapt)}s)\t"
+                + f"ETA: {format_seconds(int(__rapt * (__length - __index)))}\n",
             )
             __basefile: str = __encode["infile"]["filename"]
             with Path(f"{__basefile.replace(Path(__basefile).suffix, '_ffprobe.json', 1)}").open(
@@ -751,6 +873,11 @@ def main(config: dict) -> None:
                         probe_timeout=int(float(__base_probe_log["format"]["duration"]) * 1.2),
                     )
                     __vmaf_rsp = getvmaf(encode_cfg=__encode)
+                    __rapt = (
+                        __encode_rep["elapsed_time"]
+                        + __encode_rep["elapsed_prbt"]
+                        + __vmaf_rsp["elapsed_time"]
+                    )
                 except (KeyboardInterrupt, Exception) as err:
                     """__datafile write."""
                     print(f"\n\n{err}: datafile writeing to {__datafile}")  # noqa: T201
