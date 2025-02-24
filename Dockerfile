@@ -1,12 +1,11 @@
 #- -------------------------------------------------------------------------------------------------
 #- Runner
 #-
-FROM ghcr.io/naa0yama/join_logo_scp_trial:v25.01.2600-beta1-ubuntu2404
-
+FROM ghcr.io/naa0yama/join_logo_scp_trial:v25.02.24-beta5-ubuntu2404
 ARG DEBIAN_FRONTEND=noninteractive \
-    DEFAULT_USERNAME=user \
+    DEFAULT_USERNAME=vscode \
     \
-    ASDF_VERSION="v0.14.1" \
+    ASDF_VERSION="v0.16.4" \
     BIOME_VERSION="cli/v1.8.3"
 
 SHELL ["/bin/bash", "-c"]
@@ -48,28 +47,35 @@ RUN set -eux && \
 # Create user
 RUN set -eux && \
     userdel -r ubuntu && \
-    groupadd --gid 60001 vscode && \
-    useradd -s /bin/bash --uid 60001 --gid 60001 -m vscode && \
-    echo vscode:password | chpasswd && \
-    passwd -d vscode && \
-    echo -e "vscode\tALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/vscode
+    groupadd --gid 60001 "${DEFAULT_USERNAME}" && \
+    useradd -s /bin/bash --uid 60001 --gid 60001 -m "${DEFAULT_USERNAME}" && \
+    echo "${DEFAULT_USERNAME}:password" | chpasswd && \
+    passwd -d "${DEFAULT_USERNAME}" && \
+    echo -e "${DEFAULT_USERNAME}\tALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/${DEFAULT_USERNAME}"
 
-COPY --chown=vscode --chmod=644 .tool-versions /home/vscode/.tool-versions
+COPY --chown=${DEFAULT_USERNAME} --chmod=644 .tool-versions /home/${DEFAULT_USERNAME}/.tool-versions
 
-# Install asdf
-USER vscode
+# Add asdf install
 RUN set -eux && \
-    git clone https://github.com/asdf-vm/asdf.git ~/.asdf \
-    --depth 1 --branch ${ASDF_VERSION} && \
-    echo ". \"\$HOME/.asdf/asdf.sh\"" >> ~/.bashrc && \
-    echo ". \"\$HOME/.asdf/completions/asdf.bash\"" >> ~/.bashrc
+    cd /tmp && \
+    if [ -z "${ASDF_VERSION}" ]; then echo "ASDF_VERSION is blank"; else echo "ASDF_VERSION is set to '$ASDF_VERSION'"; fi && \
+    curl -fSL -o /tmp/asdf.tar.gz "$(curl -sfSL https://api.github.com/repos/asdf-vm/asdf/releases/tags/${ASDF_VERSION} | \
+    jq -r '.assets[] | select(.name | endswith("linux-amd64.tar.gz")) | .browser_download_url')" && \
+    tar -xf /tmp/asdf.tar.gz && \
+    mv -v /tmp/asdf /usr/local/bin/asdf && \
+    type -p asdf && \
+    asdf version
 
-# asdf update
-# Broken stable release
-# Ref: https://github.com/asdf-vm/asdf/issues/1821
-# RUN set -eux && \
-#     source $HOME/.asdf/asdf.sh && \
-#     asdf update
+USER ${DEFAULT_USERNAME}
+RUN <<EOF
+cat <<- _DOC_ >> ~/.bashrc
+
+#asdf command
+export PATH="\${ASDF_DATA_DIR:-$HOME/.asdf}/shims:\$PATH"
+. <(asdf completion bash)
+
+_DOC_
+EOF
 
 # Dependencies Python
 USER root
@@ -97,18 +103,16 @@ RUN set -eux && \
 
 # asdf install plugin python
 USER vscode
+ARG PATH="/home/${DEFAULT_USERNAME}/.asdf/shims:${PATH}"
 RUN set -eux && \
-    source $HOME/.asdf/asdf.sh && \
-    asdf plugin-add python
+    asdf plugin add python
 
 # asdf install plugin poetry
 RUN set -eux && \
-    source $HOME/.asdf/asdf.sh && \
-    asdf plugin-add poetry
+    asdf plugin add poetry
 
 # plugin install
 RUN set -eux && \
-    source $HOME/.asdf/asdf.sh && \
     asdf install python && \
     asdf install
 
