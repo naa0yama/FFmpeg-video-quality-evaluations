@@ -311,9 +311,10 @@ def getfilehash(filename: str) -> str:
     return f"{__hasher.hexdigest()}"
 
 
-def getffmpeg_versions(configfile: str) -> dict:
+def get_versions(configfile: str) -> dict:
     """Get ffmpge versions."""
     __versions_file: Path = Path(f"{Path(configfile).parent}/versions.json")
+    __versions_build_file: Path = Path("/opt/ffmpeg/versions.json")
     print(f"[PROBE ] {__versions_file}")  # noqa: T201
     subprocess.run(
         args=[
@@ -336,9 +337,18 @@ def getffmpeg_versions(configfile: str) -> dict:
         __versions_log: dict = json.load(file)
     __versions_file.unlink()
 
+    """__versions_build_file がある"""
+    if Path(f"{__versions_build_file}").exists():
+        print(f"[GET   ] {__versions_build_file} file found.")  # noqa: T201
+        with Path(f"{__versions_build_file}").open("r") as file:
+            __versions_build: dict = yaml.load(file)
+
     return {
-        "program_version": __versions_log["program_version"],
-        "library_versions": __versions_log["library_versions"],
+        "ffmpege": {
+            "program_version": __versions_log["program_version"],
+            "library_versions": __versions_log["library_versions"],
+        },
+        "packages": __versions_build,
     }
 
 
@@ -708,7 +718,7 @@ def load_config(configfile: str) -> dict:  # noqa: PLR0915, PLR0912, C901
                         )
 
     """add ffmpeg versions."""
-    __configs["configs"]["ffmpege"] = getffmpeg_versions(configfile=configfile)
+    __configs["configs"]["environment"] = get_versions(configfile=configfile)
     print(f"\n\n{len(__results_list)} pattern generate.\n\n")  # noqa: T201
     with Path(configfile).open("w") as file:
         yaml.dump(__configs, file)
@@ -733,98 +743,102 @@ def load_config(configfile: str) -> dict:  # noqa: PLR0915, PLR0912, C901
 
 def getcsv(datafile: dict) -> None:
     """Get csv."""
-    __csvfile_all: str = f"{datafile}".replace(".json", "_all.csv", 1)
-    __csvfile_type: str = f"{datafile}".replace(".json", "_gby_type.csv", 1)
-    __csvfile_option: str = f"{datafile}".replace(".json", "_gby_option.csv", 1)
+    with Path(f"{datafile}").open("r") as file:
+        __datafile: list = yaml.load(file)
+    print(f"[CSV   ] load {datafile} ....")  # noqa: T201
 
-    print(f"load {datafile} ....")  # noqa: T201
-    duckdb.execute(
-        f"""
-            CREATE TEMPORARY TABLE encodes AS
-            SELECT *
-            FROM read_json('{datafile}')
-        """,  # noqa: S608
-    )
+    if __datafile != []:
+        __csvfile_all: str = f"{datafile}".replace(".json", "_all.csv", 1)
+        __csvfile_type: str = f"{datafile}".replace(".json", "_gby_type.csv", 1)
+        __csvfile_option: str = f"{datafile}".replace(".json", "_gby_option.csv", 1)
 
-    print(f"Export csv ..... {__csvfile_all}")  # noqa: T201
-    duckdb.sql(
-        r"""
-        SELECT
-            row_number() OVER () - 1                               AS index,
-            codec                                                  AS codec,
-            type                                                   AS type,
-            preset                                                 AS preset,
-            threads                                                AS threads,
-            infile.name                                            AS ref_name,
-            infile.type                                            AS ref_type,
-            infile.option                                          AS infile_option,
-            outfile.filename                                       AS outfile_filename,
-            outfile.size_kbyte                                     AS outfile_size_kbyte,
-            outfile.bit_rate_kbs                                   AS outfile_bit_rate_kbs,
-            outfile.options                                        AS outfile_options,
-            results.encode.second                                  AS enc_sec,
-            results.encode.time                                    AS enc_time,
-            results.compression_ratio_persent                      AS comp_ratio_persent,
-            results.encode.speed                                   AS enc_speed,
-            results.vmaf.pooled_metrics.float_ssim.min             AS ssim_min,
-            results.vmaf.pooled_metrics.float_ssim.harmonic_mean   AS ssim_mean,
-            results.vmaf.pooled_metrics.vmaf.min                   AS vmaf_min,
-            results.vmaf.pooled_metrics.vmaf.harmonic_mean         AS vmaf_mean,
-        FROM encodes
-        """,
-    ).write_csv(__csvfile_all)
+        duckdb.execute(
+            f"""
+                CREATE TEMPORARY TABLE encodes AS
+                SELECT *
+                FROM read_json('{datafile}')
+            """,  # noqa: S608
+        )
 
-    print(f"Export csv ..... {__csvfile_type}")  # noqa: T201
-    duckdb.sql(
-        r"""
-        SELECT
-            row_number() OVER () - 1                                   AS index,
-            codec                                                      AS codec,
-            type                                                       AS type,
-            preset                                                     AS preset,
-            threads                                                    AS threads,
-            infile.type                                                AS ref_type,
-            AVG(outfile.size_kbyte)                                    AS outfile_size_kbyte,
-            AVG(outfile.bit_rate_kbs)                                  AS outfile_bit_rate_kbs,
-            outfile.options                                            AS outfile_options,
-            AVG(results.encode.second)                                 AS enc_sec,
-            AVG(results.compression_ratio_persent)                     AS comp_ratio_persent,
-            AVG(results.encode.speed)                                  AS enc_speed,
-            AVG(results.vmaf.pooled_metrics.float_ssim.min)            AS ssim_min,
-            AVG(results.vmaf.pooled_metrics.float_ssim.harmonic_mean)  AS ssim_mean,
-            AVG(results.vmaf.pooled_metrics.vmaf.min)                  AS vmaf_min,
-            AVG(results.vmaf.pooled_metrics.vmaf.harmonic_mean)        AS vmaf_mean,
-        FROM encodes
-        GROUP BY codec, type, preset, threads, ref_type, outfile_options
+        print(f"[CSV   ] Export csv ..... {__csvfile_all}")  # noqa: T201
+        duckdb.sql(
+            r"""
+            SELECT
+                row_number() OVER () - 1                               AS index,
+                codec                                                  AS codec,
+                type                                                   AS type,
+                preset                                                 AS preset,
+                threads                                                AS threads,
+                infile.name                                            AS ref_name,
+                infile.type                                            AS ref_type,
+                infile.option                                          AS infile_option,
+                outfile.filename                                       AS outfile_filename,
+                outfile.size_kbyte                                     AS outfile_size_kbyte,
+                outfile.bit_rate_kbs                                   AS outfile_bit_rate_kbs,
+                outfile.options                                        AS outfile_options,
+                results.encode.second                                  AS enc_sec,
+                results.encode.time                                    AS enc_time,
+                results.compression_ratio_persent                      AS comp_ratio_persent,
+                results.encode.speed                                   AS enc_speed,
+                results.vmaf.pooled_metrics.float_ssim.min             AS ssim_min,
+                results.vmaf.pooled_metrics.float_ssim.harmonic_mean   AS ssim_mean,
+                results.vmaf.pooled_metrics.vmaf.min                   AS vmaf_min,
+                results.vmaf.pooled_metrics.vmaf.harmonic_mean         AS vmaf_mean,
+            FROM encodes
+            """,
+        ).write_csv(__csvfile_all)
 
-        """,
-    ).write_csv(__csvfile_type)
+        print(f"[CSV   ] Export csv ..... {__csvfile_type}")  # noqa: T201
+        duckdb.sql(
+            r"""
+            SELECT
+                row_number() OVER () - 1                                   AS index,
+                codec                                                      AS codec,
+                type                                                       AS type,
+                preset                                                     AS preset,
+                threads                                                    AS threads,
+                infile.type                                                AS ref_type,
+                AVG(outfile.size_kbyte)                                    AS outfile_size_kbyte,
+                AVG(outfile.bit_rate_kbs)                                  AS outfile_bit_rate_kbs,
+                outfile.options                                            AS outfile_options,
+                AVG(results.encode.second)                                 AS enc_sec,
+                AVG(results.compression_ratio_persent)                     AS comp_ratio_persent,
+                AVG(results.encode.speed)                                  AS enc_speed,
+                AVG(results.vmaf.pooled_metrics.float_ssim.min)            AS ssim_min,
+                AVG(results.vmaf.pooled_metrics.float_ssim.harmonic_mean)  AS ssim_mean,
+                AVG(results.vmaf.pooled_metrics.vmaf.min)                  AS vmaf_min,
+                AVG(results.vmaf.pooled_metrics.vmaf.harmonic_mean)        AS vmaf_mean,
+            FROM encodes
+            GROUP BY codec, type, preset, threads, ref_type, outfile_options
 
-    print(f"Export csv ..... {__csvfile_option}")  # noqa: T201
-    duckdb.sql(
-        r"""
-        SELECT
-            row_number() OVER () - 1                                   AS index,
-            codec                                                      AS codec,
-            type                                                       AS type,
-            preset                                                     AS preset,
-            threads                                                    AS threads,
-            AVG(outfile.size_kbyte)                                    AS outfile_size_kbyte,
-            AVG(outfile.bit_rate_kbs)                                  AS outfile_bit_rate_kbs,
-            outfile.options                                            AS outfile_options,
-            AVG(results.encode.second)                                 AS enc_sec,
-            AVG(results.compression_ratio_persent)                     AS comp_ratio_persent,
-            AVG(results.encode.speed)                                  AS enc_speed,
-            AVG(results.vmaf.pooled_metrics.float_ssim.min)            AS ssim_min,
-            AVG(results.vmaf.pooled_metrics.float_ssim.harmonic_mean)  AS ssim_mean,
-            AVG(results.vmaf.pooled_metrics.vmaf.min)                  AS vmaf_min,
-            AVG(results.vmaf.pooled_metrics.vmaf.harmonic_mean)        AS vmaf_mean,
-        FROM encodes
-        GROUP BY codec, type, preset, threads, outfile_options
+            """,
+        ).write_csv(__csvfile_type)
 
-        """,
-    ).write_csv(__csvfile_option)
-    print("Export csv done.")  # noqa: T201
+        print(f"[CSV   ] Export csv ..... {__csvfile_option}")  # noqa: T201
+        duckdb.sql(
+            r"""
+            SELECT
+                row_number() OVER () - 1                                   AS index,
+                codec                                                      AS codec,
+                type                                                       AS type,
+                preset                                                     AS preset,
+                threads                                                    AS threads,
+                AVG(outfile.size_kbyte)                                    AS outfile_size_kbyte,
+                AVG(outfile.bit_rate_kbs)                                  AS outfile_bit_rate_kbs,
+                outfile.options                                            AS outfile_options,
+                AVG(results.encode.second)                                 AS enc_sec,
+                AVG(results.compression_ratio_persent)                     AS comp_ratio_persent,
+                AVG(results.encode.speed)                                  AS enc_speed,
+                AVG(results.vmaf.pooled_metrics.float_ssim.min)            AS ssim_min,
+                AVG(results.vmaf.pooled_metrics.float_ssim.harmonic_mean)  AS ssim_mean,
+                AVG(results.vmaf.pooled_metrics.vmaf.min)                  AS vmaf_min,
+                AVG(results.vmaf.pooled_metrics.vmaf.harmonic_mean)        AS vmaf_mean,
+            FROM encodes
+            GROUP BY codec, type, preset, threads, outfile_options
+
+            """,
+        ).write_csv(__csvfile_option)
+        print("[CSV   ] Export csv done.")  # noqa: T201
 
 
 def compress_files(dst: Path, files: list) -> None:
@@ -875,15 +889,16 @@ def archive() -> None:
         return
 
     """move to __assetdir"""
-    for ext in [".json", ".log"]:
-        for file_path in __basedir.glob(f"*{ext}"):
-            if file_path.is_file():
-                shutil.move(f"{file_path}", f"{__assetdir}/{file_path.name}")
-                print(f"move: {file_path} to {__assetdir}/{file_path.name}")  # noqa: T201
+    __archive_files: list = [
+        __file for __file in __basedir.glob("*.(json|log)") if __file.is_file()
+    ]
+    for file_path in __archive_files:
+        if file_path.is_file():
+            shutil.move(f"{file_path}", f"{__assetdir}/{file_path.name}")
+            print(f"move: {file_path} to {__assetdir}/{file_path.name}")  # noqa: T201
 
-    """archive vmaf files"""
-    __archives: list = [__file for __file in __assetdir.glob("*_vmaf.json") if __file.is_file()]
-    compress_files(dst=__assetdir, files=__archives)
+    """archive files"""
+    compress_files(dst=__assetdir, files=__archive_files)
 
     """move to configfile, csv datafile"""
     for file in [__configfile, __datafile, __datafilecsv]:
@@ -1058,6 +1073,12 @@ def main(config: dict) -> None:
                 "__datafile 書き込み"
                 with Path(__datafile).open("w") as file:
                     json.dump(__encode_cfg, file)
+            else:
+                __rapt = (
+                    __encode_cfg["results"]["encode"]["second"]
+                    + __encode_cfg["results"]["probe"]["second"]
+                    + __encode_cfg["results"]["vmaf"]["second"]
+                )
 
 
 if __name__ == "__main__":

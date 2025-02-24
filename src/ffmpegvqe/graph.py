@@ -489,5 +489,5 @@ last_mod_time: float = 0
 # 周期的なデータ更新コールバックの設定
 curdoc().add_periodic_callback(
     update_data,
-    4000,  # 4000 ミリ秒 ごとにチェック
-)  # 修正: コメントも更新
+    10000,  # 10000 ミリ秒 ごとにチェック
+)
