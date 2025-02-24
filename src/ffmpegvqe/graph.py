@@ -326,7 +326,12 @@ size_plot.vbar(
 size_plot.extra_y_ranges = cast(
     BokehDict,
     {
-        "outfile_bit_rate_kbs": DataRange1d(start=0),
+        "outfile_bit_rate_kbs": Range1d(
+            start=0,
+            end=max(source.data["outfile_bit_rate_kbs"]) * 1.1
+            if source.data["outfile_bit_rate_kbs"]
+            else 1,
+        ),
     },
 )
 
@@ -443,7 +448,7 @@ range_tool = RangeTool(x_range=x_shared)
 range_tool_plot = figure(
     title="Select Range",
     sizing_mode="scale_width",
-    height=50,
+    height=20,
     tools="xpan",
     toolbar_location=None,
     x_range=select_range,
@@ -460,7 +465,6 @@ range_tool_plot.scatter(
     "group",
     "outfile_size_kbyte",
     source=source,
-    size=5,
     color="lightsteelblue",
 )
 
