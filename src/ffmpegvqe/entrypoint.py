@@ -1075,9 +1075,9 @@ def main(config: dict) -> None:
                     json.dump(__encode_cfg, file)
             else:
                 __rapt = (
-                    __encode_cfg["results"]["encode"]["second"]
-                    + __encode_cfg["results"]["probe"]["second"]
-                    + __encode_cfg["results"]["vmaf"]["second"]
+                    __encode["results"]["encode"]["second"]
+                    + __encode["results"]["probe"]["second"]
+                    + __encode["results"]["vmaf"]["second"]
                 )
 
 
