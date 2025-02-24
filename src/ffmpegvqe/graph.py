@@ -191,7 +191,7 @@ def update_data() -> None:
 
     if current_mod_time > last_mod_time:
         sleep(5)
-        print(f"File updated: {datafile}")  # noqa: T201
+        print(f"\n\nFile updated: {datafile}")  # noqa: T201
 
         # データを再ロード
         refresh_data()
