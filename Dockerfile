@@ -1,7 +1,7 @@
 #- -------------------------------------------------------------------------------------------------
 #- Runner
 #-
-FROM ghcr.io/naa0yama/join_logo_scp_trial:v25.01.2600-beta1-ubuntu2404
+FROM ghcr.io/naa0yama/join_logo_scp_trial:v25.02.24-beta1-ubuntu2404
 
 ARG DEBIAN_FRONTEND=noninteractive \
     DEFAULT_USERNAME=user \
