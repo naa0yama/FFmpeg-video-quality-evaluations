@@ -5,29 +5,38 @@
 """graph."""
 
 import argparse
-from collections.abc import Sequence
-import json
 from pathlib import Path
 from time import sleep
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import cast
 
+from bokeh.core.properties import FactorSeq
 from bokeh.core.property.container import Dict as BokehDict
+from bokeh.core.property.container import List as BokehList
 from bokeh.io import curdoc
 from bokeh.layouts import column
+from bokeh.layouts import row
 from bokeh.models import ColumnDataSource
+from bokeh.models import DataRange1d
+from bokeh.models import FactorRange
 from bokeh.models import LinearAxis
 from bokeh.models import Range1d
 from bokeh.models import RangeTool
+from bokeh.models.widgets import MultiChoice
 from bokeh.plotting import figure
+import duckdb
 import ruamel.yaml
 
+if TYPE_CHECKING:
+    from bokeh.models.sources import DataDict
+
 # データソースを作成
-yaml = ruamel.yaml.YAML(typ="safe", pure=True)
-yaml.indent(mapping=2, sequence=4, offset=2)
-yaml.default_flow_style = False
-yaml.explicit_start = True
-yaml.width = 200
+yaml_parser = ruamel.yaml.YAML(typ="safe", pure=True)
+yaml_parser.indent(mapping=2, sequence=4, offset=2)
+yaml_parser.default_flow_style = False
+yaml_parser.explicit_start = True
+yaml_parser.width = 200
 
 
 class DataTypeError(TypeError):
@@ -38,6 +47,9 @@ class DataTypeError(TypeError):
         super().__init__(message)
 
 
+MyAny = Any
+
+# コマンドライン引数のパース
 parser = argparse.ArgumentParser(
     description="FFmpeg video quality encoding quality evaluation for Graph.",
 )
@@ -50,136 +62,258 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-def load_data(datafile: str) -> dict[str, Any]:
-    """Load data."""
-    with Path(datafile).open("r") as file:
-        _data = json.load(file)
+def load_data_with_duckdb(datafile: str) -> MyAny:
+    """Load data using DuckDB."""
+    con = duckdb.connect(database=":memory:")
+    con.execute(f"CREATE TABLE encodes AS SELECT * FROM read_json('{datafile}')")  # noqa: S608
+    query = """
+    SELECT
+        row_number() OVER () - 1                               AS index,
+        codec                                                  AS codec,
+        type                                                   AS type,
+        preset                                                 AS preset,
+        threads                                                AS threads,
+        infile.name                                            AS ref_name,
+        infile.type                                            AS ref_type,
+        infile.option                                          AS infile_option,
+        outfile.filename                                       AS outfile_filename,
+        outfile.size_kbyte / 1000.0                            AS outfile_size_kbyte,
+        outfile.bit_rate_kbs / 1000.0                          AS outfile_bit_rate_kbs,
+        outfile.options                                        AS outfile_options,
+        outfile.stream.gop                                     AS stream_gop,
+        outfile.stream.has_b_frames                            AS stream_has_b_frames,
+        outfile.stream.refs                                    AS stream_refs,
+        outfile.stream.frames.I                                AS stream_frames_i,
+        outfile.stream.frames.p                                AS stream_frames_p,
+        outfile.stream.frames.b                                AS stream_frames_b,
+        results.encode.second                                  AS enc_sec,
+        results.encode.time                                    AS enc_time,
+        results.compression_ratio_persent                      AS comp_ratio_persent,
+        results.encode.speed                                   AS enc_speed,
+        results.vmaf.pooled_metrics.float_ssim.min             AS ssim_min,
+        results.vmaf.pooled_metrics.float_ssim.harmonic_mean   AS ssim_mean,
+        results.vmaf.pooled_metrics.vmaf.min                   AS vmaf_min,
+        results.vmaf.pooled_metrics.vmaf.harmonic_mean         AS vmaf_mean
+    FROM encodes
+    """
+    data_df: MyAny = con.execute(query).df()
+    con.close()
 
-    if not isinstance(_data, dict):
-        raise DataTypeError
-    return _data
+    return data_df
 
 
-# データの抽出
-def extract_data(data: dict[str, Any]) -> dict[str, Sequence[Any]]:
-    """Extract data."""
-    _bit_rate: list = []
-    _name: list = []
-    _options: list = []
-    _size_mbyte: list = []
-    _codec: list = []
-    _type: list = []
-    _vmaf_min: list = []
-    _vmaf_mean: list = []
-    _stream_gop: list = []
-    _stream_has_b_frames: list = []
-    _stream_refs: list = []
-    _stream_frames_i: list = []
-    _stream_frames_p: list = []
-    _stream_frames_b: list = []
-
-    for __encode in data["encodes"]:
-        _bit_rate.append(__encode["outfile"].get("bit_rate_kbs", 0.0) / 1000)
-        _name.append(__encode["infile"]["name"])
-        _options.append(__encode["outfile"]["options"])
-        _size_mbyte.append(__encode["outfile"].get("size_kbyte", 0.0) / 1024)
-        _codec.append(__encode["codec"])
-        _type.append(__encode["type"])
-        _vmaf_min.append(
-            __encode["results"]
-            .get("vmaf", {})
-            .get("pooled_metrics", {})
-            .get("vmaf", {})
-            .get("min", 0.0),
+def process_grouped_data(df: MyAny, selected_groups: BokehList) -> MyAny:
+    """Group and aggregate the data based on selected groupby fields."""
+    grouped: MyAny = (
+        df.groupby(selected_groups)
+        .agg(
+            {
+                "outfile_bit_rate_kbs": "mean",
+                "outfile_size_kbyte": "mean",
+                "vmaf_mean": "mean",
+                "vmaf_min": "mean",
+                "stream_gop": "mean",
+                "stream_has_b_frames": "mean",
+                "stream_refs": "mean",
+                "stream_frames_i": "max",
+                "stream_frames_p": "max",
+                "stream_frames_b": "max",
+            },
         )
-        _vmaf_mean.append(
-            __encode["results"]
-            .get("vmaf", {})
-            .get("pooled_metrics", {})
-            .get("vmaf", {})
-            .get("harmonic_mean", 0.0),
-        )
-        _stream_gop.append(__encode["outfile"].get("stream", {}).get("gop", 0))
-        _stream_has_b_frames.append(__encode["outfile"].get("stream", {}).get("has_b_frames", 0))
-        _stream_refs.append(__encode["outfile"].get("stream", {}).get("refs", 0))
+        .reset_index()
+    )
 
-        _stream_frames_i.append(
-            __encode["outfile"].get("stream", {}).get("frames", {}).get("I", 0),
-        )
-        _stream_frames_p.append(
-            __encode["outfile"].get("stream", {}).get("frames", {}).get("P", 0),
-        )
-        _stream_frames_b.append(
-            __encode["outfile"].get("stream", {}).get("frames", {}).get("B", 0),
-        )
+    # 複数のグループ化項目を文字列として結合
+    grouped["group"] = grouped[selected_groups].astype(str).agg("_".join, axis=1)
 
-    index = list(range(len(_bit_rate)))  # x 軸の値はインデックス
-    print(f"\n\nload index {_bit_rate.index(0.0) if 0.0 in _bit_rate else len(index)}.")  # noqa: T201
-    return {
-        "index": index,
-        "bit_rate": _bit_rate,
-        "size_mbyte": _size_mbyte,
-        "codec": _codec,
-        "type": _type,
-        "name": _name,
-        "options": _options,
-        "vmaf_min": _vmaf_min,
-        "vmaf_mean": _vmaf_mean,
-        "stream_gop": _stream_gop,
-        "stream_has_b_frames": _stream_has_b_frames,
-        "stream_refs": _stream_refs,
-        "stream_frames_i": _stream_frames_i,
-        "stream_frames_p": _stream_frames_p,
-        "stream_frames_b": _stream_frames_b,
+    return grouped
+
+
+def update_source_and_factors(grouped: MyAny) -> None:
+    """Update the ColumnDataSource and FactorRange with new grouped data."""
+    new_data: DataDict = {
+        "group": grouped["group"].tolist(),
+        "outfile_bit_rate_kbs": grouped["outfile_bit_rate_kbs"].tolist(),
+        "outfile_size_kbyte": grouped["outfile_size_kbyte"].tolist(),
+        "vmaf_mean": grouped["vmaf_mean"].tolist(),
+        "vmaf_min": grouped["vmaf_min"].tolist(),
+        "stream_gop": grouped["stream_gop"].tolist(),
+        "stream_has_b_frames": grouped["stream_has_b_frames"].tolist(),
+        "stream_refs": grouped["stream_refs"].tolist(),
+        "stream_frames_i": grouped["stream_frames_i"].tolist(),
+        "stream_frames_p": grouped["stream_frames_p"].tolist(),
+        "stream_frames_b": grouped["stream_frames_b"].tolist(),
     }
+
+    source.data = new_data
+
+    # x_range.factors を更新(ユニークなカテゴリのみ、ソート済み)
+    x_shared.factors = cast(FactorSeq, sorted(grouped["group"].unique()))
+
+    # y_range を動的に更新
+    if grouped["outfile_bit_rate_kbs"].tolist():
+        max_bit_rate = max(grouped["outfile_bit_rate_kbs"])
+    else:
+        max_bit_rate = 1
+
+    size_plot.extra_y_ranges["outfile_bit_rate_kbs"].end = cast(BokehDict, max_bit_rate * 1.1)  # type: ignore[index]
+
+
+def refresh_data() -> None:
+    """Refresh data based on current widget selections."""
+    try:
+        updated_data = load_data_with_duckdb(datafile)
+    except FileNotFoundError:
+        print(f"File not found: {datafile}")  # noqa: T201
+        return
+
+    # ウィジェットの選択に基づいてデータをフィルタリング
+    selected_groups = groupby_select.value  # List[str]
+    selected_codecs = codec_filter.value
+
+    _df = updated_data.copy()
+    if selected_codecs:
+        _df = _df[_df["codec"].isin(selected_codecs)]
+
+    grouped = process_grouped_data(_df, selected_groups)
+    update_source_and_factors(grouped)
+
+
+def update_data() -> None:
+    """Update data if the YAML file has been modified."""
+    global last_mod_time  # noqa: PLW0603
+    try:
+        current_mod_time = Path(datafile).stat().st_mtime
+    except FileNotFoundError:
+        # ファイルが存在しない場合の処理
+        print(f"File not found: {datafile}")  # noqa: T201
+        return
+
+    if current_mod_time > last_mod_time:
+        sleep(5)
+        print(f"File updated: {datafile}")  # noqa: T201
+
+        # データを再ロード
+        refresh_data()
+
+        last_mod_time = current_mod_time
+    else:
+        print("No update needed; file has not changed.")  # noqa: T201
 
 
 # 初期データの準備
 configfile = f"{args.config}"
 with Path(configfile).open("r") as file:
-    __configs = yaml.load(file)
-datafile: str = f"{__configs['configs']['datafile']}"
+    __configs = yaml_parser.load(file)
 
-data = load_data(datafile)
-source = ColumnDataSource(data=extract_data(data))
+if not isinstance(__configs, dict):
+    raise DataTypeError(message="Config file does not contain a dictionary.")
 
-# 定義するx_rangeを共有するために作成
-x_shared = Range1d(
-    start=0,
-    end=len(source.data["index"]),
-    bounds="auto",
+datafile = __configs.get("configs", {}).get("datafile")
+if not isinstance(datafile, str):
+    raise DataTypeError(message="datafile is not specified correctly in the config.")
+
+data = load_data_with_duckdb(datafile)
+
+selected_groups_initial: BokehList = cast(
+    BokehList,
+    [
+        "codec",
+        "type",
+        "preset",
+        "threads",
+        "ref_type",
+        "outfile_options",
+    ],
+)
+grouped_initial = process_grouped_data(data, selected_groups_initial)
+source = ColumnDataSource(
+    data={
+        "group": grouped_initial["group"].tolist(),
+        "outfile_bit_rate_kbs": grouped_initial["outfile_bit_rate_kbs"].tolist(),
+        "outfile_size_kbyte": grouped_initial["outfile_size_kbyte"].tolist(),
+        "vmaf_mean": grouped_initial["vmaf_mean"].tolist(),
+        "vmaf_min": grouped_initial["vmaf_min"].tolist(),
+        "stream_gop": grouped_initial["stream_gop"].tolist(),
+        "stream_has_b_frames": grouped_initial["stream_has_b_frames"].tolist(),
+        "stream_refs": grouped_initial["stream_refs"].tolist(),
+        "stream_frames_i": grouped_initial["stream_frames_i"].tolist(),
+        "stream_frames_p": grouped_initial["stream_frames_p"].tolist(),
+        "stream_frames_b": grouped_initial["stream_frames_b"].tolist(),
+    },
 )
 
-initial_window = max(10, len(source.data["index"]) - 1)
+# 定義するx_rangeを FactorRange に変更(カテゴリカル軸用)
+x_shared = FactorRange(
+    factors=sorted(grouped_initial["group"].unique()),
+)
+
+initial_window = max(10, len(source.data["group"]) - 1)
 select_range = Range1d(
     start=0,
     end=initial_window,
     bounds="auto",
 )
+
+# ウィジェットの定義
+groupby_select = MultiChoice(
+    title="Group By",
+    value=selected_groups_initial,
+    min_height=60,
+    options=[
+        "codec",
+        "type",
+        "preset",
+        "threads",
+        "ref_name",
+        "ref_type",
+        "infile_option",
+        "outfile_options",
+    ],
+)
+
+codec_options = sorted(set(data["codec"]))
+codec_filter = MultiChoice(
+    title="Filter by Codec",
+    min_height=60,
+    value=codec_options,
+    options=codec_options,
+)
+
+
+# ウィジェットにコールバックを追加
+def widget_callback(attr: str, old: list[Any], new: list[Any]) -> None:  # noqa: ARG001
+    """Callback."""
+    refresh_data()
+
+
+groupby_select.on_change("value", widget_callback)
+codec_filter.on_change("value", widget_callback)
+
+
 # プロットの作成
 size_plot = figure(
-    sizing_mode="scale_both",
+    sizing_mode="stretch_both",
     min_width=400,
     min_height=300,
     title=f"Bit Rate (Mbs) and File Size (MB) from {configfile}",
     x_range=x_shared,
-    x_axis_label="Index",
+    y_range=DataRange1d(),
+    x_axis_label="Group",
     y_axis_label="File Size (MB)",
     tooltips=[
-        ("Index", "@index"),
-        ("Bit Rate (Mbs)", "@bit_rate"),
-        ("File Size(MB)", "@size_mbyte"),
-        ("name", "@name"),
-        ("Codec", "@codec"),
-        ("Type", "@type"),
-        ("Options", "@options"),
+        ("Group", "@group"),
+        ("Bit Rate (Mbs)", "@outfile_bit_rate_kbs"),
+        ("File Size(MB)", "@outfile_size_kbyte"),
+        ("VMAF Mean", "@vmaf_mean"),
+        ("VMAF Min", "@vmaf_min"),
     ],
 )
 
 # ファイルサイズの棒グラフ
 size_plot.vbar(
-    x="index",
-    top="size_mbyte",
+    x="group",
+    top="outfile_size_kbyte",
     source=source,
     width=0.5,
     color="lightsteelblue",
@@ -192,57 +326,56 @@ size_plot.vbar(
 size_plot.extra_y_ranges = cast(
     BokehDict,
     {
-        "bit_rate": Range1d(start=0, end=max(source.data["bit_rate"]) * 1.1),
+        "outfile_bit_rate_kbs": DataRange1d(start=0),
     },
 )
-size_plot.add_layout(LinearAxis(y_range_name="bit_rate", axis_label="Bit Rate (Mbs)"), "right")
+
+size_plot.add_layout(
+    LinearAxis(y_range_name="outfile_bit_rate_kbs", axis_label="Bit Rate (Mbs)"),
+    "right",
+)
 
 # ビットレートの折れ線グラフ
 size_plot.line(
-    "index",
-    "bit_rate",
+    "group",
+    "outfile_bit_rate_kbs",
     source=source,
     line_width=2,
     color="red",
-    y_range_name="bit_rate",
+    y_range_name="outfile_bit_rate_kbs",
     legend_label="Bit Rate (Mbs)",
     selection_line_color="firebrick",
     nonselection_line_alpha=0.6,
 )
 size_plot.scatter(
-    "index",
-    "bit_rate",
+    "group",
+    "outfile_bit_rate_kbs",
     source=source,
     size=8,
     color="red",
     alpha=0.5,
-    y_range_name="bit_rate",
+    y_range_name="outfile_bit_rate_kbs",
     selection_color="firebrick",
     nonselection_alpha=0.6,
 )
 
 # VMAF プロットの作成
 vmaf_plot = figure(
-    sizing_mode="scale_both",
+    sizing_mode="stretch_both",
     min_width=400,
     min_height=300,
     title=f"VMAF from {configfile}",
     x_range=x_shared,
-    x_axis_label="Index",
+    x_axis_label="Group",
     y_axis_label="VMAF Mean",
     tooltips=[
-        ("Index", "@index"),
+        ("Group", "@group"),
         ("VMAF min", "@vmaf_min"),
         ("VMAF mean", "@vmaf_mean"),
-        ("Codec", "@codec"),
-        ("Type", "@type"),
-        ("name", "@name"),
-        ("Options", "@options"),
     ],
 )
-
 vmaf_plot.line(
-    "index",
+    "group",
     "vmaf_mean",
     source=source,
     line_width=2,
@@ -251,7 +384,7 @@ vmaf_plot.line(
     nonselection_line_alpha=0.6,
 )
 vmaf_plot.line(
-    "index",
+    "group",
     "vmaf_min",
     source=source,
     line_width=2,
@@ -260,7 +393,7 @@ vmaf_plot.line(
     nonselection_line_alpha=0.6,
 )
 vmaf_plot.scatter(
-    "index",
+    "group",
     "vmaf_mean",
     source=source,
     size=8,
@@ -270,28 +403,23 @@ vmaf_plot.scatter(
     nonselection_alpha=0.6,
 )
 
-
 # フレーム プロットの作成
 frame_plot = figure(
-    sizing_mode="scale_both",
+    sizing_mode="stretch_both",
     min_width=400,
     min_height=300,
     title=f"Frames from {configfile}",
     x_range=x_shared,
-    x_axis_label="Index",
+    x_axis_label="Group",
     y_axis_label="Frame",
     tooltips=[
-        ("Index", "@index"),
+        ("Group", "@group"),
         ("GOP", "@stream_gop"),
         ("has_b", "@stream_has_b_frames"),
         ("refs", "@stream_refs"),
         ("I", "@stream_frames_i"),
         ("P", "@stream_frames_p"),
         ("B", "@stream_frames_b"),
-        ("Codec", "@codec"),
-        ("Type", "@type"),
-        ("name", "@name"),
-        ("Options", "@options"),
     ],
 )
 
@@ -301,13 +429,12 @@ frame_plot.xgrid.grid_line_color = None
 # 積み上げ棒グラフの描画
 frame_plot.vbar_stack(
     stackers=["stream_frames_b", "stream_frames_p", "stream_frames_i"],
-    x="index",
+    x="group",
     width=0.6,
     color=["#718dbf", "#e84d60", "#c9d9d3"],
     source=source,
     legend_label=["B-Frame", "P-Frame", "I-Frame"],
 )  # type: ignore[no-untyped-call]
-
 
 # Create the RangeTool and link it to `x_shared`
 range_tool = RangeTool(x_range=x_shared)
@@ -323,16 +450,27 @@ range_tool_plot = figure(
 )
 
 # Add a simplified view or summary to the range_tool_plot
-range_tool_plot.line("index", "size_mbyte", source=source, color="lightsteelblue")
-range_tool_plot.scatter("index", "size_mbyte", source=source, size=5, color="lightsteelblue")
+range_tool_plot.line(
+    "group",
+    "outfile_size_kbyte",
+    source=source,
+    color="lightsteelblue",
+)
+range_tool_plot.scatter(
+    "group",
+    "outfile_size_kbyte",
+    source=source,
+    size=5,
+    color="lightsteelblue",
+)
 
 range_tool_plot.add_tools(range_tool)
-
 range_tool_plot.yaxis.visible = False
 range_tool_plot.xgrid.visible = False
 
-# Assemble the layout
+# レイアウトの組み立て
 layout = column(
+    row(groupby_select, codec_filter),
     size_plot,
     frame_plot,
     vmaf_plot,
@@ -344,28 +482,8 @@ curdoc().add_root(layout)
 curdoc().title = "VQE from FFmpeg"
 last_mod_time: float = 0
 
-
-def update_data() -> None:
-    """Update data if the YAML file has been modified."""
-    global last_mod_time  # noqa: PLW0603
-    try:
-        current_mod_time = Path(datafile).stat().st_mtime
-    except FileNotFoundError:
-        # Handle the case where the file does not exist
-        print(f"File not found: {datafile}")  # noqa: T201
-        return
-
-    if current_mod_time > last_mod_time:
-        sleep(15)
-        _new_data = load_data(datafile)
-        source.data = cast(dict[str, Any], extract_data(_new_data))
-        last_mod_time = current_mod_time
-        print(f"Data updated at {current_mod_time}")  # noqa: T201
-    else:
-        print("No update needed; file has not changed.")  # noqa: T201
-
-
+# 周期的なデータ更新コールバックの設定
 curdoc().add_periodic_callback(
     update_data,
-    15000,
-)  # 15000 ミリ秒 ごとにチェック
+    4000,  # 4000 ミリ秒 ごとにチェック
+)  # 修正: コメントも更新

@@ -23,6 +23,7 @@ tqdm = "4.67.1"
 plotbitrate = "~1.1.2.0"
 ruamel-yaml = "^0.18.10"
 bokeh = "^3.6.2"
+duckdb = "^1.2.0"
 
 [tool.poetry.group.dev.dependencies]
 taskipy = "~1.14.0"

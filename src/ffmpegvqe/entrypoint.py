@@ -6,7 +6,6 @@
 
 # Standard Library
 import argparse
-import csv
 from functools import partial
 import hashlib
 import json
@@ -24,6 +23,7 @@ from time import strftime
 from typing import Any
 from uuid import uuid4
 
+import duckdb
 from ffmpeg_progress_yield import FfmpegProgress
 import ruamel.yaml
 from tqdm import tqdm as std_tqdm
@@ -112,7 +112,12 @@ tqdm = partial(
 def getframeinfo(filename: str) -> dict:
     """Get frame Information."""
     __probe_log: dict = {}
-    __stream: dict = {"gop": 0, "has_b_frames": 0, "refs": 0, "frames": {"I": 0, "P": 0, "B": 0}}
+    __stream: dict = {
+        "gop": 0,
+        "has_b_frames": 0,
+        "refs": 0,
+        "frames": {"I": 0, "P": 0, "B": 0, "total": 0},
+    }
     # フレームのカウントを初期化
     __gop_lengths = []
     __current_gop_length = 0
@@ -146,6 +151,9 @@ def getframeinfo(filename: str) -> dict:
     __stream["gop"] = int(__first_gop_length)
     __stream["has_b_frames"] = int(__probe_log["streams"][0]["has_b_frames"])
     __stream["refs"] = int(__probe_log["streams"][0]["refs"])
+    __stream["frames"]["total"] = (
+        __stream["frames"]["I"] + __stream["frames"]["P"] + __stream["frames"]["B"]
+    )
 
     """ "frames" を削除"""
     if "frames" in __probe_log:
@@ -365,7 +373,7 @@ def load_config(configfile: str) -> dict:  # noqa: PLR0915, PLR0912, C901
     """Load config."""
     __configs: dict = {}
     __config_flag: bool = False
-    __encode_cfg: dict = {}
+    __encode_cfg: list = []
     __distdir: Path = Path(f"./videos/dist/{Path(configfile).name.replace('.yml', '')}")
     __patterns: list = [
         {
@@ -524,14 +532,40 @@ def load_config(configfile: str) -> dict:  # noqa: PLR0915, PLR0912, C901
             "configs": {
                 "references": [
                     {
-                        "name": "bbb",
-                        "basefile": "./videos/source/BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts",
-                        "basehash": "",
+                        "name": "ABBB",
+                        "type": "Anime",
+                        "basefile": "./videos/source/ABBB_MPEG-2_1920x1080_30p.m2ts",
+                        "basehash": "f005791ab9cabdc4468317d5d58becf3eb6228a49c6fad09e0923685712af769",
                     },
                     {
-                        "name": "nature",
-                        "basefile": "./videos/source/Nature_JapanTV_MPEG-2_1920x1080_30p.m2ts",
-                        "basehash": "",
+                        "name": "ASintel",
+                        "type": "Anime",
+                        "basefile": "./videos/source/ASintel_MPEG-2_1920x1080_30p.m2ts",
+                        "basehash": "8554804c935a382384eed9196ff88bd561767b6be1786aa4921087f265d92f3a",
+                    },
+                    {
+                        "name": "AToS",
+                        "type": "Anime",
+                        "basefile": "./videos/source/AToS_MPEG-2_1920x1080_30p.m2ts",
+                        "basehash": "ff6a0c366a3c631cf76d20c205cf505f964c9126551bf5bf10e8d99f9d04df52",
+                    },
+                    {
+                        "name": "NAir",
+                        "type": "Nature",
+                        "basefile": "./videos/source/NAir_MPEG-2_1920x1080_30p.m2ts",
+                        "basehash": "aec5612c556567df8cc3b37010c2850f709054293f1d5d0b96c68b349c2a97a2",
+                    },
+                    {
+                        "name": "NArmy",
+                        "type": "Nature",
+                        "basefile": "./videos/source/NArmy_MPEG-2_1920x1080_30p.m2ts",
+                        "basehash": "aef3503a79fcacf0e65e368416b0b0b85e54b8eb77e2613a4b750b59fb2b50d5",
+                    },
+                    {
+                        "name": "NNavy",
+                        "type": "Nature",
+                        "basefile": "./videos/source/NNavy_MPEG-2_1920x1080_30p.m2ts",
+                        "basehash": "52409e9400315916bb191dfafe4edd415204671ae00e2ddb447671f4850876cb",
                     },
                 ],
                 "datafile": "",
@@ -544,10 +578,15 @@ def load_config(configfile: str) -> dict:  # noqa: PLR0915, PLR0912, C901
 
     """reference filehash を埋める."""
     for _index, _ref in enumerate(__configs["configs"]["references"]):
-        __configs["configs"]["references"][_index]["basehash"] = getfilehash(_ref["basefile"])
         if not Path(
             f"{_ref['basefile'].replace(Path(_ref['basefile']).suffix, '_ffprobe.json', 1)}",
         ).exists():
+            if __configs["configs"]["references"][_index]["basehash"] != getfilehash(
+                _ref["basefile"],
+            ):
+                __msg: str = f"Error: references name: {_ref['name']}, basehash not match."
+                raise VQEError(__msg)
+            print(f"References name: {_ref['name']}, basehash successfull.")  # noqa: T201
             getprobe(videofile=_ref["basefile"])
 
     """__datafile が設定されてなく、"""
@@ -560,16 +599,14 @@ def load_config(configfile: str) -> dict:  # noqa: PLR0915, PLR0912, C901
         with Path(__datafile).open("r") as file:
             __encode_cfg = json.load(file)
 
-    __existing_encodes = {encode["id"]: encode for encode in __encode_cfg.get("encodes", [])}
-    __results_list.extend(__encode_cfg.get("encodes", []))
+    __existing_encodes = {encode["id"]: encode for encode in __encode_cfg}
+    __results_list.extend(__encode_cfg)
 
     for __pattern in __configs["configs"]["patterns"]:
         __presets: list = __pattern["presets"]
         for __preset in __presets:
             if type(__pattern["outfile"]["options"]) is not list:
-                __msg: str = (
-                    f"outfile.options is must list[str] : {__pattern['outfile']['options']}"
-                )
+                __msg = f"outfile.options is must list[str] : {__pattern['outfile']['options']}"
                 raise VQEError(__msg)
             for __out_option in __pattern["outfile"]["options"]:
                 for __ref in __configs["configs"]["references"]:
@@ -601,35 +638,60 @@ def load_config(configfile: str) -> dict:  # noqa: PLR0915, PLR0912, C901
                         "threads": __threads,
                         "infile": {
                             "name": __ref["name"],
+                            "type": __ref["type"],
                             "filename": __ref["basefile"],
+                            "duration": 0.0,
+                            "size_kbyte": 0.0,
                             "option": __infile_opts,
                         },
                         "outfile": {
                             "filename": f"{__distdir}/{__out_id_hash[:12]}",
+                            "options": __out_option,
+                            "hash": "",
                             "bit_rate_kbs": 0.0,
                             "duration": 0.0,
-                            "hash": "",
-                            "options": __out_option,
-                            "size_kbyte": 0,
+                            "size_kbyte": 0.0,
+                            "stream": {
+                                "gop": 0,
+                                "has_b_frames": 0,
+                                "refs": 0,
+                                "frames": {"I": 0, "P": 0, "B": 0, "total": 0},
+                            },
                         },
                         "commandline": "",
                         "hwaccels": __hwaccels,
-                        "elapsed": {
+                        "results": {
                             "encode": {
-                                "second": 0,
+                                "second": 0.0,
+                                "time": "",
+                                "fps": 0,
+                                "speed": 0.0,
+                            },
+                            "compression_ratio_persent": 0.0,
+                            "probe": {
+                                "second": 0.0,
                                 "time": "",
                             },
                             "vmaf": {
-                                "second": 0,
+                                "second": 0.0,
                                 "time": "",
+                                "version": "",
+                                "commandline": "",
+                                "pooled_metrics": {
+                                    "float_ssim": {
+                                        "min": 0.0,
+                                        "max": 0.0,
+                                        "mean": 0.0,
+                                        "harmonic_mean": 0.0,
+                                    },
+                                    "vmaf": {
+                                        "min": 0.0,
+                                        "max": 0.0,
+                                        "mean": 0.0,
+                                        "harmonic_mean": 0.0,
+                                    },
+                                },
                             },
-                        },
-                        "results": {
-                            "compression": {
-                                "ratio_persent": 0,
-                                "speed": 0,
-                            },
-                            "vmaf": {},
                         },
                     }
 
@@ -656,99 +718,113 @@ def load_config(configfile: str) -> dict:  # noqa: PLR0915, PLR0912, C901
     elif __config_flag is True:
         print(f"Create datafile is {__datafile} write.")  # noqa: T201
         with Path(__datafile).open("w") as file:
-            json.dump({"encodes": []}, file)
+            json.dump([], file)
     elif __config_flag is False:
         print(f"{len(__results_list)} pattern is {__datafile} write.")  # noqa: T201
         with Path(__datafile).open("w") as file:
-            __encode_cfg["encodes"] = __results_list
+            __encode_cfg = __results_list
             json.dump(__encode_cfg, file)
 
     return {
         "configs": __configs["configs"],
-        "encodes": __encode_cfg,
         "datafile": __datafile,
     }
 
 
 def getcsv(datafile: dict) -> None:
     """Get csv."""
-    with Path(f"{datafile}").open("r") as file:
-        __data = json.load(file)
-    __csvfile: str = f"{datafile}".replace(".json", ".csv", 1)
+    __csvfile_all: str = f"{datafile}".replace(".json", "_all.csv", 1)
+    __csvfile_type: str = f"{datafile}".replace(".json", "_gby_type.csv", 1)
+    __csvfile_option: str = f"{datafile}".replace(".json", "_gby_option.csv", 1)
 
-    __exports: list = [
-        [
-            "index",
-            "id_opt",
-            "codec",
-            "type",
-            "preset",
-            "threads",
-            "name",
-            "infile_options",
-            "outfile_filename",
-            "outfile_size_kbyte",
-            "outfile_bit_rate_kbs",
-            "outfile_options",
-            "elapsed_encode_second",
-            "elapsed_encode_time",
-            "compression_ratio_persent",
-            "compression_speed",
-            "ssim_min",
-            "ssim_harmonic_mean",
-            "vmaf_min",
-            "vmaf_harmonic_mean",
-        ],
-    ]
+    print(f"load {datafile} ....")  # noqa: T201
+    duckdb.execute(
+        f"""
+            CREATE TEMPORARY TABLE encodes AS
+            SELECT *
+            FROM read_json('{datafile}')
+        """,  # noqa: S608
+    )
 
-    __hashs: list = [
-        encode["outfile"]["hash"]
-        for encode in __data["encodes"]
-        if encode["outfile"]["hash"] != ""
-    ]
+    print(f"Export csv ..... {__csvfile_all}")  # noqa: T201
+    duckdb.sql(
+        r"""
+        SELECT
+            row_number() OVER () - 1                               AS index,
+            codec                                                  AS codec,
+            type                                                   AS type,
+            preset                                                 AS preset,
+            threads                                                AS threads,
+            infile.name                                            AS ref_name,
+            infile.type                                            AS ref_type,
+            infile.option                                          AS infile_option,
+            outfile.filename                                       AS outfile_filename,
+            outfile.size_kbyte                                     AS outfile_size_kbyte,
+            outfile.bit_rate_kbs                                   AS outfile_bit_rate_kbs,
+            outfile.options                                        AS outfile_options,
+            results.encode.second                                  AS enc_sec,
+            results.encode.time                                    AS enc_time,
+            results.compression_ratio_persent                      AS comp_ratio_persent,
+            results.encode.speed                                   AS enc_speed,
+            results.vmaf.pooled_metrics.float_ssim.min             AS ssim_min,
+            results.vmaf.pooled_metrics.float_ssim.harmonic_mean   AS ssim_mean,
+            results.vmaf.pooled_metrics.vmaf.min                   AS vmaf_min,
+            results.vmaf.pooled_metrics.vmaf.harmonic_mean         AS vmaf_mean,
+        FROM encodes
+        """,
+    ).write_csv(__csvfile_all)
 
-    if __hashs != []:
-        for __index, __config in enumerate(__data["encodes"]):
-            __exports.extend(
-                [
-                    [
-                        __index,
-                        __config["id_opt"],
-                        __config["codec"],
-                        __config["type"],
-                        __config["preset"],
-                        __config["threads"],
-                        __config["infile"]["name"],
-                        __config["infile"]["option"],
-                        __config["outfile"]["filename"],
-                        __config["outfile"]["size_kbyte"],
-                        __config["outfile"]["bit_rate_kbs"],
-                        __config["outfile"]["options"],
-                        __config["elapsed"]["encode"]["second"],
-                        __config["elapsed"]["encode"]["time"],
-                        __config["results"]["compression"]["ratio_persent"],
-                        __config["results"]["compression"]["speed"],
-                        __config["results"]["vmaf"]["pooled_metrics"]["float_ssim"]["min"],
-                        __config["results"]["vmaf"]["pooled_metrics"]["float_ssim"][
-                            "harmonic_mean"
-                        ],
-                        __config["results"]["vmaf"]["pooled_metrics"]["vmaf"]["min"],
-                        __config["results"]["vmaf"]["pooled_metrics"]["vmaf"]["harmonic_mean"],
-                    ],
-                ],
-            )
+    print(f"Export csv ..... {__csvfile_type}")  # noqa: T201
+    duckdb.sql(
+        r"""
+        SELECT
+            row_number() OVER () - 1                                   AS index,
+            codec                                                      AS codec,
+            type                                                       AS type,
+            preset                                                     AS preset,
+            threads                                                    AS threads,
+            infile.type                                                AS ref_type,
+            AVG(outfile.size_kbyte)                                    AS outfile_size_kbyte,
+            AVG(outfile.bit_rate_kbs)                                  AS outfile_bit_rate_kbs,
+            outfile.options                                            AS outfile_options,
+            AVG(results.encode.second)                                 AS enc_sec,
+            AVG(results.compression_ratio_persent)                     AS comp_ratio_persent,
+            AVG(results.encode.speed)                                  AS enc_speed,
+            AVG(results.vmaf.pooled_metrics.float_ssim.min)            AS ssim_min,
+            AVG(results.vmaf.pooled_metrics.float_ssim.harmonic_mean)  AS ssim_mean,
+            AVG(results.vmaf.pooled_metrics.vmaf.min)                  AS vmaf_min,
+            AVG(results.vmaf.pooled_metrics.vmaf.harmonic_mean)        AS vmaf_mean,
+        FROM encodes
+        GROUP BY codec, type, preset, threads, ref_type, outfile_options
 
-        print(f"Export csv ..... {__csvfile}")  # noqa: T201
-        with Path(__csvfile).open("w") as csvfile:
-            csvwriter = csv.writer(
-                csvfile,
-                delimiter=",",
-                quotechar='"',
-                quoting=csv.QUOTE_NONNUMERIC,
-            )
-            for __export in __exports:
-                csvwriter.writerow(__export)
-        print("Export csv done.")  # noqa: T201
+        """,
+    ).write_csv(__csvfile_type)
+
+    print(f"Export csv ..... {__csvfile_option}")  # noqa: T201
+    duckdb.sql(
+        r"""
+        SELECT
+            row_number() OVER () - 1                                   AS index,
+            codec                                                      AS codec,
+            type                                                       AS type,
+            preset                                                     AS preset,
+            threads                                                    AS threads,
+            AVG(outfile.size_kbyte)                                    AS outfile_size_kbyte,
+            AVG(outfile.bit_rate_kbs)                                  AS outfile_bit_rate_kbs,
+            outfile.options                                            AS outfile_options,
+            AVG(results.encode.second)                                 AS enc_sec,
+            AVG(results.compression_ratio_persent)                     AS comp_ratio_persent,
+            AVG(results.encode.speed)                                  AS enc_speed,
+            AVG(results.vmaf.pooled_metrics.float_ssim.min)            AS ssim_min,
+            AVG(results.vmaf.pooled_metrics.float_ssim.harmonic_mean)  AS ssim_mean,
+            AVG(results.vmaf.pooled_metrics.vmaf.min)                  AS vmaf_min,
+            AVG(results.vmaf.pooled_metrics.vmaf.harmonic_mean)        AS vmaf_mean,
+        FROM encodes
+        GROUP BY codec, type, preset, threads, outfile_options
+
+        """,
+    ).write_csv(__csvfile_option)
+    print("Export csv done.")  # noqa: T201
 
 
 def compress_files(dst: Path, files: list) -> None:
@@ -756,7 +832,7 @@ def compress_files(dst: Path, files: list) -> None:
     if not files:
         print("Compress file not found.")  # noqa: T201
         return
-    archive_name = f"{dst}/vmaf_archive.tar.xz"
+    archive_name = f"{dst}/vmaf_archive.xz"
 
     print(f"\n\nCreate archive file: {archive_name}")  # noqa: T201
     with tarfile.open(archive_name, "w:xz") as tar:
@@ -788,16 +864,12 @@ def archive() -> None:
         __data = json.load(__file)
 
     __hashs: int = len(
-        [
-            encode["outfile"]["hash"]
-            for encode in __data["encodes"]
-            if encode["outfile"]["hash"] != ""
-        ],
+        [encode["outfile"]["hash"] for encode in __data if encode["outfile"]["hash"] != ""],
     )
 
-    if (__hashs) != len(__data["encodes"]):
+    if (__hashs) != len(__data):
         print(  # noqa: T201
-            f"\n\ndatafile {__datafile} is hashs {__hashs} to encodes {len(__data['encodes'])}.\n"
+            f"\n\ndatafile {__datafile} is hashs {__hashs} to encodes {len(__data)}.\n"
             "archive process stop.",
         )
         return
@@ -846,9 +918,9 @@ def main(config: dict) -> None:
         with Path(__datafile).open("r") as file:
             __encode_cfg = json.load(file)
 
-        __length: int = len(__encode_cfg["encodes"])
+        __length: int = len(__encode_cfg)
         __rapt: int = 0
-        for __index, __encode in enumerate(__encode_cfg["encodes"]):
+        for __index, __encode in enumerate(__encode_cfg):
             print(  # noqa: T201
                 "=" * 155
                 + f"\n{__index + 1:0>4}/{__length:0>4} ({(__index + 1) / __length:>7.2%})\t"
@@ -882,7 +954,7 @@ def main(config: dict) -> None:
                     """__datafile write."""
                     print(f"\n\n{err}: datafile writeing to {__datafile}")  # noqa: T201
                     with Path(__datafile).open("w") as file:
-                        json.dump({"encodes": __encode_cfg["encodes"]}, file)
+                        json.dump(__encode_cfg, file)
                         file.flush()
                         fsync(file.fileno())
                     print("done.\n\n")  # noqa: T201
@@ -904,7 +976,7 @@ def main(config: dict) -> None:
                     __vmaf_log = json.load(file)
 
                 """Write parameters."""
-                __encode_cfg["encodes"][__index]["infile"].update(
+                __encode["infile"].update(
                     {
                         "duration": float(__base_probe_log["format"]["duration"]),
                         "size_kbyte": (
@@ -915,7 +987,7 @@ def main(config: dict) -> None:
                         ),
                     },
                 )
-                __encode_cfg["encodes"][__index]["outfile"].update(
+                __encode["outfile"].update(
                     {
                         "bit_rate_kbs": float(
                             (int(__probe_log["format"]["bit_rate"]) / 1024),
@@ -933,12 +1005,34 @@ def main(config: dict) -> None:
                         "stream": __encode_rep["stream"],
                     },
                 )
-                __encode_cfg["encodes"][__index].update(
+                __encode.update(
                     {
                         "commandline": __encode_rep["commandline"],
-                        "elapsed": {
+                        "results": {
                             "encode": {
                                 "second": __encode_rep["elapsed_time"],
+                                "time": strftime(
+                                    "%H:%M:%S",
+                                    gmtime(__encode_rep["elapsed_time"]),
+                                ),
+                                "fps": (
+                                    int(__encode_rep["stream"]["frames"]["total"])
+                                    / __encode_rep["elapsed_time"]
+                                ),
+                                "speed": (
+                                    float(__probe_log["format"]["duration"])
+                                    / __encode_rep["elapsed_time"]
+                                ),
+                            },
+                            "compression_ratio_persent": (
+                                1
+                                - (
+                                    float(__probe_log["format"]["size"])
+                                    / float(__base_probe_log["format"]["size"])
+                                )
+                            ),
+                            "probe": {
+                                "second": __encode_rep["elapsed_prbt"],
                                 "time": strftime(
                                     "%H:%M:%S",
                                     gmtime(__encode_rep["elapsed_time"]),
@@ -946,24 +1040,10 @@ def main(config: dict) -> None:
                             },
                             "vmaf": {
                                 "second": __vmaf_rsp["elapsed_time"],
-                                "time": strftime("%H:%M:%S", gmtime(__vmaf_rsp["elapsed_time"])),
-                            },
-                        },
-                        "results": {
-                            "compression": {
-                                "ratio_persent": (
-                                    1
-                                    - (
-                                        float(__probe_log["format"]["size"])
-                                        / float(__base_probe_log["format"]["size"])
-                                    )
+                                "time": strftime(
+                                    "%H:%M:%S",
+                                    gmtime(__vmaf_rsp["elapsed_time"]),
                                 ),
-                                "speed": (
-                                    float(__probe_log["format"]["duration"])
-                                    / __encode_rep["elapsed_time"]
-                                ),
-                            },
-                            "vmaf": {
                                 "version": __vmaf_log["version"],
                                 "commandline": __vmaf_rsp["commandline"],
                                 "pooled_metrics": {
@@ -977,7 +1057,7 @@ def main(config: dict) -> None:
 
                 "__datafile 書き込み"
                 with Path(__datafile).open("w") as file:
-                    json.dump({"encodes": __encode_cfg["encodes"]}, file)
+                    json.dump(__encode_cfg, file)
 
 
 if __name__ == "__main__":
