@@ -232,6 +232,8 @@ $ du -sh .git
 
 ```
 
+変更オブジェクトがない状態で実施する必要がある
+
 ```bash
 git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch -r assets/' -- --all
 git gc --aggressive --prune=now
@@ -239,6 +241,23 @@ git push --all --force origin
 
 mkdir -p assets
 touch assets/.gitkeep
+
+```
+
+### データを利用する
+
+#### 解凍
+
+```bash
+mkdir -p logs
+tar -xvf logs_archive.tar.xz -C logs/
+
+```
+
+#### 圧縮
+
+```bash
+tar -Jcvf logs_archive.tar.xz logs/
 
 ```
 
