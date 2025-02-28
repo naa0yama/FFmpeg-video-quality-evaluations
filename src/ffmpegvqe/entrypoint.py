@@ -846,7 +846,7 @@ def compress_files(dst: Path, files: list) -> None:
     if not files:
         print("[ARCHIVE] Compress file not found.")  # noqa: T201
         return
-    archive_name = f"{dst.parent}/vmaf_archive.tar.xz"
+    archive_name = f"{dst.parent}/logs_archive.tar.xz"
 
     print(f"\n\n[ARCHIVE] Create archive file: {archive_name}")  # noqa: T201
     with tarfile.open(archive_name, "w:xz") as tar:
