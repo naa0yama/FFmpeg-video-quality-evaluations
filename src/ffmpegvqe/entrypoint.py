@@ -498,7 +498,7 @@ def load_config(configfile: str) -> dict:  # noqa: PLR0915, PLR0912, C901
             "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
             "outfile": {
                 "options": [
-                    "-q:v 22",
+                    "-q:v 35",
                 ],
             },
             "hwaccels": "-hwaccel_output_format qsv",
@@ -511,7 +511,7 @@ def load_config(configfile: str) -> dict:  # noqa: PLR0915, PLR0912, C901
             "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
             "outfile": {
                 "options": [
-                    "-global_quality 22",
+                    "-global_quality 35",
                 ],
             },
             "hwaccels": "-hwaccel_output_format qsv",
