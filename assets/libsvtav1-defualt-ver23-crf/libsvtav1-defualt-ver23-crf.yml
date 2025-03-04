@@ -148,5 +148,5 @@ configs:
       libvpl: v2.14.0
       libvpx: v1.15.0
       libx264: 31e19f92f00c7003fa115047ce50978bc98c3a0d
-      libx265: '3.5'
+      libx265: '4.0'
       obuparse: 918524abdc19b6582d853c03373d8e2e0b9f11ee

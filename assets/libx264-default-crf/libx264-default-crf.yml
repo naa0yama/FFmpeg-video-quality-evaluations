@@ -29,11 +29,11 @@ configs:
   patterns:
     - codec: libx264
       type: CRF
-      comments: ""
+      comments: ''
       presets:
         - medium
       infile:
-        option: ""
+        option: ''
       outfile:
         options:
           - -crf 13
@@ -57,15 +57,14 @@ configs:
           - -crf 31
           - -crf 32
           - -crf 33
-      hwaccels: ""
+      hwaccels: ''
   environment:
     ffmpege:
       program_version:
         version: n7.1
         copyright: Copyright (c) 2007-2024 the FFmpeg developers
         compiler_ident: gcc 13 (Ubuntu 13.3.0-6ubuntu2~24.04)
-        configuration:
-          --enable-avisynth --enable-libaribb24 --enable-libass --enable-libdav1d --enable-libfreetype --enable-libmp3lame --enable-libopus --enable-libsvtav1 --enable-libvmaf --enable-libvpl
+        configuration: --enable-avisynth --enable-libaribb24 --enable-libass --enable-libdav1d --enable-libfreetype --enable-libmp3lame --enable-libopus --enable-libsvtav1 --enable-libvmaf --enable-libvpl
           --enable-libvpx --enable-libx264 --enable-libx265 --enable-vaapi --enable-gpl --enable-nonfree --enable-version3 --disable-debug --disable-doc --disable-ffplay --disable-shared --enable-small
           --enable-static --enable-stripping --extra-libs='-lpthread -lm' --pkg-config-flags=--static --extra-cflags=-fopenmp --extra-ldflags='-fopenmp -Wl,--allow-multiple-definition -Wl,-z,stack-size=2097152'
           --toolchain=hardened
@@ -139,5 +138,5 @@ configs:
       libvpl: v2.14.0
       libvpx: v1.15.0
       libx264: 31e19f92f00c7003fa115047ce50978bc98c3a0d
-      libx265: "4.0"
+      libx265: '4.0'
       obuparse: 918524abdc19b6582d853c03373d8e2e0b9f11ee

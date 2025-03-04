@@ -53,6 +53,13 @@ duckdb.sql(
 duckdb.sql(
     r"""
     SELECT
+        MAX(gop),
+        MAX(has_b_frames),
+        MAX(refs),
+        MAX(fI),
+        MAX(fP),
+        MAX(fB),
+        MAX(fT),
         ref_type,
         ROUND(outfile_size_kbyte, 2),
         ROUND(outfile_bit_rate_kbs, 2),
@@ -73,6 +80,13 @@ duckdb.sql(
 duckdb.sql(
     r"""
     SELECT
+        MAX(gop),
+        MAX(has_b_frames),
+        MAX(refs),
+        MAX(fI),
+        MAX(fP),
+        MAX(fB),
+        MAX(fT),
         ref_type,
         ROUND(outfile_size_kbyte, 2),
         ROUND(outfile_bit_rate_kbs, 2),
