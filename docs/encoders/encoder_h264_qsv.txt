@@ -1,7 +1,7 @@
 Encoder h264_qsv []:
-    General capabilities: delay hybrid 
+    General capabilities: delay hybrid
     Threading capabilities: none
-    Supported hardware devices: qsv qsv qsv 
+    Supported hardware devices: qsv qsv qsv
     Supported pixel formats: nv12 qsv
 h264_qsv encoder AVOptions:
   -async_depth       <int>        E..V....... Maximum processing parallelism (from 1 to INT_MAX) (default 4)
@@ -83,4 +83,3 @@ h264_qsv encoder AVOptions:
   -a53cc             <boolean>    E..V....... Use A53 Closed Captions (if available) (default true)
   -aud               <boolean>    E..V....... Insert the Access Unit Delimiter NAL (default false)
   -repeat_pps        <boolean>    E..V....... repeat pps for every frame (default false)
-

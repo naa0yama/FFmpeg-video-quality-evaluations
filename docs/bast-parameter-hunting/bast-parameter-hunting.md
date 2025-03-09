@@ -6,7 +6,7 @@ h264_qsv, hevc_qsv, av1_qsv のエンコードパラメータで容量が小さ�
 
 ## 現状のベスト
 
-### h264_qsv
+### h264_qsv best
 
 ```bash
 >  File size, bitrate, compress_rate, ssim_harmonic_mean,vmaf_min, vmaf_harmonic_mean
@@ -18,7 +18,7 @@ ffmpeg -y -threads 4 -hide_banner -ignore_unknown -fflags +discardcorrupt+genpts
     -map 0:v -hwaccel qsv -c:v mpeg2_qsv -i base.mkv \
     -c:v h264_qsv -preset:v veryslow \
     -global_quality 25 -look_ahead 1 -look_ahead_depth 60 -look_ahead_downsampling off \
-    -aspect 16:9 -gop 256 -bf 16 -refs 9 -b_strategy 1 \
+    -aspect 16:9 -g 256 -bf 16 -refs 9 -b_strategy 1 \
     -color_range tv -color_primaries bt709 -color_trc bt709 -colorspace bt709 -max_muxing_queue_size 4000 \
     -movflags faststart -f mkv \
     -map 0:a -c:a aac -ar 48000 -ab 256k -ac 2 -bsf:a aac_adtstoasc \
@@ -27,7 +27,7 @@ ffmpeg -y -threads 4 -hide_banner -ignore_unknown -fflags +discardcorrupt+genpts
 
 ```
 
-### hevc_qsv
+### hevc_qsv best
 
 hevc_qsv は VMAF min/mean の値から h264_qsv と同程度にすると `-global_quality 22` が基準になりそうためこれを使ってテストする  
 それでも h264 に比べて 38% 圧縮されるのは優秀と思う。
@@ -41,7 +41,7 @@ ffmpeg -y -threads 4 -hide_banner -ignore_unknown -fflags +discardcorrupt+genpts
     -map 0:v -hwaccel qsv -c:v mpeg2_qsv -i videos/source/BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts \
     -c:v hevc_qsv -preset:v veryslow \
     -global_quality 22 -look_ahead 1 -bf 14 -refs 8 -extbrc 1 -look_ahead_depth 60 \
-    -aspect 16:9 -gop 256 -bf 14 -refs 8 -b_strategy 1 \
+    -aspect 16:9 -g 256 -bf 14 -refs 8 -b_strategy 1 \
     -color_range tv -color_primaries bt709 -color_trc bt709 -colorspace bt709 -max_muxing_queue_size 4000 \
     -movflags faststart -f mkv \
     -map 0:a -c:a aac -ar 48000 -ab 256k -ac 2 -bsf:a aac_adtstoasc \
@@ -68,7 +68,7 @@ ffmpeg -loglevel verbose -y -threads 4 -hwaccel_output_format qsv -hwaccel qsv \
 ```
 
 ```bash
-  -c:v hevc_nvenc -preset slow -profile:v main10 -pix_fmt yuv420p10le 
+  -c:v hevc_nvenc -preset slow -profile:v main10 -pix_fmt yuv420p10le
   -bf 3 -refs 9
   -color_range tv -color_primaries bt709 -color_trc bt709 -colorspace bt709
   -vf yadif=mode=send_frame:parity=auto:deint=all,scale=w=-2:h=720 -max_muxing_queue_size 4000
@@ -91,28 +91,22 @@ ffmpeg -loglevel verbose -y -threads 4 -hwaccel_output_format qsv -hwaccel qsv \
 
 ```
 
-### av1_qsv
+### av1_qsv best
 
 ## 画質探索の極意
 
 私の知識で、簡単に動画ファイルの圧縮について記述します。  
 [FFmpeg](https://www.ffmpeg.org) を利用します、 Windows などでは [HandBrake](https://handbrake.fr) など GUI で優れたエンコードソフトウェアがありますが、私の環境では Linux を主に利用しており、 Linux/Windows で同じ設定を利用出来ないと品質を維持して利用することが出来ません。  
 
-「動画の圧縮」と一言で言っても方法が多く、広義の方法として言われる事が多いため実現したい事を定義する。世の中には地上波放送を録画して楽しむ文化がある。総称として DTV が用いられるため以下はそうする。 DTV は地上波放送を録画する関係で MPEG-2 のコーディックで配信されてくる音声、映像データを保存するため 7GB/時間となる。  
-そのため、アニメやドラマを全録するような利用をすると 2600番組/年程度録画することになり単純な容量では 18TB 程度必要になる。これでは毎年高額な HDD を足す運用になり維持管理が難しいため映像を圧縮して容量を削減するのが目的である。
+「動画の圧縮」と一言で言っても方法が多く、広義の方法として言われる事が多いため実現したい事を定義する。世の中には地上波放送を録画して楽しむ文化がある。総称として DTV が用いられるため以下はそうする。 DTV は地上波放送を録画する関係で MPEG-2 のコーディックで配信されてくる音声、映像データを保存するため約 7GB/時間の容量を必要とする。  
+そのため、アニメやドラマを全録するような利用をすると2600番組/年程度録画することになり、単純な容量計算では 18TB 程度必要になる。これでは毎年高額な大容量 HDD を買い足す運用になり維持管理が難しいため映像を圧縮して容量を削減するのが目的である。
 
-映像を圧縮するには codec を指定する、今回は Intel QSV を利用するため h264, hevc, av1 に対応しており圧縮率は h264 -> hevc -> av1 の順番でよくなり秒間あたりの bitrate が削減できるため動画全体として容量を圧縮できる。一方、圧縮時間は圧縮率が高い codec になるほど時間がかかるため av1 が最も優れているが、処理時間とトレードオフになる事もある。
+映像を圧縮するには codec を指定する、今回は Intel QSV を利用するため h264, HEVC, AV1 に対応しており圧縮率は h264 -> HEVC -> AV1 の順番でよくなり秒間あたりの Bitrate が削減できるため動画全体として容量を圧縮できる。一方、圧縮時間は圧縮率が高い codec になるほど時間がかかるため AV1 が最も優れているが、処理時間とトレードオフになる事もある。
 
-エンコードすると多少なりとも映像は劣化する。がそれを定量的に確認する術がなく、「なんか画質悪くなった」というようなケースがあったんではなかろうか。そのため今回は結構なパターンを検証することもあり [VMAF](https://github.com/Netflix/vmaf/tree/master) を利用したスコアを確認する。 VMAF のスコアは 1080p をベースに算出され、 0-100 での数値で表記される。 全フレームの平均が採用されるが、最低値を確認する方法として `min` も存在するがこれは フレームに対して記録された最低値のため容易に 0 が記録される事がある。オプションを設定することで 調和平均(`harmonic_mean`) を確認することができる。のでこちらを利用する。
+エンコードすると多少なりとも映像は劣化する。がそれを定量的に確認する術がなく、「なんか画質悪くなった」というようなケースがあったんではなかろうか。そのため今回は結構なパターンを検証することもあり [VMAF](https://github.com/Netflix/vmaf) を利用したスコアを確認する。 VMAF のスコアは 1080p をベースに算出され、 0-100 での数値で表記される。 全フレームの平均が採用されるが、最低値を確認する方法として `min` も存在するこれは フレームに対して記録された最低値のため容易に 0 が記録される事がある。オプションを設定することで 調和平均(`harmonic_mean`) を確認することができる。のでこちらを利用する。
 
-テストの目標は平均 VMAF 96 以上、容量はできるだけ小さくを目標にする。  
+テストの目標は調和平均 VMAF 93 以上、容量はできるだけ小さくを目標にする。  
 アニメ 1話 200MB 以下、1クオーター 500GB 前後になるようにしたい。  
-
-FFmpeg を利用して圧縮する場合は GOP, B-Frame, 参照 B-Frame あたりのオプションが効いてくる。調べた限りでは h264_qsv の設定は `-g 256 -bf 2 -refs 3` である。 GOP は必要十分であるので変更せず、 `-bf`, `-refs` の設定を詰める事になるだろう。
-
-画質、 VMAF については Intel QSV を利用するなら LA-ICQ (Look-Ahead Intelligent Constant Quality) を前提に考えると良いだろう。 FFmpeg で利用する場合は `-global_quality <int>` `-look_ahead 1` を設定すると LA-ICQ でエンコードされる。  
-
-Intel QSV のエンコードの特性として、 `libx264` でよく利用される CRF(Constant Rate Factor) と同等にしたければ `-global_quality 25` とすればよい。それだけでは各 Frame の下限値を設定出来ないため、`-min_qp_i`, `-min_qp_p`, `-min_qp_b` を設定し画質の低下を調整すると画質を向上させつつ容量の削減ができる
 
 * q(Constant Quantizer): エンコード時に出る `q=XX.X` の数値で `-global_quality` に合わせて前後する。
   * `libx264` の `-crf 23` は `q=29.0` となる
@@ -144,7 +138,7 @@ Intel QSV のエンコードの特性として、 `libx264` でよく利用さ�
 |          | `-global_quality 25 -look_ahead 1`        |                           | LA-ICQ でエンコードする                                                           |
 |          | `-look_ahead_depth 60`                    | 0, 0-100                  | 先行読み込みフレームを 60 枚(約2秒)にする                                         |
 |          | `-look_ahead_downsampling off`            | unknown, (auto,off,2x,4x) | 先行読み込み時にダウンサンプリングをしない                                        |
-|          | `-gop`                                    | 256                       | GOP長、Iフレーム間の距離                                                          |
+|          | `-g`                                      | 256                       | GOP長、Iフレーム間の距離                                                          |
 |          | `-bf 16`                                  | 2                         | I-Frame と P-Frame 間の B-Frame の数                                              |
 |          | `-refs 9`                                 | 3                         | B-Frame 動き補正を考慮する参照フレーム数                                          |
 |          | `-b_strategy 1`                           | `-1`, 0, 1                | B-Frame を 参照 B-Frame として使用することを制御します。                          |
@@ -178,7 +172,7 @@ $ ffmpeg -loglevel debug -i base.mkv -c:v h264_qsv -global_quality 25 -look_ahea
 [h264_qsv @ 0x6003e69b3bc0] VDENC: ON
 [h264_qsv @ 0x6003e69b3bc0] Entropy coding: CABAC; MaxDecFrameBuffering: 3
 [h264_qsv @ 0x6003e69b3bc0] NalHrdConformance: OFF; SingleSeiNalUnit: ON; VuiVclHrdParameters: OFF VuiNalHrdParameters: OFF
-[h264_qsv @ 0x6003e69b3bc0] FrameRateExtD: 1001; FrameRateExtN: 30000 
+[h264_qsv @ 0x6003e69b3bc0] FrameRateExtD: 1001; FrameRateExtN: 30000
 [h264_qsv @ 0x6003e69b3bc0] IntRefType: 0; IntRefCycleSize: 0; IntRefQPDelta: 0
 [h264_qsv @ 0x6003e69b3bc0] MaxFrameSize: 783360; MaxSliceSize: 0
 [h264_qsv @ 0x6003e69b3bc0] BitrateLimit: OFF; MBBRC: ON; ExtBRC: OFF
@@ -186,10 +180,10 @@ $ ffmpeg -loglevel debug -i base.mkv -c:v h264_qsv -global_quality 25 -look_ahea
 [h264_qsv @ 0x6003e69b3bc0] RepeatPPS: OFF; NumMbPerSlice: 0; LookAheadDS: 2x
 [h264_qsv @ 0x6003e69b3bc0] AdaptiveI: OFF; AdaptiveB: OFF; BRefType:pyramid
 [h264_qsv @ 0x6003e69b3bc0] MinQPI: 0; MaxQPI: 0; MinQPP: 0; MaxQPP: 0; MinQPB: 0; MaxQPB: 0
-[h264_qsv @ 0x6003e69b3bc0] DisableDeblockingIdc: 0 
+[h264_qsv @ 0x6003e69b3bc0] DisableDeblockingIdc: 0
 [h264_qsv @ 0x6003e69b3bc0] SkipFrame: no_skip
 [h264_qsv @ 0x6003e69b3bc0] PRefType: default
-[h264_qsv @ 0x6003e69b3bc0] TransformSkip: unknown 
+[h264_qsv @ 0x6003e69b3bc0] TransformSkip: unknown
 [h264_qsv @ 0x6003e69b3bc0] IntRefCycleDist: 0
 [h264_qsv @ 0x6003e69b3bc0] LowDelayBRC: OFF
 [h264_qsv @ 0x6003e69b3bc0] MaxFrameSizeI: 0; MaxFrameSizeP: 0
@@ -197,31 +191,45 @@ $ ffmpeg -loglevel debug -i base.mkv -c:v h264_qsv -global_quality 25 -look_ahea
 
 ```
 
-### Encode type
+## Encode type
 
 Intel QSV では下記のエンコードモードに対応している
 
 * CQP (Constant Quantization Parameter)
+  * **Intel QSV での h264_qsv, hevc_qsv, av1_qsv のデフォルトモード**
+  * 一定品質を維持する設定のため、単調なシーンでは過剰、複雑なシーンではビットレート不足となる
 * ICQ (Intelligent Constant Quality)
+  * このモードは画質を一定に保ちながら、シーンの複雑さに応じてビットレートを調整します。
 * LA-ICQ (Look-Ahead Intelligent Constant Quality)
-* VBR (Variable Bit Rate)
+  * `hevc_qsv`, `av1_qsv` では 2025/02 現在では LA_ICQ の実装はない
+    * [[Bug]: VA_RC_ICQ not available in AV1 encoder on DG2 · Issue #1597 · intel/media-driver](https://github.com/intel/media-driver/issues/1597)
+  * 先読み解析により画質制御がされ適切なビットレートを割り当てることで、画質と容量のバランスを取ります
 
-libx265 でおなじみ CRF(Constant Rate Factor) は QSV には存在しない  
+libx265 でおなじみ CRF(Constant Rate Factor) は Intel QSV には存在しない  
 画質は、 LA-ICQ が最も良く ICQ、CQP、VBR の順になる
 
+## 条件
+
 * q / CRF は手元の環境でテストし VMAF min/mean が下限 70/93 を超えるパラメーターを採用する
-* VBR はアーカイブ目的では用途に合わないためテストしていない
-* `hevc_qsv`, `av1_qsv` では 2025/02 現在では LA_ICQ の実装はない
-  * [[Bug]: VA_RC_ICQ not available in AV1 encoder on DG2 · Issue #1597 · intel/media-driver](https://github.com/intel/media-driver/issues/1597)
 * [Encode Features for Intel® Discrete Graphics](https://www.intel.com/content/www/us/en/docs/onevpl/developer-reference-media-intel-hardware/1-0/features-and-formats.html#ENCODE-DISCRETE)
 * MSSIM(Mean SSIM / 構造的類似性) 画像の類似性を計測する値、1に近いほうが元画像に近い
-
 * [VMAF - Video Multi-Method Assessment Fusion](https://github.com/Netflix/vmaf/tree/master)
   * Netflix が配信映像の主観的品質評価を目的に開発したライブラリー
   * 機械学習を利用して人間の映像品質の識別を教師データとして学習しているため、人間の知覚に近い
   * 0-100 で算出され一般に 93-96 は元映像の見分けが付かず、 95 以上はオリジナルより余剰容量(Bitrate)となる
     * スコア差 2 は人間では見分けが付かず、3を超えると知覚が鋭敏な人は気づく (18人のテストで半分が気づく)
     * 93.00 付近で複数値がある場合は compress_rate が ±0.03 以内なら VMAF mean がより高い方を選択
+* `-threads`
+  * 通常の利用では指定なしでも問題ないが、今回のテストでは 60Core のマシンを利用しているため実利用の環境に合わせ 4Core で制限をかける
+
+* HW encode
+  * `-preset`
+    * HW encode になるとどの `-preset` を使っても実行時間の差はわずかであるため一番処理に時間がかかる `veryslow` を採用する
+
+## ベースデータ
+
+ベースデータは各 codec の基準値として採用する値  
+この値から + / - どちらに触れたかで映像の向上を確認する
 
 | codev       | BRC modes     | BBB / Nature | q / CRF |  File size |   bitrate | encode time | compress_rate | MSSIM | VMAF min/mean | Options<br>GOP,b-frame, refs     |
 | :---------- | :------------ | :----------: | ------: | ---------: | --------: | ----------: | ------------: | ----: | ------------: | :------------------------------- |
@@ -281,264 +289,53 @@ libx265 でおなじみ CRF(Constant Rate Factor) は QSV には存在しない
 |             |               |    Anime     |      26 |  46,445.72 |  3,096.28 |       12.70 |          0.82 |  1.00 | 79.17 / 94.34 | -global_quality 26               |
 |             |               |    Nature    |      24 | 107,178.63 |  7,146.07 |       12.71 |          0.57 |  1.00 | 84.42 / 93.37 | -global_quality 24               |
 
-* `h264_qsv`
-  * CQP `bbb` VMAF min/mean 70/93 としようとしたら `-q:v 27` だが、 VMAF min が足りないため調整
-* `av1_qsv`
-  * CQP `bbb` はまだ `-q:v` を下げても行けるがサンプルに合わせた設定になりそうなため参考値
-  * ICQ `nature` でも VMAF 値が足りないが、これ以上品質を高くしてもファイルサイズだけ嵩むためここで中止
-
-```bash
-CQP     -q:v 25
-ICQ     -global_quality 25
-LA-ICQ  -global_quality 25 -look_ahead 1
-VBR     -b:v 8.5M -maxrate 10M
-
->        File size, bitrate, encode time, compress_rate, ssim_harmonic_mean,vmaf_min, vmaf_harmonic_mean
-CQP      82,209.45, 5479.72,    00:00:11,          0.68,               0.99,   69.44,              95.31
-ICQ     128,750.08, 8581.91,    00:00:12,          0.50,               1.00,   76.40,              96.61
-LA-ICQ  128,750.08, 8581.91,    00:00:12,          0.50,               1.00,   76.40,              96.61  (default 以降はこれが基準)
-VBR     118,807.07, 7919.15,    00:00:12,          0.54,               1.00,   79.76,              97.77
-
-libx264 111,973.04, 7463.63,    00:00:40,          0.56,               1.00,   81.62,              96.49  "-crf 23"
-
-```
-
-#### CQP (Constant Quantization Parameter)
-
-**Intel QSV での h264_qsv, hevc_qsv, av1_qsv のデフォルトモード**  
-一定品質を維持する設定のため、単調なシーンでは過剰、複雑なシーンではビットレート不足となる
-
-```bash
-ffmpeg -hwaccel qsv -i input.mp4 \
-    -c:v h264_qsv -preset veryslow \
-    -q:v 25 \
-    output.mp4
-
-```
-
-#### ICQ (Intelligent Constant Quality)
-
-このモードは画質を一定に保ちながら、シーンの複雑さに応じてビットレートを調整します。
-
-```bash
-ffmpeg -hwaccel qsv -i input.mp4 \
-  -c:v h264_qsv -preset veryslow \
-  -global_quality 25 \
-  output.mp4
-
-```
-
-#### LA-ICQ (Look-Ahead Intelligent Constant Quality)
-
-先読み解析により画質制御がされ適切なビットレートを割り当てることで、画質と容量のバランスを取ります  
-**`hevc_qsv`, `av1_qsv` では未実装のため利用出来ない**
-
-```bash
-ffmpeg -hwaccel qsv -i input.mp4 \
-  -c:v h264_qsv -preset veryslow \
-  -look_ahead 1 -global_quality 25 \
-  output.mp4
-
-```
-
-#### VBR (Variable Bit Rate)
-
-平均ビットレートによる制御のため画質に関係なく、同容量のサイズにするには優れている  
-VBR は正直やる意味が無いので計測しない
-
-```bash
-ffmpeg -hwaccel qsv -i input.mp4 \
-  -c:v h264_qsv -preset veryslow \
-  -b:v 8.5M -maxrate 10M \
-  output.mp4
-
-```
-
-### -preset
-
-`-preset` は非常に強力で、デフォルトは `medium` が利用される `veryslow` に向かうにつれより高負荷(時間がかかる)処理が追加されていき、高圧縮・低用量となる。今回は Intel QSV を利用して Hardware offload するため `veryslow` を利用する
-
-```bash
-- -global_quality 25 -look_ahead 1
-
->  preset,    File size, bitrate, encode time, compress_rate, ssim_harmonic_mean,vmaf_min, vmaf_harmonic_mean
- veryfast,   120,911.39, 8059.42,    00:00:06,          0.53,                  1,   75.75,              95.96
-   medium,   119,872.17, 7990.15,    00:00:07,          0.53,                  1,   75.81,              96.00
- veryslow,   128,750.08, 8581.91,    00:00:12,          0.50,                  1,   76.40,              96.61  (default 以降はこれが基準)
-
-```
-
-### -bf -refs
-
-`-bf` は B-Frame の数、 `-refs` は B-Frame 作成時に動き補正を考慮するフレーム数である。  
-試しに、 `-bf {1..20}`, `-refs {1..20}` を出力したのが下記のグラフ。
-
-どの `-bf` でも `-refs` の関係は下記
-
-* `-refs 1`: 容量と bitrate が急上昇する
-* `-refs 2-5`: 容量と bitrate が一定になる
-* `-refs 6-15`: 容量と bitrate が一定になる、 `-refs 2-5` より容量が削減できる
-* `-refs 16` 以降は min VMAF の劣化が著しいため利用しない
-
-![-bf -refs](3aaa346e4b39.png)
-
-そのため、下記を採用する
-
-```bash
-- -global_quality 25 -look_ahead 1 -bf 16 -refs 9
-
->  File size, bitrate, compress_rate, ssim_harmonic_mean,vmaf_min, vmaf_harmonic_mean
-> 128,750.08, 8581.91,          0.50,                  1,   76.40,              96.61 (default)
-> 108,452.88, 7228.99,          0.58,               0.99,   73.42,              95.70
-
-```
-
-また、今回採用した `-bf 16 -refs 9` を設定すると `q=33.0` になるためこの後 `qp` を設定する場合は考慮が必要
-
-```text
--global_quality 25 -look_ahead 1                 ICQQuality: 25, q=28.0
--global_quality 25 -look_ahead 1 -bf 16 -refs 9, ICQQuality: 25, q=33.0
--global_quality   q=
-13                21
-14                22
-15-16             24
-17                25
-18                26
-19                27
-20-23             26
-24-25             28
-26                29
-27                30
-28                31
-29-31             33
-32                34
-33                35
-
-```
-
-#### hevc_qsv
-
-```text
->  File size, bitrate, compress_rate, ssim_harmonic_mean,vmaf_min, vmaf_harmonic_mean
->  80,452.69, 5362.62,          0.69,                  1,   77.74,               96.20 (default)
->  76,031.02, 5067.89,          0.70,                  1,   76.75,               95.93 -bf 14 -refs 8 (-bf 16 -refs 9 の比率に近い)
-
-```
-
-hevc_qsv では `-bf 16` 以上は `-refs 3` 以上には出来ない、 `-bf 15 -refs 20` は通る
-
-```bash
-$ ffmpeg -y -threads 4 -hwaccel_output_format qsv \
-    -hwaccel qsv -c:v mpeg2_qsv -i videos/dist/hevc_qsv-bf-refs/base.mkv \
-    -global_quality 22 -look_ahead 1 -bf 16 -refs 4 -c:v hevc_qsv -preset:v veryslow -f null -
-
-[hevc_qsv @ 0x59894042fec0] Invalid FrameType:0.
-[vost#0:0/hevc_qsv @ 0x5989404311c0] Error submitting video frame to the encoder
-[vost#0:0/hevc_qsv @ 0x5989404311c0] Error encoding a frame: Invalid data found when processing input
-[vost#0:0/hevc_qsv @ 0x5989404311c0] Task finished with error code: -1094995529 (Invalid data found when processing input)
-[vost#0:0/hevc_qsv @ 0x5989404311c0] Terminating thread with return code -1094995529 (Invalid data found when processing input)
-[out#0/null @ 0x598940435800] video:8024KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
-frame=   67 fps=0.0 q=-0.0 Lsize=N/A time=00:00:02.16 bitrate=N/A speed=6.04x    
-Conversion failed!
-
-```
-
-### -b_strategy
-
-Strategy to choose between I/P/B-frames (from -1 to 1) (default -1)  
-B-Frame の挿入位置を適応補完で決定する  
-`-b_strategy 1` を設定することでファイルサイズが圧縮される、 `-preset:v veryslow` ではデフォルトで On の模様
-
-```bash
-- -global_quality 25 -look_ahead 1 -bf 16 -refs 9 -b_strategy 0
-- -global_quality 25 -look_ahead 1 -bf 16 -refs 9 -b_strategy 1
-
-> -b_strategy,  File size, bitrate, compress_rate, ssim_harmonic_mean,vmaf_min, vmaf_harmonic_mean
->              128,750.08, 8581.91,          0.50,                  1,   76.40,              96.61 (normal)
->           0, 143,151.53, 9541.84,          0.44,               0.99,   74.70,              95.80
->           1, 108,452.88, 7228.99,          0.58,               0.99,   73.42,              95.70
-
-```
-
-### -min_qp_i, -min_qp_p, -min_qp_b
-
-* `-min_qp_i`: Maximum video quantizer scale for I frame
-* `-min_qp_p`: Maximum video quantizer scale for P frame
-* `-min_qp_b`: Maximum video quantizer scale for B frame
-
-`-min_qp_i`, `-min_qp_p`, `-min_qp_b` を設定する  
-デフォルトの設定で出力した、データだと `-global_quality 20` までは VMAF mean の数値がブレないためそのあたりが品質の上限が良さそう。  
-qp は `-global_quality 25` を下回って設定しても効果が無いようである。また、 `-global_quality 25 -look_ahead 1 -bf 16 -refs 9` を使った場合。 q=33.0 となるため q=28 - q=38 をターゲットに試験した。  
-結果は、下記の通りだが、 `-min_qp_i` の上下のみで VMAF min, VMAF mean の変化があるため `-min_qp_p`, `-min_qp_b` の効果を確認出来なかった。また、I25 - I29 でのファイルサイズ差は 約10MBで、そこまで頑張って設定しても旨味がなさそう
-
-```text
->               File size, bitrate, compress_rate, ssim_harmonic_mean,vmaf_min, vmaf_harmonic_mean
->              128,750.08, 8581.91,          0.50,                  1,   76.40,              96.61 (normal)
->              108,452.88, 7228.99,          0.58,               0.99,   73.42,              95.70 (default)
-
-> I25:P25:B25  108,438.35, 7228.02,          0.58,               0.99,   73.42,              95.70
-> I26:P26:B26  108,310.00, 7219.46,          0.58,               0.99,   73.14,              95.68
-> I27:P27:B27  107,448.87, 7162.06,          0.58,               0.99,   72.88,              95.50
-> I28:P28:B28  102,625.93, 6840.59,          0.60,               0.99,   71.42,              95.15
-> I29:P29:B29   98,810.38, 6586.26,          0.61,               0.99,   70.16,              94.69
-
-ここから下は使えないだろう...
-> I30:P30:B30   90,632.87, 6041.18,          0.65,               0.99,   68.60,              93.94
-> I31:P31:B31   82,588.07, 5504.95,          0.68,               0.99,   67.26,              93.05
-> I32:P32:B32   73,254.13, 4882.79,          0.71,               0.99,   64.29,              91.99
-> I33:P33:B33   63,608.83, 4239.88,          0.75,               0.99,   59.49,              90.55
-> I34:P34:B34   51,465.86, 3430.49,          0.80,               0.98,   55.26,              88.75
-> I35:P35:B35   43,258.03, 2883.39,          0.83,               0.98,   51.50,              87.05
-> I36:P36:B36   35,406.80, 2360.06,          0.86,               0.98,   47.29,              84.96
-> I37:P37:B37   28,417.56, 1894.19,          0.89,               0.98,   43.52,              82.69
-> I38:P38:B38   23,438.38, 1562.30,          0.91,               0.97,   39.65,              80.15
-
-```
-
-### `-look_ahead_depth`, `-look_ahead_downsampling`
-
-* `-look_ahead_depth` は LA-ICQ で適切な bitrate 割当のために設定する、が `-preset:v veryslow` の場合は設定されているようで、動作に変更が無い
-* `-look_ahead_downsampling` こちらも同じ、でサンプルでは効果がなかった
-* hevc_qsv の場合は `-extbrc 1 -look_ahead_depth 60` としているするひつよがあった
-
-全くのズレがない、横一列
-
-### -threads
-
-[FFmpeg Threads Command: 品質とパフォーマンスに与える影響 - ストリーミング ラーニング センター](https://streaminglearningcenter.com/blogs/ffmpeg-command-threads-how-it-affects-quality-and-performance.html)
-
-ffmpeg の `-threads X` でフレームあたりの VMAF 品質低下があると記事を見たので計測、結果全く誤差が無い
-完全一致なので thread による影響はない
-
-* ffmpeg 7.1
-* Lavc61.19.100
-* VMAF 3.0.0, vmaf_v0.6.1
-
-|            |            auto (min) |        thread 1 (min) |        thread 4 (min) |        thread 8 (min) |       thread 15 (min) |
-| :--------- | --------------------: | --------------------: | --------------------: | --------------------: | --------------------: |
-| mpeg2ts    | 93.594580 (66.704512) | 93.594580 (66.704512) | 93.594580 (66.704512) | 93.594580 (66.704512) | 93.594580 (66.704512) |
-| libx264    | 90.300860 (72.486087) | 90.300860 (66.067915) | 90.300860 (66.067915) | 90.300860 (66.067915) | 90.300860 (66.067915) |
-| libx265    | 88.317820 (71.885449) | 88.317820 (65.279336) | 88.317820 (65.279336) | 88.317820 (65.279336) | 88.317820 (65.279336) |
-| libaom-av1 | 90.866412 (72.324044) | 90.866412 (65.867695) | 90.866412 (65.867695) | 90.866412 (65.867695) | 90.866412 (65.867695) |
-
-### 使用しない
-
-* B-Frame を使うと使用不可
-  * `-int_ref_type`
-  * `-p_strategy`
-  * `-adaptive_b`
-  * `-adaptive_i`
-
-* 設定が byte 単位なので今回は利用せず
-  * `-max_frame_size`
-  * `-max_frame_size_i`
-  * `-max_frame_size_p`
-  * `-max_slice_size`
-  * `-bitrate_limit`
-
-* 数値に違いがないため、効果がわからず
-  * `hevc_qsv`
-    * `-rdo`
-    * `-mbbrc`
-    * `-extbrc`
-    * `-b_strategy`
+## テストの順番
+
+### h264_qsv tests
+
+* CQP / ICQ / LA-ICQ をテスト、設定値を決定
+  * LA-ICQ を採用
+  * ベースラインから `-global_quality 25 -look_ahead 1` でテストを開始
+* 1. フレーム処理と適応型設定
+  * **結果:** パラメータを変更しながら、調査したが指定なしが一番良い
+  * `adaptive_i`: Iフレームの適応型配置を有効化
+    * 0-1
+  * `adaptive_b`: Bフレームの適応型配置を有効化
+    * 0-1
+  * `b_strategy`: Bフレームの選択戦略を有効化
+    * 0-1
+* 1. 基本設定（プリセットとシナリオ）
+  * `-scenario`
+    * **結果:** 全く変化なし
+    * unknown
+    * displayremoting
+    * videoconference
+    * archive
+    * livestreaming
+    * cameracapture
+    * videosurveillance
+    * gamestreaming
+    * remotegaming
+* 1. レートコントロールと品質
+  * `-look_ahead_depth`: フレーム数での先読みの深さを設定
+    * **結果:** 全く変化なし
+    * 0..100
+  * `-look_ahead_downsampling`: 先読み時にダウンスケーリングするか
+    * unknown
+    * auto
+    * off
+    * 2x
+    * 4x
+  * `-rdo`: Bitrate の極端な乱高下を最適化する
+    * **結果:** 全く変化なし
+    * 0-1
+  * `min_qp_i`, `max_qp_i`, `min_qp_p`, `max_qp_p`, `min_qp_b`, `max_qp_b`
+    * LA-ICQ では自動的に設定されるため、変更しない
+* 1. 画質とフィルタ
+  * `dblk_idc`: デブロックフィルタ、ブロックノイズを軽減し、画質を改善します。
+    * **結果:** 全く変化なし
+    * 0-2
+
+### hevc_qsv tests
+
+### av1_qsv tests

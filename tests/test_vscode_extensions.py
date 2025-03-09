@@ -6,14 +6,14 @@
 
 # Standard Library
 import json
-import os
+from pathlib import Path
 import re
 
 
 # %%
 def load_jsonc(filepath: str, encoding: str = "utf-8") -> dict:
     """Load jsonc."""
-    with open(filepath, "r", encoding=encoding) as f:
+    with Path(filepath).open(encoding=encoding) as f:
         text = f.read()
     text_without_comment = re.sub(r"/\*[\s\S]*?\*/|//.*", "", text)
     json_obj: dict = json.loads(text_without_comment)
@@ -23,25 +23,17 @@ def load_jsonc(filepath: str, encoding: str = "utf-8") -> dict:
 # %%
 def test_vscode_extensions_sync() -> None:
     """Test vscode extensions sync."""
-    __vscode_dcit = load_jsonc(
-        filepath=os.path.join(
-            os.path.dirname(os.path.dirname(__file__)),
-            ".vscode",
-            "extensions.json",
-        ),
+    vscode_dict = load_jsonc(
+        filepath=f"{Path(__file__).parent.parent}/.vscode/extensions.json",
     )
 
-    __devcontainer_dcit = load_jsonc(
-        filepath=os.path.join(
-            os.path.dirname(os.path.dirname(__file__)),
-            ".devcontainer",
-            "devcontainer.json",
-        ),
+    devcontainer_dict = load_jsonc(
+        filepath=f"{Path(__file__).parent.parent}/.devcontainer/devcontainer.json",
     )
 
     assert (
-        __vscode_dcit["recommendations"]
-        == __devcontainer_dcit["customizations"]["vscode"]["extensions"]
+        vscode_dict["recommendations"]
+        == devcontainer_dict["customizations"]["vscode"]["extensions"]
     )
 
 

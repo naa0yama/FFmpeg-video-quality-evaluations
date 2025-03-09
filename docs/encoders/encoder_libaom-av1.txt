@@ -1,5 +1,5 @@
 Encoder libaom-av1 []:
-    General capabilities: dr1 delay threads 
+    General capabilities: dr1 delay threads
     Threading capabilities: other
     Supported pixel formats: yuv420p yuv422p yuv444p gbrp yuv420p10le yuv422p10le yuv444p10le yuv420p12le yuv422p12le yuv444p12le gbrp10le gbrp12le gray gray10le gray12le
 libaom-av1 encoder AVOptions:
@@ -72,4 +72,3 @@ libaom-av1 encoder AVOptions:
   -enable-interintra-comp <boolean>    E..V....... Enable interintra compound (default auto)
   -enable-smooth-interintra <boolean>    E..V....... Enable smooth interintra mode (default auto)
   -aom-params        <dictionary> E..V....... Set libaom options using a :-separated list of key=value pairs
-

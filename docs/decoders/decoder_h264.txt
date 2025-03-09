@@ -1,7 +1,7 @@
 Decoder h264 []:
-    General capabilities: dr1 delay threads 
+    General capabilities: dr1 delay threads
     Threading capabilities: frame and slice
-    Supported hardware devices: vaapi 
+    Supported hardware devices: vaapi
 H264 Decoder AVOptions:
   -is_avc            <boolean>    .D.V..X.... is avc (default false)
   -nal_length_size   <int>        .D.V..X.... nal_length_size (from 0 to 4) (default 0)
@@ -9,4 +9,3 @@ H264 Decoder AVOptions:
   -x264_build        <int>        .D.V....... Assume this x264 version if no x264 version found in any SEI (from -1 to INT_MAX) (default -1)
   -skip_gray         <boolean>    .D.V....... Do not return gray gap frames (default false)
   -noref_gray        <boolean>    .D.V....... Avoid using gray gap frames as references (default true)
-

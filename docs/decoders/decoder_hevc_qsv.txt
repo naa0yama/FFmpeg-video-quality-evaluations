@@ -1,7 +1,7 @@
 Decoder hevc_qsv []:
-    General capabilities: dr1 delay avoidprobe hybrid 
+    General capabilities: dr1 delay avoidprobe hybrid
     Threading capabilities: none
-    Supported hardware devices: qsv 
+    Supported hardware devices: qsv
 hevc_qsv AVOptions:
   -async_depth       <int>        .D.V....... Internal parallelization depth, the higher the value the higher the latency. (from 1 to INT_MAX) (default 4)
   -load_plugin       <int>        .D.V....... A user plugin to load in an internal session (from 0 to 2) (default hevc_hw)
@@ -13,4 +13,3 @@ hevc_qsv AVOptions:
      default         0            .D.V.......
      on              1            .D.V.......
      off             2            .D.V.......
-

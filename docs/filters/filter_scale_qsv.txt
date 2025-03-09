@@ -13,4 +13,3 @@ scale_qsv AVOptions:
      compute         3            ..FV....... compute
      vd              4            ..FV....... vd
      ve              5            ..FV....... ve
-

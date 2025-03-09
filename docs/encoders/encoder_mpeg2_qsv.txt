@@ -1,7 +1,7 @@
 Encoder mpeg2_qsv []:
-    General capabilities: delay hybrid 
+    General capabilities: delay hybrid
     Threading capabilities: none
-    Supported hardware devices: qsv qsv qsv 
+    Supported hardware devices: qsv qsv qsv
     Supported pixel formats: nv12 qsv
 mpeg2_qsv encoder AVOptions:
   -async_depth       <int>        E..V....... Maximum processing parallelism (from 1 to INT_MAX) (default 4)
@@ -22,4 +22,3 @@ mpeg2_qsv encoder AVOptions:
      simple          80           E..V.......
      main            64           E..V.......
      high            16           E..V.......
-

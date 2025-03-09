@@ -1,0 +1,132 @@
+#!/usr/bin/env python3
+# To add a new cell, type '# %%'
+# To add a new markdown cell, type '# %% [markdown]'
+# %%
+"""duckdb."""
+
+import argparse
+import logging
+from pathlib import Path
+
+import duckdb
+import ruamel.yaml
+from ruamel.yaml.representer import RoundTripRepresenter
+
+
+class NoAliasDumper(RoundTripRepresenter):
+    """ruamel.yaml custom class."""
+
+    def ignore_aliases(self, data: object) -> bool:
+        """Disabled alias."""
+        return bool(data is not None)
+
+
+yaml = ruamel.yaml.YAML(typ="safe", pure=True)
+yaml.indent(mapping=2, sequence=4, offset=2)
+yaml.default_flow_style = False
+yaml.explicit_start = True
+yaml.width = 200
+yaml.Representer = NoAliasDumper
+
+parser = argparse.ArgumentParser(description="FFmpeg video quality encoding quality evaluation.")
+parser.add_argument(
+    "--config",
+    help="config file path. (e.g): ./videos/h264_qsv-custom-la_icq.yml",
+    required=True,
+    type=str,
+)
+parser.add_argument(
+    "--option",
+    help="option (e.g): -global_quality 35",
+    required=True,
+    type=str,
+)
+
+
+def load_config(config_path: str) -> str:
+    """Load the configuration file and return the datafile path.
+
+    Args:
+        config_path (str): Path to the configuration file.
+
+    Returns:
+        str: Path to the datafile.
+    """
+    with Path(config_path).open("r") as file:
+        return str(yaml.load(file)["configs"]["datafile"])
+
+
+def create_temp_table(csvfile_type: str) -> None:
+    """Create a temporary table in DuckDB from the CSV file.
+
+    Args:
+        csvfile_type (str): Path to the CSV file.
+    """
+    logging.info("[CSV] loading %s", csvfile_type)
+    duckdb.execute(
+        """
+            CREATE TEMPORARY TABLE encodes AS
+            SELECT *
+            FROM read_csv(?)
+        """,
+        [csvfile_type],
+    )
+
+
+def show_query_results(option: str) -> None:
+    """Show query results filtered by the given option.
+
+    Args:
+        option (str): Filter option for the query.
+    """
+    query = """
+        SELECT
+            ref_type,
+            ROUND(outfile_size_kbyte, 2),
+            ROUND(outfile_bit_rate_kbs, 2),
+            ROUND(enc_sec, 2),
+            ROUND(comp_ratio_persent, 2),
+            ROUND(ssim_mean, 2),
+            CONCAT(ROUND(vmaf_min, 2), ' / ', ROUND(vmaf_mean, 2)),
+            outfile_options
+        FROM encodes
+        WHERE
+            outfile_options LIKE ?
+        LIMIT 8
+    """
+    duckdb.sql(query, params=[f"%{option}%"]).show()
+
+
+def show_aggregated_results() -> None:
+    """Show aggregated results for entries with VMAF mean greater than or equal to 93.00."""
+    duckdb.sql(
+        r"""
+        SELECT
+            ROUND(AVG(outfile_size_kbyte), 2),
+            ROUND(AVG(outfile_bit_rate_kbs), 2),
+            ROUND(AVG(enc_sec), 2),
+            ROUND(AVG(comp_ratio_persent), 2),
+            ROUND(AVG(ssim_mean), 2),
+            ROUND(AVG(vmaf_min), 2),
+            ROUND(AVG(vmaf_mean), 2),
+            outfile_options,
+        FROM encodes
+        WHERE
+            vmaf_mean >= 93.00
+        GROUP BY outfile_options
+        """,
+    ).show()
+
+
+def main() -> None:
+    """Main function to parse arguments and execute the workflow."""
+    args = parser.parse_args()
+    datafile = load_config(args.config)
+    csvfile_type = datafile.replace(".json", "_gby_type.csv", 1)
+    create_temp_table(csvfile_type)
+    show_query_results(args.option)
+    show_aggregated_results()
+
+
+if __name__ == "__main__":
+    main()

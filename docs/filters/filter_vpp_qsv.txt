@@ -6,7 +6,7 @@ Filter vpp_qsv
 vpp_qsv AVOptions:
    deinterlace       <int>        ..FV....... deinterlace mode: 0=off, 1=bob, 2=advanced (from 0 to 2) (default 0)
      bob             1            ..FV....... Bob deinterlace mode.
-     advanced        2            ..FV....... Advanced deinterlace mode. 
+     advanced        2            ..FV....... Advanced deinterlace mode.
    denoise           <int>        ..FV....... denoise level [0, 100] (from 0 to 100) (default 0)
    detail            <int>        ..FV....... enhancement level [0, 100] (from 0 to 100) (default 0)
    framerate         <rational>   ..FV....... output framerate (from 0 to DBL_MAX) (default 0/1)
@@ -54,4 +54,3 @@ vpp_qsv AVOptions:
    out_color_primaries <string>     ..FV....... Output color primaries
    out_color_transfer <string>     ..FV....... Output color transfer characteristics
    tonemap           <int>        ..FV....... Perform tonemapping (0=disable tonemapping, 1=perform tonemapping if the input has HDR metadata) (from 0 to 1) (default 0)
-

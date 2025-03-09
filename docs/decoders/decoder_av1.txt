@@ -1,7 +1,6 @@
 Decoder av1 []:
-    General capabilities: dr1 
+    General capabilities: dr1
     Threading capabilities: none
-    Supported hardware devices: vaapi 
+    Supported hardware devices: vaapi
 AV1 decoder AVOptions:
   -operating_point   <int>        .D.V....... Select an operating point of the scalable bitstream (from 0 to 31) (default 0)
-

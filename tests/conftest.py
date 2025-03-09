@@ -2,10 +2,18 @@
 # To add a new cell, type '# %%'
 # To add a new markdown cell, type '# %% [markdown]'
 # %%
-"""test top conftest."""
+"""Pytest configuration."""
 
 # Standard Library
-import os
+from pathlib import Path
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), "src"))
+import pytest
+
+sys.path.append(str(Path(__file__).parent.parent / "src"))
+
+
+@pytest.fixture(autouse=True)
+def setup_test_env() -> None:
+    """Set up test environment."""
+    return

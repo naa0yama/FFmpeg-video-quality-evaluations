@@ -99,7 +99,7 @@ SWScaler AVOptions:
      accurate_rnd                 E..V....... accurate rounding
      full_chroma_int              E..V....... full chroma interpolation
      full_chroma_inp              E..V....... full chroma input
-     bitexact                     E..V....... 
+     bitexact                     E..V.......
      error_diffusion              E..V....... error diffusion dither
   -srcw              <int>        E..V....... source width (from 1 to INT_MAX) (default 16)
   -srch              <int>        E..V....... source height (from 1 to INT_MAX) (default 16)
@@ -139,4 +139,3 @@ framesync AVOptions:
    ts_sync_mode      <int>        ..FV....... How strictly to sync streams based on secondary input timestamps (from 0 to 1) (default default)
      default         0            ..FV....... Frame from secondary input with the nearest lower or equal timestamp to the primary input frame
      nearest         1            ..FV....... Frame from secondary input with the absolute nearest timestamp to the primary input frame
-

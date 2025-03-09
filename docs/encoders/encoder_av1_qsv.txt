@@ -1,7 +1,7 @@
 Encoder av1_qsv []:
-    General capabilities: delay hybrid 
+    General capabilities: delay hybrid
     Threading capabilities: none
-    Supported hardware devices: qsv qsv qsv 
+    Supported hardware devices: qsv qsv qsv
     Supported pixel formats: nv12 p010le qsv
 av1_qsv encoder AVOptions:
   -async_depth       <int>        E..V....... Maximum processing parallelism (from 1 to INT_MAX) (default 4)
@@ -30,4 +30,3 @@ av1_qsv encoder AVOptions:
   -tile_cols         <int>        E..V....... Number of columns for tiled encoding (from 0 to 65535) (default 0)
   -tile_rows         <int>        E..V....... Number of rows for tiled encoding (from 0 to 65535) (default 0)
   -look_ahead_depth  <int>        E..V....... Depth of look ahead in number frames, available when extbrc option is enabled (from 0 to 100) (default 0)
-

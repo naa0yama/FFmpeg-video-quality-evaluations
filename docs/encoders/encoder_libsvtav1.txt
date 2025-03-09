@@ -1,5 +1,5 @@
 Encoder libsvtav1 []:
-    General capabilities: delay threads 
+    General capabilities: delay threads
     Threading capabilities: other
     Supported pixel formats: yuv420p yuv420p10le
 libsvtav1 AVOptions:
@@ -9,4 +9,3 @@ libsvtav1 AVOptions:
   -svtav1-params     <dictionary> E..V....... Set the SVT-AV1 configuration using a :-separated list of key=value parameters
   -dolbyvision       <boolean>    E..V....... Enable Dolby Vision RPU coding (default auto)
      auto                         E..V.......
-

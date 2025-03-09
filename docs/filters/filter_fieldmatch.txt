@@ -37,4 +37,3 @@ fieldmatch AVOptions:
    blockx            <int>        ..FV....... set the x-axis size of the window used during combed frame detection (from 4 to 512) (default 16)
    blocky            <int>        ..FV....... set the y-axis size of the window used during combed frame detection (from 4 to 512) (default 16)
    combpel           <int>        ..FV....... set the number of combed pixels inside any of the blocky by blockx size blocks on the frame for the frame to be detected as combed (from 0 to INT_MAX) (default 80)
-

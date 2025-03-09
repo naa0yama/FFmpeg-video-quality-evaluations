@@ -1,7 +1,7 @@
 Encoder vp9_qsv []:
-    General capabilities: delay hybrid 
+    General capabilities: delay hybrid
     Threading capabilities: none
-    Supported hardware devices: qsv qsv qsv 
+    Supported hardware devices: qsv qsv qsv
     Supported pixel formats: nv12 p010le vuyx qsv xv30le
 vp9_qsv encoder AVOptions:
   -async_depth       <int>        E..V....... Maximum processing parallelism (from 1 to INT_MAX) (default 4)
@@ -24,4 +24,3 @@ vp9_qsv encoder AVOptions:
      profile3        4            E..V.......
   -tile_cols         <int>        E..V....... Number of columns for tiled encoding (from 0 to 32) (default 0)
   -tile_rows         <int>        E..V....... Number of rows for tiled encoding (from 0 to 4) (default 0)
-
