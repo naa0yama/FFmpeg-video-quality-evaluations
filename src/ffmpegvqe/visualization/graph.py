@@ -5,6 +5,7 @@
 """Graph visualization for FFmpeg video quality evaluations."""
 
 import argparse
+import os
 from pathlib import Path
 from time import sleep
 from typing import TYPE_CHECKING
@@ -32,19 +33,6 @@ from ffmpegvqe.utils.yaml_handler import create_yaml_handler
 if TYPE_CHECKING:
     from bokeh.models.sources import DataDict
 
-# グローバル変数の宣言
-yaml_parser = create_yaml_handler()
-source: ColumnDataSource
-x_shared: FactorRange
-size_plot: figure
-vmaf_plot: figure
-frame_plot: figure
-range_tool_plot: figure
-groupby_select: MultiChoice
-codec_filter: MultiChoice
-datafile: str
-last_mod_time: float = 0
-
 
 class DataTypeError(TypeError):
     """Custom exception for invalid data types.
@@ -63,9 +51,22 @@ class DataTypeError(TypeError):
 
 MyAny = Any
 
+# グローバル変数の宣言
+yaml_parser = create_yaml_handler()
+source: ColumnDataSource
+x_shared: FactorRange
+size_plot: figure
+vmaf_plot: figure
+frame_plot: figure
+range_tool_plot: figure
+groupby_select: MultiChoice
+codec_filter: MultiChoice
+datafile: str
+last_mod_time: float = 0
 
-def create_argument_parser() -> argparse.ArgumentParser:
-    """Create and configure the argument parser.
+
+def create_graph_argument_parser() -> argparse.ArgumentParser:
+    """Create and configure the argument parser for graph visualization.
 
     Returns:
         Configured argument parser.
@@ -490,10 +491,12 @@ def setup_layout_and_callbacks(
 
     Args:
         widgets: Tuple containing (groupby_select, codec_filter).
-        plots: Tuple containing (size_plot, frame_plot, vmaf_plot, range_tool_plot).
+        plots: Tuple containing (size_plot, vmaf_plot, frame_plot, range_tool_plot).
     """
+    global groupby_select, codec_filter, size_plot, vmaf_plot, frame_plot, range_tool_plot
+
     groupby_select, codec_filter = widgets
-    size_plot, frame_plot, vmaf_plot, range_tool_plot = plots
+    size_plot, vmaf_plot, frame_plot, range_tool_plot = plots
 
     # ウィジェットにコールバックを追加
     def widget_callback(attr: str, old: list[Any], new: list[Any]) -> None:  # noqa: ARG001
@@ -513,8 +516,8 @@ def setup_layout_and_callbacks(
     layout = column(
         row(groupby_select, codec_filter),
         size_plot,
-        frame_plot,
         vmaf_plot,
+        frame_plot,
         range_tool_plot,
         sizing_mode="scale_width",
     )
@@ -534,10 +537,10 @@ def main() -> None:
 
     Initializes the Bokeh server application.
     """
-    global source, x_shared, size_plot, groupby_select, codec_filter, datafile, last_mod_time  # noqa: PLW0603
+    global source, x_shared, size_plot, vmaf_plot, frame_plot, range_tool_plot, groupby_select, codec_filter, datafile, last_mod_time  # noqa: PLW0603
 
     # コマンドライン引数のパース
-    parser = create_argument_parser()
+    parser = create_graph_argument_parser()
     args = parser.parse_args()
 
     # 初期データの準備
@@ -607,12 +610,14 @@ def main() -> None:
 
     # レイアウトとコールバックの設定
     widgets_tuple = (groupby_select, codec_filter)
-    plots_tuple = (size_plot, frame_plot, vmaf_plot, range_tool_plot)
+    plots_tuple = (size_plot, vmaf_plot, frame_plot, range_tool_plot)
     setup_layout_and_callbacks(widgets_tuple, plots_tuple)
 
     # 最終更新時間の初期化
     last_mod_time = 0
 
 
-if __name__ == "__main__":
+# テスト時でない場合のみ初期化を実行
+is_testing = os.environ.get("PYTEST_RUNNING", "0") == "1"
+if not is_testing:
     main()

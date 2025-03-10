@@ -35,7 +35,7 @@ Video encoding quality evaluation project using VMAF and SSIM
   * `--args --config videos/h264_default-qq13-14.yml` を設定する事で config を読み込ませる
 
   ```bash
-  bokeh serve src/ffmpegvqe/graph.py --show --args --config videos/h264_default-qq13-14.yml
+  bokeh serve src/ffmpegvqe/visualization/graph.py --show --args --config videos/h264_default-qq13-14.yml
 
   ```
 

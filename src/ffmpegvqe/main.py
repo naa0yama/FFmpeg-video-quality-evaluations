@@ -269,8 +269,8 @@ def main() -> None:
     if args.archive:
         archive(config_path=args.config, args=args)
 
+    __configs: dict[str, Any] = load_config(configfile=args.config, args=args)
     if args.encode:
-        __configs: dict[str, Any] = load_config(configfile=args.config, args=args)
         main_encode(config=__configs, args=args)
         getcsv(datafile=__configs["configs"]["datafile"])
 
