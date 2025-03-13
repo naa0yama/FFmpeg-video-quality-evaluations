@@ -102,18 +102,25 @@ def show_aggregated_results() -> None:
     duckdb.sql(
         r"""
         SELECT
-            ROUND(AVG(outfile_size_kbyte), 2),
-            ROUND(AVG(outfile_bit_rate_kbs), 2),
-            ROUND(AVG(enc_sec), 2),
-            ROUND(AVG(comp_ratio_persent), 2),
-            ROUND(AVG(ssim_mean), 2),
-            ROUND(AVG(vmaf_min), 2),
-            ROUND(AVG(vmaf_mean), 2),
+            ROUND(AVG(outfile_size_kbyte), 3)        AS outfile_size_kbyte,
+            ROUND(AVG(outfile_bit_rate_kbs), 3)      AS outfile_bit_rate_kbs,
+            ROUND(AVG(enc_sec), 3)                   AS enc_sec,
+            ROUND(AVG(comp_ratio_persent), 3)        AS comp_ratio_persent,
+            ROUND(AVG(ssim_mean), 3)                 AS ssim_mean,
+            ROUND(AVG(vmaf_min), 3)                  AS vmaf_min,
+            ROUND(AVG(vmaf_mean), 3)                 AS vmaf_mean,
+            ROUND(AVG((200 - (vmaf_min + vmaf_mean)) +
+                (2 - (ssim_mean + comp_ratio_persent))), 3) AS pt,
             outfile_options,
         FROM encodes
         WHERE
-            vmaf_mean >= 93.00
+            outfile_options LIKE '%-look_ahead 1' AND
+            comp_ratio_persent >= 0.60 AND
+            ssim_mean >= 0.99 AND
+            vmaf_mean >= 93.00 AND
+            vmaf_mean <= 100.00
         GROUP BY outfile_options
+        ORDER BY pt DESC
         """,
     ).show()
 
