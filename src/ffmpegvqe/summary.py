@@ -35,12 +35,6 @@ parser.add_argument(
     required=True,
     type=str,
 )
-parser.add_argument(
-    "--option",
-    help="option (e.g): -global_quality 35",
-    required=True,
-    type=str,
-)
 
 
 def load_config(config_path: str) -> str:
@@ -73,34 +67,29 @@ def create_temp_table(csvfile_type: str) -> None:
     )
 
 
-def show_query_results(option: str) -> None:
-    """Show query results filtered by the given option.
-
-    Args:
-        option (str): Filter option for the query.
-    """
-    query = """
-        SELECT
-            ref_type,
-            ROUND(outfile_size_kbyte, 2),
-            ROUND(outfile_bit_rate_kbs, 2),
-            ROUND(enc_sec, 2),
-            ROUND(comp_ratio_persent, 2),
-            ROUND(ssim_mean, 2),
-            CONCAT(ROUND(vmaf_min, 2), ' / ', ROUND(vmaf_mean, 2)),
-            outfile_options
-        FROM encodes
-        WHERE
-            outfile_options LIKE ?
-        LIMIT 8
-    """
-    duckdb.sql(query, params=[f"%{option}%"]).show()
-
-
 def show_aggregated_results() -> None:
     """Show aggregated results for entries with VMAF mean greater than or equal to 93.00."""
     duckdb.sql(
-        r"""
+        """
+        SELECT
+            ref_type,
+            ROUND(AVG(outfile_size_kbyte), 3)        AS outfile_size_kbyte,
+            ROUND(AVG(outfile_bit_rate_kbs), 3)      AS outfile_bit_rate_kbs,
+            ROUND(AVG(enc_sec), 3)                   AS enc_sec,
+            ROUND(AVG(comp_ratio_persent), 3)        AS comp_ratio_persent,
+            ROUND(AVG(ssim_mean), 3)                 AS ssim_mean,
+            ROUND(AVG(vmaf_min), 3)                  AS vmaf_min,
+            ROUND(AVG(vmaf_mean), 3)                 AS vmaf_mean,
+            outfile_options
+        FROM encodes
+        GROUP BY ref_type, outfile_options
+        ORDER BY outfile_options DESC
+        LIMIT 8
+    """,
+    ).show()
+
+    duckdb.sql(
+        """
         SELECT
             ROUND(AVG(outfile_size_kbyte), 3)        AS outfile_size_kbyte,
             ROUND(AVG(outfile_bit_rate_kbs), 3)      AS outfile_bit_rate_kbs,
@@ -114,7 +103,6 @@ def show_aggregated_results() -> None:
             outfile_options,
         FROM encodes
         WHERE
-            outfile_options LIKE '%-look_ahead 1' AND
             comp_ratio_persent >= 0.60 AND
             ssim_mean >= 0.99 AND
             vmaf_mean >= 93.00 AND
@@ -131,7 +119,6 @@ def main() -> None:
     datafile = load_config(args.config)
     csvfile_type = datafile.replace(".json", "_gby_type.csv", 1)
     create_temp_table(csvfile_type)
-    show_query_results(args.option)
     show_aggregated_results()
 
 

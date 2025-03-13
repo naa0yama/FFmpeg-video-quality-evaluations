@@ -268,6 +268,7 @@ def main() -> None:
 
     if args.archive:
         archive(config_path=args.config, args=args)
+        sys.exit("\n\n Archive done.")
 
     __configs: dict[str, Any] = load_config(configfile=args.config, args=args)
     if args.encode:

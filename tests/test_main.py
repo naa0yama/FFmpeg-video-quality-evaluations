@@ -311,7 +311,7 @@ def test_main_with_archive(mocker: MockerFixture) -> None:
     mock_archive.assert_called_once_with(config_path="dummy_config.yml", args=mock_args)
 
     # sys.exitが呼ばれていないことを確認
-    mock_exit.assert_not_called()
+    mock_exit.assert_called_once_with("\n\n Archive done.")
 
 
 def test_main_with_encode(mocker: MockerFixture) -> None:

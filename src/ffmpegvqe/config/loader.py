@@ -45,7 +45,7 @@ def _get_default_patterns() -> list[dict[str, Any]]:
             "infile": {"option": ""},
             "outfile": {
                 "options": [
-                    "-crf 28",
+                    "-crf 23",
                 ],
             },
             "hwaccels": "",
@@ -58,7 +58,7 @@ def _get_default_patterns() -> list[dict[str, Any]]:
             "infile": {"option": ""},
             "outfile": {
                 "options": [
-                    "-crf 35",
+                    "-crf 31",
                 ],
             },
             "hwaccels": "",
@@ -71,7 +71,7 @@ def _get_default_patterns() -> list[dict[str, Any]]:
             "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
             "outfile": {
                 "options": [
-                    "-q:v 25",
+                    "-q:v 22",
                 ],
             },
             "hwaccels": "-hwaccel_output_format qsv",
@@ -110,7 +110,7 @@ def _get_default_patterns() -> list[dict[str, Any]]:
             "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
             "outfile": {
                 "options": [
-                    "-q:v 22",
+                    "-q:v 20",
                 ],
             },
             "hwaccels": "-hwaccel_output_format qsv",
@@ -123,7 +123,7 @@ def _get_default_patterns() -> list[dict[str, Any]]:
             "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
             "outfile": {
                 "options": [
-                    "-global_quality 22",
+                    "-global_quality 21",
                 ],
             },
             "hwaccels": "-hwaccel_output_format qsv",

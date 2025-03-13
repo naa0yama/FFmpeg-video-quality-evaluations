@@ -8,20 +8,20 @@ h264_qsv, hevc_qsv, av1_qsv のエンコードパラメータで容量が小さ�
 
 ### h264_qsv best
 
-```bash
->  File size, bitrate, compress_rate, ssim_harmonic_mean,vmaf_min, vmaf_harmonic_mean
-> 128,750.08, 8581.91,          0.50,                  1,   76.40,              96.61 (default)
-> 108,452.88, 7228.99,          0.58,               0.99,   73.42,              95.70 本設定
+|  File size |   bitrate | encode time | compress_rate | MSSIM |   VMAF min/mean | options                                         |
+| ---------: | --------: | ----------: | ------------: | ----: | --------------: | :---------------------------------------------- |
+| 80,026.906 | 5,334.941 |      12.104 |         0.689 | 0.996 | 82.038 / 95.711 | -global_quality 25 -look_ahead 1                |
+| 70,052.759 | 4,670.035 |      12.913 |         0.727 | 0.996 | 79.411 / 94.773 | -global_quality 25 -look_ahead 1 -bf 15 -refs 8 |
 
+```bash
 ffmpeg -y -threads 4 -hide_banner -ignore_unknown -fflags +discardcorrupt+genpts -analyzeduration 30M -probesize 100M \
     -hwaccel_output_format qsv \
     -map 0:v -hwaccel qsv -c:v mpeg2_qsv -i base.mkv \
     -c:v h264_qsv -preset:v veryslow \
-    -global_quality 25 -look_ahead 1 -look_ahead_depth 60 -look_ahead_downsampling off \
-    -aspect 16:9 -g 256 -bf 16 -refs 9 -b_strategy 1 \
+    -global_quality 25 -look_ahead 1 -aspect 16:9 -bf 15 -refs 8 \
     -color_range tv -color_primaries bt709 -color_trc bt709 -colorspace bt709 -max_muxing_queue_size 4000 \
     -movflags faststart -f mkv \
-    -map 0:a -c:a aac -ar 48000 -ab 256k -ac 2 -bsf:a aac_adtstoasc \
+    -map 0:a -c:a libopus -b:a 128k -ar 48k -ac 2 \
     \
     out.mkv
 
@@ -299,44 +299,24 @@ libx265 でおなじみ CRF(Constant Rate Factor) は Intel QSV には存在し�
 * 1. フレーム処理と適応型設定
   * **結果:** パラメータを変更しながら、調査したが指定なしが一番良い
   * `adaptive_i`: Iフレームの適応型配置を有効化
-    * 0-1
   * `adaptive_b`: Bフレームの適応型配置を有効化
-    * 0-1
   * `b_strategy`: Bフレームの選択戦略を有効化
-    * 0-1
 * 1. 基本設定（プリセットとシナリオ）
   * `-scenario`
     * **結果:** 全く変化なし
-    * unknown
-    * displayremoting
-    * videoconference
-    * archive
-    * livestreaming
-    * cameracapture
-    * videosurveillance
-    * gamestreaming
-    * remotegaming
 * 1. レートコントロールと品質
   * `-look_ahead_depth`: フレーム数での先読みの深さを設定
-    * **結果:** 全く変化なし
-    * 0..100
   * `-look_ahead_downsampling`: 先読み時にダウンスケーリングするか
-    * unknown
-    * auto
-    * off
-    * 2x
-    * 4x
+    * **結果:** 全く変化なし
   * `-rdo`: Bitrate の極端な乱高下を最適化する
     * **結果:** 全く変化なし
-    * 0-1
   * `min_qp_i`, `max_qp_i`, `min_qp_p`, `max_qp_p`, `min_qp_b`, `max_qp_b`
     * LA-ICQ では自動的に設定されるため、変更しない
 * 1. 画質とフィルタ
   * `dblk_idc`: デブロックフィルタ、ブロックノイズを軽減し、画質を改善します。
     * **結果:** 全く変化なし
-    * 0-2
 * 1. GOP, B-Frame, Refs の選定
-  * `-g 256 -bf {2..20} -refs {1..20}` をテストした
+  * `-bf {2..20} -refs {1..20}` をテストした
     * * **結果:**
       * `-bf 15 -refs 8` を採用する、これによって平均で 12% 容量を削減できる(h264_qsv の場合)
       * 調査では `-bf 2 -refs 9` がもっと画質が良かった
@@ -346,12 +326,32 @@ libx265 でおなじみ CRF(Constant Rate Factor) は Intel QSV には存在し�
     * `-refs {1..20}`
       * `-refs 15` 以上はどの `-bf` でも品質が落ちる(VMAF min 34 など)
 
-|                   |  File size |   bitrate | encode time | compress_rate | MSSIM |   VMAF min/mean | options                                                |
-| :---------------- | ---------: | --------: | ----------: | ------------: | ----: | --------------: | :----------------------------------------------------- |
-| `h264_qsv` LA-ICQ | 80,026.906 | 5,334.941 |      12.104 |         0.689 | 0.996 | 82.038 / 95.711 | -global_quality 25 -look_ahead 1                       |
-|                   | 80,026.906 | 5,334.941 |      12.099 |         0.689 | 0.996 | 82.038 / 95.711 | -global_quality 25 -look_ahead 1 -g 256                |
-|                   | 70,052.759 | 4,670.035 |      12.913 |         0.727 | 0.996 | 79.411 / 94.773 | -global_quality 25 -look_ahead 1 -g 256 -bf 15 -refs 8 |
+|                   |  File size |   bitrate | encode time | compress_rate | MSSIM |   VMAF min/mean | options                                         |
+| :---------------- | ---------: | --------: | ----------: | ------------: | ----: | --------------: | :---------------------------------------------- |
+| `h264_qsv` LA-ICQ | 80,026.906 | 5,334.941 |      12.104 |         0.689 | 0.996 | 82.038 / 95.711 | -global_quality 25 -look_ahead 1                |
+|                   | 70,052.759 | 4,670.035 |      12.913 |         0.727 | 0.996 | 79.411 / 94.773 | -global_quality 25 -look_ahead 1 -bf 15 -refs 8 |
 
 ### hevc_qsv tests
+
+* CQP / ICQ をテスト、設定値を決定
+  * ICQ を採用
+  * ベースラインから `-global_quality 21` でテストを開始
+* 1. GOP サイズ、 B-Frame、参照フレーム数
+  * **結果:**
+  * `-bf 15 -refs 8` を採用
+  * `-g 256` にしても 0.004% しか容量に変化が無いため、デフォルトの `-g 248` を採用する
+* 1. Extended BRC と先読みフレーム数
+  * `-extbrc 1 -look_ahead_depth {10..100}`
+    * **結果:**
+  * `-rdo`: Bitrate の極端な乱高下を最適化する
+    * **結果:**
+    * 0-1
+* 1. シナリオ
+  * `-scenario`
+    * **結果:** 全く変化なし
+* 1. 画質とフィルタ
+  * `dblk_idc`: デブロックフィルタ、ブロックノイズを軽減し、画質を改善します。
+    * **結果:**
+    * 0-2
 
 ### av1_qsv tests
