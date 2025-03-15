@@ -71,7 +71,7 @@ def _get_default_patterns() -> list[dict[str, Any]]:
             "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
             "outfile": {
                 "options": [
-                    "-q:v 22",
+                    "-q:v 22 -bf 15 -refs 8",
                 ],
             },
             "hwaccels": "-hwaccel_output_format qsv",
@@ -84,7 +84,7 @@ def _get_default_patterns() -> list[dict[str, Any]]:
             "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
             "outfile": {
                 "options": [
-                    "-global_quality 25",
+                    "-global_quality 25 -bf 15 -refs 8",
                 ],
             },
             "hwaccels": "-hwaccel_output_format qsv",
@@ -97,7 +97,7 @@ def _get_default_patterns() -> list[dict[str, Any]]:
             "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
             "outfile": {
                 "options": [
-                    "-global_quality 25 -look_ahead 1",
+                    "-global_quality 25 -look_ahead 1 -bf 15 -refs 8",
                 ],
             },
             "hwaccels": "-hwaccel_output_format qsv",
@@ -110,7 +110,7 @@ def _get_default_patterns() -> list[dict[str, Any]]:
             "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
             "outfile": {
                 "options": [
-                    "-q:v 20",
+                    "-q:v 20 -bf 15 -refs 8 -vf vpp_qsv=format=p010le",
                 ],
             },
             "hwaccels": "-hwaccel_output_format qsv",
@@ -123,7 +123,7 @@ def _get_default_patterns() -> list[dict[str, Any]]:
             "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
             "outfile": {
                 "options": [
-                    "-global_quality 21",
+                    "-global_quality 21 -bf 15 -refs 8 -vf vpp_qsv=format=p010le",
                 ],
             },
             "hwaccels": "-hwaccel_output_format qsv",
@@ -136,7 +136,7 @@ def _get_default_patterns() -> list[dict[str, Any]]:
             "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
             "outfile": {
                 "options": [
-                    "-q:v 35",
+                    "-q:v 53 -vf vpp_qsv=format=p010le",
                 ],
             },
             "hwaccels": "-hwaccel_output_format qsv",
@@ -149,7 +149,7 @@ def _get_default_patterns() -> list[dict[str, Any]]:
             "infile": {"option": "-hwaccel qsv -c:v mpeg2_qsv"},
             "outfile": {
                 "options": [
-                    "-global_quality 35",
+                    "-global_quality 24 -vf vpp_qsv=format=p010le",
                 ],
             },
             "hwaccels": "-hwaccel_output_format qsv",

@@ -91,6 +91,7 @@ def show_aggregated_results() -> None:
     duckdb.sql(
         """
         SELECT
+            codec,
             ROUND(AVG(outfile_size_kbyte), 3)        AS outfile_size_kbyte,
             ROUND(AVG(outfile_bit_rate_kbs), 3)      AS outfile_bit_rate_kbs,
             ROUND(AVG(enc_sec), 3)                   AS enc_sec,
@@ -100,6 +101,13 @@ def show_aggregated_results() -> None:
             ROUND(AVG(vmaf_mean), 3)                 AS vmaf_mean,
             ROUND(AVG((200 - (vmaf_min + vmaf_mean)) +
                 (2 - (ssim_mean + comp_ratio_persent))), 3) AS pt,
+            ROUND(AVG(gop), 3)                       AS gop,
+            IF(AVG(has_b_frames) > 1,
+                ROUND(AVG(has_b_frames) + 1, 3), 0)  AS bf,
+            ROUND(AVG(refs), 3)                      AS refs,
+            CONCAT(ROUND(AVG(FI), 3), ' / ',
+                ROUND(AVG(FP), 3), ' / ',
+                ROUND(AVG(FB), 3))                   AS "I/P/B frames",
             outfile_options,
         FROM encodes
         WHERE
@@ -107,7 +115,7 @@ def show_aggregated_results() -> None:
             ssim_mean >= 0.99 AND
             vmaf_mean >= 93.00 AND
             vmaf_mean <= 100.00
-        GROUP BY outfile_options
+        GROUP BY codec, outfile_options
         ORDER BY pt DESC
         """,
     ).show()

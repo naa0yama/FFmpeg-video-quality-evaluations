@@ -6,12 +6,22 @@ h264_qsv, hevc_qsv, av1_qsv のエンコードパラメータで容量が小さ�
 
 ## 現状のベスト
 
-### h264_qsv best
+|                 |  File size |   bitrate | encode time | compress_rate | MSSIM |   VMAF min/mean | GOP   | bf   | refs | I/P/B frames           | options                                                     |
+| :-------------- | ---------: | --------: | ----------: | ------------: | ----: | --------------: | :---- | :--- | :--- | :--------------------- | :---------------------------------------------------------- |
+| libx264         | 94,385.908 | 6,292.776 |      40.209 |         0.617 | 0.998 | 85.469 / 94.831 | 250.0 | 3.0  | 4.0  | 30.0 / 2654.5 / 1380.0 | -crf 23                                                     |
+| libx265         | 88,267.994 | 5,884.813 |     160.378 |         0.651 | 0.997 | 83.206 / 94.555 | 250.0 | 3.0  | 1.0  | 21.5 / 2036.0 / 2231.0 | -crf 23                                                     |
+| libx265         | 42,769.258 | 2,851.418 |      132.84 |         0.832 | 0.994 | 73.278 / 89.803 | 250.0 | 3.0  | 1.0  | 21.5 / 2036.0 / 2231.0 | -crf 28                                                     |
+| libsvtav1       | 64,850.455 | 4,323.608 |      86.170 |         0.745 | 0.997 | 83.326 / 94.639 | 161.0 | 0.0  | 1.0  | 23.0 / 3573.5 / 0.0    | -crf 31                                                     |
+| libsvtav1       | 45,813.643 | 3,054.433 |      85.297 |         0.820 | 0.996 | 80.339 / 93.243 | 161.0 | 0.0  | 1.0  | 23.0 / 3573.5 / 0.0    | -crf 35                                                     |
+|                 |            |           |             |               |       |                 |       |      |      |                        |                                                             |
+| h264_qsv LA-ICQ | 80,026.906 | 5,334.941 |      12.104 |         0.689 | 0.996 | 82.038 / 95.711 | 256.0 | 3.0  | 3.0  | 15.0 / 899.0 / 2683.0  | -global_quality 25 -look_ahead 1                            |
+|                 | 70,052.759 | 4,670.035 |      12.913 |         0.727 | 0.996 | 79.411 / 94.773 | 256.0 | 5.0  | 8.0  | 15.0 / 225.0 / 3357.0  | -global_quality 25 -look_ahead 1 -bf 15 -refs 8             |
+| hevc_qsv ICQ    | 58,740.902 | 3,915.939 |      13.359 |         0.772 | 0.997 | 81.685 / 95.556 | 248.0 | 5.0  | 1.0  | 15.0 / 0.0 / 3582.0    | -global_quality 21 -bf 15 -refs 8                           |
+|                 | 57,403.106 | 3,826.759 |      13.384 |         0.777 | 0.997 | 81.586 / 95.704 | 248.0 | 5.0  | 1.0  | 15.0 / 0.0 / 3582.0    | -global_quality 21 -bf 15 -refs 8 -vf vpp_qsv=format=p010le |
+| av1_qsv ICQ     | 69,171.718 | 4,611.312 |      12.597 |         0.730 | 0.997 | 82.761 / 95.985 | 248.0 | 0.0  | 1.0  | 15.0 / 3582.0 / 0.0    | -global_quality 24                                          |
+|                 | 70,849.782 | 4,723.186 |      12.628 |         0.723 | 0.997 |  83.577 / 96.34 | 248.0 | 0.0  | 1.0  | 15.0 / 3582.0 / 0.0    | -global_quality 24 -vf vpp_qsv=format=p010le                |
 
-|  File size |   bitrate | encode time | compress_rate | MSSIM |   VMAF min/mean | options                                         |
-| ---------: | --------: | ----------: | ------------: | ----: | --------------: | :---------------------------------------------- |
-| 80,026.906 | 5,334.941 |      12.104 |         0.689 | 0.996 | 82.038 / 95.711 | -global_quality 25 -look_ahead 1                |
-| 70,052.759 | 4,670.035 |      12.913 |         0.727 | 0.996 | 79.411 / 94.773 | -global_quality 25 -look_ahead 1 -bf 15 -refs 8 |
+### h264_qsv best
 
 ```bash
 ffmpeg -y -threads 4 -hide_banner -ignore_unknown -fflags +discardcorrupt+genpts -analyzeduration 30M -probesize 100M \
@@ -29,65 +39,10 @@ ffmpeg -y -threads 4 -hide_banner -ignore_unknown -fflags +discardcorrupt+genpts
 
 ### hevc_qsv best
 
-hevc_qsv は VMAF min/mean の値から h264_qsv と同程度にすると `-global_quality 22` が基準になりそうためこれを使ってテストする  
-それでも h264 に比べて 38% 圧縮されるのは優秀と思う。
+hevc_qsv はファイルサイズの削減更に進み、画質を落とさず容量削減が可能。
+また、 10-Bit カラーの Main10 にも対応するためグラデーションなど状況でも問題ない。
 
 ```bash
-h264_qsv -global_quality 25 128,750kB, VMAF min/mean 76.400/96.610
-hevc_qsv -global_quality 22  78,567kB, VMAF min/mean 77.739/96.204
-
-ffmpeg -y -threads 4 -hide_banner -ignore_unknown -fflags +discardcorrupt+genpts -analyzeduration 30M -probesize 100M \
-    -hwaccel_output_format qsv \
-    -map 0:v -hwaccel qsv -c:v mpeg2_qsv -i videos/source/BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts \
-    -c:v hevc_qsv -preset:v veryslow \
-    -global_quality 22 -look_ahead 1 -bf 14 -refs 8 -extbrc 1 -look_ahead_depth 60 \
-    -aspect 16:9 -g 256 -bf 14 -refs 8 -b_strategy 1 \
-    -color_range tv -color_primaries bt709 -color_trc bt709 -colorspace bt709 -max_muxing_queue_size 4000 \
-    -movflags faststart -f mkv \
-    -map 0:a -c:a aac -ar 48000 -ab 256k -ac 2 -bsf:a aac_adtstoasc \
-    \
-    out.mkv
-
-```
-
-```bash
-# LA-ICQ
-ffmpeg -loglevel verbose -y -threads 4 -hwaccel_output_format qsv -hwaccel qsv \
-  -c:v mpeg2_qsv -i videos/dist/hevc_qsv-bf-refs/base.mkv \
-  -global_quality 22 -look_ahead 1 -bf 14 -refs 8 \
-  -extbrc 1 -look_ahead_depth 40 -c:v hevc_qsv -preset:v veryslow -f null -
-
-
-
-
-ffmpeg -loglevel verbose -y -threads 4 -hwaccel_output_format qsv -hwaccel qsv \
-  -c:v mpeg2_qsv -i videos/dist/hevc_qsv-bf-refs/base.mkv \
-  -global_quality 22 -look_ahead_depth 40 -bf 14 -refs 8 \
-  -c:v hevc_qsv -preset:v veryslow -f null -
-
-```
-
-```bash
-  -c:v hevc_nvenc -preset slow -profile:v main10 -pix_fmt yuv420p10le
-  -bf 3 -refs 9
-  -color_range tv -color_primaries bt709 -color_trc bt709 -colorspace bt709
-  -vf yadif=mode=send_frame:parity=auto:deint=all,scale=w=-2:h=720 -max_muxing_queue_size 4000
-  -movflag faststart -f mp4
-  -map 0:a -c:a aac -ar 48000 -ab 256k -ac 2 -bsf:a aac_adtstoasc
-
-  '-hide_banner', '-ignore_unknown',
-  '-fflags', '+discardcorrupt+genpts', '-analyzeduration', '30M', '-probesize', '100M',
-  '-map', '0:v', '-aspect', '16:9', '-c:v', 'hevc_nvenc', '-preset', 'slow', '-profile:v', 'main10',
-  '-pix_fmt', 'yuv420p10le', '-rc:v', 'constqp', '-rc-lookahead', 20, '-spatial-aq', 0, '-temporal-aq', 1,
-  '-multipass', 'qres', '-g', 250, '-b_ref_mode', 'each', '-bf', 3, '-refs', 9,
-  '-color_range', 'tv', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709',
-  '-vf', 'yadif=mode=send_frame:parity=auto:deint=all,scale=w=-2:h=720',
-  '-max_muxing_queue_size', 4000,
-  '-tag:v', 'hvc1', '-movflags', 'faststart', '-f', 'mp4',
-
-  '-map', '0:a'
-  '-c:a', 'aac', '-ar', '48000', '-ab', '256k', '-ac', '2'
-  '-bsf:a', 'aac_adtstoasc'
 
 ```
 
@@ -342,16 +297,27 @@ libx265 でおなじみ CRF(Constant Rate Factor) は Intel QSV には存在し�
   * `-g 256` にしても 0.004% しか容量に変化が無いため、デフォルトの `-g 248` を採用する
 * 1. Extended BRC と先読みフレーム数
   * `-extbrc 1 -look_ahead_depth {10..100}`
-    * **結果:**
+    * **結果:** 変化なし
   * `-rdo`: Bitrate の極端な乱高下を最適化する
-    * **結果:**
-    * 0-1
+    * **結果:** 変化なし
 * 1. シナリオ
   * `-scenario`
     * **結果:** 全く変化なし
 * 1. 画質とフィルタ
   * `dblk_idc`: デブロックフィルタ、ブロックノイズを軽減し、画質を改善します。
-    * **結果:**
-    * 0-2
+    * **結果:** VMAF min は改善するが VMAF mean が劣化するため、採用しない
+* `-b_strategy`,`-adaptive_i`, `adaptive_b` 効果無し
+* `-profile main10` やったほうがきれいになる
 
 ### av1_qsv tests
+
+* CQP / ICQ をテスト、設定値を決定
+  * ICQ を採用
+  * ベースラインから `-global_quality 21` でテストを開始
+* 1. GOP サイズ、 B-Frame、参照フレーム数
+  * 設定しないほうが良い
+* `-b_strategy`, `-adaptive_i`, `adaptive_b`
+  * **結果:** 全く変化なし
+* `-extbrc 1 -look_ahead_depth {10..100}`
+  * **結果:** 全く変化なし
+* `-profile main10` やったほうがきれいになる
