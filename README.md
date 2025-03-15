@@ -2,24 +2,29 @@
 
 Video encoding quality evaluation project using VMAF and SSIM
 
-## tools
+FFmpeg を利用して ソフトウェア、 Intel QSV エンコーダーで動画をエンコードし SSIM, VMAF min/mean など映像品質の指標になるデータを計算し、 CSV と JSON で出力します。  
+また、 yaml ファイルで outfile option を定義できるためパラメーターを複数試す時に楽ができ、グラフとして確認することも可能です。
 
-* [plotbitrate](https://github.com/zeroepoch/plotbitrate)
-* FFmpeg
-* FFprobe
+## 利用方法
 
-## 暫定利用方法
-
-レポジトリーを clone して devcontainer で起動する
+レポジトリーを clone して VSCode Dev Containers で起動する
 
 * 設定ファイルを作成
   * `--config` は設定ファイル名でフォルダーを切り管理しやすくするため必須
   * `patterns` と `presets` のリストをループで処理する
     * その時、パラメータとして `outfile.options` の list を分解し `encodes` として生成する。
     * 生成したデータを `datafile` のファイルに保存する
+  * `--codec`
+    * `libx264`, `libx265`, `libsvtav1`, `h264_qsv`, `hevc_qsv`, `av1_qsv` に対応
+    * どれも、 VMAF mean 93 あたりをターゲットにした設定済み
+  * `--type`
+    * `CQP`, `ICQ`, `LA_ICQ` に対応
+    * ※ `LA_ICQ` は `h264_qsv` にのみ対応
+
+  `h264_qsv` で `ICQ` の設定をベースにする場合
 
   ```bash
-  python src/ffmpegvqe/entrypoint.py --config videos/h264_default-qq13-14.yml
+  python src/ffmpegvqe/entrypoint.py --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml --codec av1_qsv --type ICQ
 
   ```
 
@@ -27,16 +32,62 @@ Video encoding quality evaluation project using VMAF and SSIM
   * `--encode` をつける事で設定ファイルの pattern 分エンコードし、 VMAF を計測後、 datafile に書き込む
 
   ```bash
-  python src/ffmpegvqe/entrypoint.py --config videos/h264_default-qq13-14.yml --encode
+  python src/ffmpegvqe/entrypoint.py --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml --encode
+
+  ```
+
+* データをアーカイブする
+  * エンコード時に出力した FFmpeg のログと VMAF のログを tar.xz で圧縮し `assets/` に移動します
+  * この時、 `--config` のファイルも更新することでグラフ表示などは問題なく可能です
+
+  ```bash
+  python src/ffmpegvqe/entrypoint.py --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml --archive
 
   ```
 
 * グラフを表示
-  * `--args --config videos/h264_default-qq13-14.yml` を設定する事で config を読み込ませる
+  * `--args --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml` を設定する事で config を読み込ませる
 
   ```bash
-  bokeh serve src/ffmpegvqe/visualization/graph.py --show --args --config videos/h264_default-qq13-14.yml
+  bokeh serve src/ffmpegvqe/visualization/graph.py --show --args --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml
 
+  ```
+
+* エンコード結果の統計を確認
+  * 総当たりでエンコードするため、統計を確認できる術を用意した
+  * リファレンスタイプ、 Anime, Nature ごとの平均値
+  * codec, outfile_options でグループした平均値
+    * 圧縮率 60% 以上
+    * SSIM 0.99% 以上
+    * VMAF mean 93.00 以上 100.00 以下
+
+  ```bash
+  $ python src/ffmpegvqe/summary.py --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml
+  ┌──────────┬────────────────────┬──────────────────────┬─────────┬────────────────────┬───────────┬──────────┬───────────┬────────────────────┐
+  │ ref_type │ outfile_size_kbyte │ outfile_bit_rate_kbs │ enc_sec │ comp_ratio_persent │ ssim_mean │ vmaf_min │ vmaf_mean │  outfile_options   │
+  │ varchar  │       double       │        double        │ double  │       double       │  double   │  double  │  double   │      varchar       │
+  ├──────────┼────────────────────┼──────────────────────┼─────────┼────────────────────┼───────────┼──────────┼───────────┼────────────────────┤
+  │ Anime    │           3186.203 │              212.419 │  13.402 │              0.987 │     0.951 │   19.818 │    50.774 │ -global_quality 45 │
+  │ Nature   │           3790.686 │              252.741 │  13.419 │              0.985 │     0.928 │   14.691 │    38.659 │ -global_quality 45 │
+  │ Nature   │           4124.542 │              275.001 │  13.414 │              0.983 │     0.933 │    13.75 │    41.183 │ -global_quality 44 │
+  │ Anime    │            3355.68 │              223.717 │  13.427 │              0.987 │     0.954 │   18.578 │    52.789 │ -global_quality 44 │
+  │ Nature   │           4555.263 │              303.719 │   13.43 │              0.981 │     0.939 │   13.121 │     44.01 │ -global_quality 43 │
+  │ Anime    │           3593.482 │              239.571 │  13.439 │              0.986 │     0.958 │   21.997 │    55.449 │ -global_quality 43 │
+  │ Anime    │           3862.365 │              257.497 │  13.205 │              0.985 │     0.961 │   24.569 │    58.062 │ -global_quality 42 │
+  │ Nature   │           5097.788 │              339.892 │  13.123 │              0.979 │     0.945 │   15.437 │    47.184 │ -global_quality 42 │
+  └──────────┴────────────────────┴──────────────────────┴─────────┴────────────────────┴───────────┴──────────┴───────────┴────────────────────┘
+
+  ┌─────────┬────────────────────┬──────────────────────┬─────────┬────────────────────┬───────────┬──────────┬───────────┬────────┬────────┬────────┬────────┬─────────────────────┬────────────────────┐
+  │  codec  │ outfile_size_kbyte │ outfile_bit_rate_kbs │ enc_sec │ comp_ratio_persent │ ssim_mean │ vmaf_min │ vmaf_mean │   pt   │  gop   │   bf   │  refs  │    I/P/B frames     │  outfile_options   │
+  │ varchar │       double       │        double        │ double  │       double       │  double   │  double  │  double   │ double │ double │ double │ double │       varchar       │      varchar       │
+  ├─────────┼────────────────────┼──────────────────────┼─────────┼────────────────────┼───────────┼──────────┼───────────┼────────┼────────┼────────┼────────┼─────────────────────┼────────────────────┤
+  │ av1_qsv │          40900.662 │              2726.63 │    12.7 │               0.84 │     0.996 │   77.979 │    93.772 │ 28.414 │  248.0 │    0.0 │    1.0 │ 15.0 / 3582.0 / 0.0 │ -global_quality 27 │
+  │ av1_qsv │          46445.725 │             3096.283 │  12.705 │              0.819 │     0.996 │   79.172 │    94.337 │ 26.676 │  248.0 │    0.0 │    1.0 │ 15.0 / 3582.0 / 0.0 │ -global_quality 26 │
+  │ av1_qsv │          57648.974 │             3843.135 │  12.748 │              0.775 │     0.997 │   80.597 │    95.227 │ 24.404 │  248.0 │    0.0 │    1.0 │ 15.0 / 3582.0 / 0.0 │ -global_quality 25 │
+  │ av1_qsv │          69171.718 │             4611.312 │  12.588 │               0.73 │     0.997 │   82.761 │    95.985 │ 21.527 │  248.0 │    0.0 │    1.0 │ 15.0 / 3582.0 / 0.0 │ -global_quality 24 │
+  │ av1_qsv │          80065.828 │             5337.601 │  12.515 │              0.687 │     0.998 │   84.387 │    96.529 │   19.4 │  248.0 │    0.0 │    1.0 │ 15.0 / 3582.0 / 0.0 │ -global_quality 23 │
+  │ av1_qsv │          91253.544 │             6083.476 │  12.568 │              0.643 │     0.998 │   85.674 │    96.941 │ 17.744 │  248.0 │    0.0 │    1.0 │ 15.0 / 3582.0 / 0.0 │ -global_quality 22 │
+  └─────────┴────────────────────┴──────────────────────┴─────────┴────────────────────┴───────────┴──────────┴───────────┴────────┴────────┴────────┴────────┴─────────────────────┴────────────────────┘
   ```
 
 ## 準備
@@ -58,62 +109,125 @@ sudo apt install hwinfo intel-gpu-tools vainfo
 
 ```
 
-Version check
+VAAPI の バージョンと、対応フォーマット、レートコントロールモードを確認します。  
+ICQ は CPU により対応 or 非対応が分かれるため、最初に確認する事、
+Main10 も利用するなら対応フォーマットがあるか確認する
 
 ```bash
-> sudo vainfo
-error: XDG_RUNTIME_DIR is invalid or not set in the environment.
-error: can't connect to X server!
+> sudo vainfo --all | \
+  grep -A50 -E "(VAProfileH264(Main|High)|VAProfileHEVCMain(10)?|VAProfileAV1Profile0)/" | \
+  grep --color=auto -E "VAProfileH264(Main|High)|VAProfileHEVCMain(10)?|VAProfileAV1Profile0|VA_RT|VA_RC"
 libva info: VA-API version 1.20.0
 libva info: Trying to open /usr/lib/x86_64-linux-gnu/dri/iHD_drv_video.so
 libva info: Found init function __vaDriverInit_1_20
 libva info: va_openDriver() returns 0
-vainfo: VA-API version: 1.20 (libva 2.12.0)
-vainfo: Driver version: Intel iHD driver for Intel(R) Gen Graphics - 24.1.0 ()
-vainfo: Supported profile and entrypoints
-      VAProfileNone                   : VAEntrypointVideoProc
-      VAProfileNone                   : VAEntrypointStats
-      VAProfileMPEG2Simple            : VAEntrypointVLD
-      VAProfileMPEG2Main              : VAEntrypointVLD
-      VAProfileH264Main               : VAEntrypointVLD
-      VAProfileH264Main               : VAEntrypointEncSliceLP
-      VAProfileH264High               : VAEntrypointVLD
-      VAProfileH264High               : VAEntrypointEncSliceLP
-      VAProfileJPEGBaseline           : VAEntrypointVLD
-      VAProfileJPEGBaseline           : VAEntrypointEncPicture
-      VAProfileH264ConstrainedBaseline: VAEntrypointVLD
-      VAProfileH264ConstrainedBaseline: VAEntrypointEncSliceLP
-      VAProfileHEVCMain               : VAEntrypointVLD
-      VAProfileHEVCMain               : VAEntrypointEncSliceLP
-      VAProfileHEVCMain10             : VAEntrypointVLD
-      VAProfileHEVCMain10             : VAEntrypointEncSliceLP
-      VAProfileVP9Profile0            : VAEntrypointVLD
-      VAProfileVP9Profile0            : VAEntrypointEncSliceLP
-      VAProfileVP9Profile1            : VAEntrypointVLD
-      VAProfileVP9Profile1            : VAEntrypointEncSliceLP
-      VAProfileVP9Profile2            : VAEntrypointVLD
-      VAProfileVP9Profile2            : VAEntrypointEncSliceLP
-      VAProfileVP9Profile3            : VAEntrypointVLD
-      VAProfileVP9Profile3            : VAEntrypointEncSliceLP
-      VAProfileHEVCMain12             : VAEntrypointVLD
-      VAProfileHEVCMain422_10         : VAEntrypointVLD
-      VAProfileHEVCMain422_10         : VAEntrypointEncSliceLP
-      VAProfileHEVCMain422_12         : VAEntrypointVLD
-      VAProfileHEVCMain444            : VAEntrypointVLD
-      VAProfileHEVCMain444            : VAEntrypointEncSliceLP
-      VAProfileHEVCMain444_10         : VAEntrypointVLD
-      VAProfileHEVCMain444_10         : VAEntrypointEncSliceLP
-      VAProfileHEVCMain444_12         : VAEntrypointVLD
-      VAProfileHEVCSccMain            : VAEntrypointVLD
-      VAProfileHEVCSccMain            : VAEntrypointEncSliceLP
-      VAProfileHEVCSccMain10          : VAEntrypointVLD
-      VAProfileHEVCSccMain10          : VAEntrypointEncSliceLP
-      VAProfileHEVCSccMain444         : VAEntrypointVLD
-      VAProfileHEVCSccMain444         : VAEntrypointEncSliceLP
-      VAProfileAV1Profile0            : VAEntrypointVLD
-      VAProfileAV1Profile0            : VAEntrypointEncSliceLP
-      VAProfileHEVCSccMain444_10      : VAEntrypointVLD
-      VAProfileHEVCSccMain444_10      : VAEntrypointEncSliceLP
+
+VAProfileH264Main/VAEntrypointVLD
+    VAConfigAttribRTFormat                 : VA_RT_FORMAT_YUV420
+                                             VA_RT_FORMAT_YUV422
+                                             VA_RT_FORMAT_RGB32
+VAProfileH264Main/VAEntrypointEncSliceLP
+    VAConfigAttribRTFormat                 : VA_RT_FORMAT_YUV420
+                                             VA_RT_FORMAT_YUV422
+                                             VA_RT_FORMAT_YUV444
+                                             VA_RT_FORMAT_RGB32
+    VAConfigAttribRateControl              : VA_RC_CBR
+                                             VA_RC_VBR
+                                             VA_RC_CQP
+                                             VA_RC_ICQ
+                                             VA_RC_MB
+                                             VA_RC_QVBR
+                                             VA_RC_TCBRC
+VAProfileH264High/VAEntrypointVLD
+    VAConfigAttribRTFormat                 : VA_RT_FORMAT_YUV420
+                                             VA_RT_FORMAT_YUV422
+                                             VA_RT_FORMAT_RGB32
+VAProfileH264High/VAEntrypointEncSliceLP
+    VAConfigAttribRTFormat                 : VA_RT_FORMAT_YUV420
+                                             VA_RT_FORMAT_YUV422
+                                             VA_RT_FORMAT_YUV444
+                                             VA_RT_FORMAT_RGB32
+    VAConfigAttribRateControl              : VA_RC_CBR
+                                             VA_RC_VBR
+                                             VA_RC_CQP
+                                             VA_RC_ICQ
+                                             VA_RC_MB
+                                             VA_RC_QVBR
+                                             VA_RC_TCBRC
+    VAConfigAttribRTFormat                 : VA_RT_FORMAT_YUV420
+                                             VA_RT_FORMAT_YUV422
+                                             VA_RT_FORMAT_YUV444
+                                             VA_RT_FORMAT_YUV411
+                                             VA_RT_FORMAT_YUV400
+                                             VA_RT_FORMAT_RGB16
+                                             VA_RT_FORMAT_RGB32
+VAProfileHEVCMain/VAEntrypointVLD
+    VAConfigAttribRTFormat                 : VA_RT_FORMAT_YUV420
+VAProfileHEVCMain/VAEntrypointEncSliceLP
+    VAConfigAttribRTFormat                 : VA_RT_FORMAT_YUV420
+                                             VA_RT_FORMAT_YUV422
+                                             VA_RT_FORMAT_YUV444
+                                             VA_RT_FORMAT_YUV420_10
+                                             VA_RT_FORMAT_YUV422_10
+                                             VA_RT_FORMAT_YUV444_10
+                                             VA_RT_FORMAT_RGB32
+                                             VA_RT_FORMAT_RGB32_10
+                                             VA_RT_FORMAT_RGB32_10BPP
+                                             VA_RT_FORMAT_YUV420_10BPP
+    VAConfigAttribRateControl              : VA_RC_CBR
+                                             VA_RC_VBR
+                                             VA_RC_VCM
+                                             VA_RC_CQP
+                                             VA_RC_ICQ
+                                             VA_RC_MB
+                                             VA_RC_QVBR
+                                             VA_RC_TCBRC
+VAProfileHEVCMain10/VAEntrypointVLD
+    VAConfigAttribRTFormat                 : VA_RT_FORMAT_YUV420
+                                             VA_RT_FORMAT_YUV420_10
+                                             VA_RT_FORMAT_YUV420_10BPP
+VAProfileHEVCMain10/VAEntrypointEncSliceLP
+    VAConfigAttribRTFormat                 : VA_RT_FORMAT_YUV420
+                                             VA_RT_FORMAT_YUV422
+                                             VA_RT_FORMAT_YUV444
+                                             VA_RT_FORMAT_YUV420_10
+                                             VA_RT_FORMAT_YUV422_10
+                                             VA_RT_FORMAT_YUV444_10
+                                             VA_RT_FORMAT_RGB32
+                                             VA_RT_FORMAT_RGB32_10
+                                             VA_RT_FORMAT_RGB32_10BPP
+                                             VA_RT_FORMAT_YUV420_10BPP
+    VAConfigAttribRateControl              : VA_RC_CBR
+                                             VA_RC_VBR
+                                             VA_RC_VCM
+                                             VA_RC_CQP
+                                             VA_RC_ICQ
+                                             VA_RC_MB
+                                             VA_RC_QVBR
+                                             VA_RC_TCBRC
+VAProfileAV1Profile0/VAEntrypointVLD
+    VAConfigAttribRTFormat                 : VA_RT_FORMAT_YUV420
+                                             VA_RT_FORMAT_YUV420_10
+                                             VA_RT_FORMAT_YUV420_10BPP
+VAProfileAV1Profile0/VAEntrypointEncSliceLP
+    VAConfigAttribRTFormat                 : VA_RT_FORMAT_YUV420
+                                             VA_RT_FORMAT_YUV420_10
+                                             VA_RT_FORMAT_YUV420_10BPP
+    VAConfigAttribRateControl              : VA_RC_CBR
+                                             VA_RC_VBR
+                                             VA_RC_CQP
+                                             VA_RC_ICQ
+                                             VA_RC_TCBRC
+    VAConfigAttribRTFormat                 : VA_RT_FORMAT_YUV420
+                                             VA_RT_FORMAT_YUV422
+                                             VA_RT_FORMAT_YUV444
+                                             VA_RT_FORMAT_YUV400
+                                             VA_RT_FORMAT_YUV420_10
+                                             VA_RT_FORMAT_YUV422_10
+                                             VA_RT_FORMAT_YUV444_10
+                                             VA_RT_FORMAT_YUV420_10BPP
+    VAConfigAttribRTFormat                 : VA_RT_FORMAT_YUV420
+                                             VA_RT_FORMAT_YUV422
 
 ```
 
@@ -131,26 +245,8 @@ curl https://get.docker.com | sh \
 
 本プロジェクトでは長期的にリファレンス映像を利用する可能性が高そうに思えたため CC-BY 4.0 で配布されている [Big Buck Bunny](http://www.bigbuckbunny.org) をベースに Release に保管することで永続化しています。  
 
-地上デジタル放送の映像に近づけるため、下記の設定で出力した映像としています。  
-映像設定の詳細は [Releases · naa0yama/FFmpeg-video-quality-evaluations](https://github.com/naa0yama/FFmpeg-video-quality-evaluations/releases) の Asset にある encode.ps1 で確認できます。  
-すべてダウンロードする場合は `videos/source/reference_downloads.sh` にスクリプトを用意してあります。
-
-| Type          | size      | frame rate | p/i         | bitrate avg / max            | Filename                                              |
-| :------------ | :-------- | :--------- | :---------- | :--------------------------- | :---------------------------------------------------- |
-| Source        | 1280x720  | 24000/1001 | progressive | `-b:v 10M`<br>`-maxrate 15M` | `BBB_JapanTV_MPEG-2_1280x720_24p.m2ts`                |
-|               |           | 30000/1001 | progressive | `-b:v 10M`<br>`-maxrate 15M` | `BBB_JapanTV_MPEG-2_1280x720_30p.m2ts`                |
-|               |           |            | interlace   | `-b:v 10M`<br>`-maxrate 15M` | `BBB_JapanTV_MPEG-2_1280x720_30i.m2ts`                |
-|               | 1440x1080 | 24000/1001 | progressive | `-b:v 14M`<br>`-maxrate 20M` | `BBB_JapanTV_MPEG-2_1440x1080_24p.m2ts`               |
-|               |           | 30000/1001 | progressive | `-b:v 14M`<br>`-maxrate 20M` | `BBB_JapanTV_MPEG-2_1440x1080_30p.m2ts`               |
-|               |           |            | interlace   | `-b:v 14M`<br>`-maxrate 20M` | `BBB_JapanTV_MPEG-2_1440x1080_30i.m2ts`               |
-| telecine 23   |           |            | interlace   | `-b:v 14M`<br>`-maxrate 20M` | `BBB_JapanTV_MPEG-2_1440x1080_30i_telecine_23.m2ts`   |
-| telecine 2332 |           |            | interlace   | `-b:v 14M`<br>`-maxrate 20M` | `BBB_JapanTV_MPEG-2_1440x1080_30i_telecine_2332.m2ts` |
-|               |           |            |             |                              |                                                       |
-|               | 1920x1080 | 24000/1001 | progressive | `-b:v 18M`<br>`-maxrate 24M` | `BBB_JapanTV_MPEG-2_1920x1080_24p.m2ts`               |
-|               |           | 30000/1001 | progressive | `-b:v 18M`<br>`-maxrate 24M` | `BBB_JapanTV_MPEG-2_1920x1080_30p.m2ts`               |
-|               |           |            | interlace   | `-b:v 18M`<br>`-maxrate 24M` | `BBB_JapanTV_MPEG-2_1920x1080_30i.m2ts`               |
-| telecine 23   |           |            | interlace   | `-b:v 18M`<br>`-maxrate 24M` | `BBB_JapanTV_MPEG-2_1920x1080_30i_telecine_23.m2ts`   |
-| telecine 2332 |           |            | interlace   | `-b:v 18M`<br>`-maxrate 24M` | `BBB_JapanTV_MPEG-2_1920x1080_30i_telecine_2332.m2ts` |
+地上デジタル放送の映像に近づけるため、エンコードオプションは実際のデータに近づけています。  
+映像設定の詳細は [Releases · naa0yama/FFmpeg-video-quality-evaluations](https://github.com/naa0yama/FFmpeg-video-quality-evaluations/releases) の Asset にある encode*.ps1 で確認できます。  
 
 ## エンコードとテスト
 
@@ -207,15 +303,8 @@ do
 done
 
 for filter in \
-  deinterlace_qsv \
-  fieldmatch \
-  libvmaf \
-  overlay_qsv \
-  sab \
-  scale \
-  scale_qsv \
-  vpp_qsv \
-  yadif
+  deinterlace_qsv fieldmatch libvmaf overlay_qsv sab \
+  scale scale_qsv vpp_qsv yadif
 do
   ffmpeg -hide_banner -h filter=${filter}    > ./videos/source/filters/filter_${filter}.txt
 done

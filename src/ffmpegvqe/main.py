@@ -89,6 +89,11 @@ def create_argument_parser() -> argparse.ArgumentParser:
         help="Automatically delete transcoded videos in Dist folder. (default: False)",
         action="store_true",
     )
+    parser.add_argument(
+        "--auto-download-references",
+        help="Automatically download reference files without prompting. (default: False)",
+        action="store_true",
+    )
 
     return parser
 

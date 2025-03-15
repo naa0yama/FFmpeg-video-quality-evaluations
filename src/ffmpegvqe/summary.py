@@ -5,7 +5,8 @@
 """duckdb."""
 
 import argparse
-import logging
+from logging import INFO
+from logging import getLogger
 from pathlib import Path
 
 import duckdb
@@ -21,6 +22,8 @@ class NoAliasDumper(RoundTripRepresenter):
         return bool(data is not None)
 
 
+logger = getLogger(__name__)
+logger.setLevel(INFO)
 yaml = ruamel.yaml.YAML(typ="safe", pure=True)
 yaml.indent(mapping=2, sequence=4, offset=2)
 yaml.default_flow_style = False
@@ -56,7 +59,7 @@ def create_temp_table(csvfile_type: str) -> None:
     Args:
         csvfile_type (str): Path to the CSV file.
     """
-    logging.info("[CSV] loading %s", csvfile_type)
+    logger.info("[CSV] loading %s", csvfile_type)
     duckdb.execute(
         """
             CREATE TEMPORARY TABLE encodes AS

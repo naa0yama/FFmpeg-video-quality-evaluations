@@ -10,6 +10,9 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+import requests
+from tqdm import tqdm
+
 from ffmpegvqe.encoding.encoder import get_versions
 from ffmpegvqe.encoding.encoder import getprobe
 from ffmpegvqe.utils.exceptions import VQEError
@@ -229,6 +232,106 @@ def _get_default_references() -> list[dict[str, Any]]:
     ]
 
 
+def is_default_reference(ref_name: str, ref_file: str, ref_hash: str) -> bool:
+    """リファレンスがデフォルトのリファレンスリストに含まれているかどうかを確認する.
+
+    Args:
+        ref_name: リファレンス名
+        ref_file: リファレンスファイルのパス
+        ref_hash: リファレンスファイルのハッシュ値
+
+    Returns:
+        bool: デフォルトのリファレンスリストに含まれているかどうか
+    """
+    default_references = _get_default_references()
+
+    for default_ref in default_references:
+        if (
+            default_ref["name"] == ref_name
+            and default_ref["basefile"] == ref_file
+            and default_ref["basehash"] == ref_hash
+        ):
+            return True
+
+    return False
+
+
+def download_reference_file(ref_file: str, ref_hash: str) -> bool:
+    """GitHub リリースからリファレンスファイルをダウンロードする.
+
+    Args:
+        ref_file: ダウンロード先のファイルパス
+        ref_hash: 期待されるハッシュ値
+
+    Returns:
+        bool: ダウンロードが成功したかどうか
+    """
+    api_url = (
+        "https://api.github.com/repos/naa0yama/FFmpeg-video-quality-evaluations/releases/latest"
+    )
+
+    try:
+        # リリース情報を取得
+        response = requests.get(api_url, timeout=30)
+        response.raise_for_status()
+        release = response.json()
+
+        # ファイル名を取得
+        file_name = Path(ref_file).name
+
+        # リリースからアセットを検索
+        for asset in release.get("assets", []):
+            if asset["name"] == file_name:
+                # アセットをダウンロード
+                download_url = asset["browser_download_url"]
+                print(f"Downloading {file_name} from {download_url}...")  # noqa: T201
+
+                # ディレクトリが存在しない場合は作成
+                Path(ref_file).parent.mkdir(parents=True, exist_ok=True)
+
+                # ファイルサイズを取得
+                file_size = int(asset["size"])
+
+                with (
+                    requests.get(download_url, stream=True, timeout=30) as r,
+                    Path(ref_file).open(
+                        "wb",
+                    ) as f,
+                    tqdm(
+                        total=file_size,
+                        unit="B",
+                        unit_scale=True,
+                        desc=f"Downloading {file_name}",
+                        bar_format="{desc:92}{percentage:5.0f}%|{bar:20}{r_bar}",
+                    ) as pbar,
+                ):
+                    r.raise_for_status()
+                    for chunk in r.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+                            pbar.update(len(chunk))
+
+                # ハッシュ値を検証
+                downloaded_hash = getfilehash(ref_file)
+                if downloaded_hash != ref_hash:
+                    print(  # noqa: T201
+                        f"Error: Downloaded file hash {downloaded_hash} "
+                        f"does not match expected hash {ref_hash}",
+                    )
+                    return False
+                print(f"Successfully downloaded {file_name}")  # noqa: T201
+                return True
+
+    except (OSError, requests.RequestException) as e:
+        print(f"Error downloading reference file: {e}")  # noqa: T201
+        return False
+
+    else:
+        # ファイルが見つからなかった場合
+        print(f"Error: Could not find {file_name} in the latest release")  # noqa: T201
+        return False
+
+
 def _load_or_create_config(
     configfile: str,
     patterns: list[dict[str, Any]],
@@ -293,8 +396,68 @@ def _validate_config(configs: dict[str, Any], patterns: list[dict[str, Any]]) ->
     return configs
 
 
-def _validate_references(configs: dict[str, Any]) -> None:
-    """Validate reference files and their hashes.
+def _find_references_to_download(
+    configs: dict[str, Any],
+) -> list[tuple[int, dict[str, Any]]]:
+    """ダウンロードが必要なリファレンスファイルを特定する.
+
+    Args:
+        configs: Configuration dictionary.
+
+    Returns:
+        List of tuples containing (index, reference) for references that need to be downloaded.
+    """
+    download_required = []
+    for _index, _ref in enumerate(configs["configs"]["references"]):
+        ref_file_path = Path(_ref["basefile"])
+        probe_file_path = Path(
+            f"{_ref['basefile'].replace(ref_file_path.suffix, '_ffprobe.json', 1)}",
+        )
+
+        if not probe_file_path.exists() and not ref_file_path.exists():
+            # デフォルトのリファレンスかどうかを確認
+            is_default = is_default_reference(
+                _ref["name"],
+                _ref["basefile"],
+                _ref["basehash"],
+            )
+
+            if is_default:
+                download_required.append((_index, _ref))
+
+    return download_required
+
+
+def _download_references(
+    download_required: list[tuple[int, dict[str, Any]]],
+) -> None:
+    """リファレンスファイルをダウンロードする.
+
+    Args:
+        download_required: List of tuples containing (index, reference) for references to download.
+
+    Raises:
+        VQEError: If download fails.
+    """
+    if not download_required:
+        return
+
+    print(f"Downloading {len(download_required)} reference files...")  # noqa: T201
+
+    for i, (_index, _ref) in enumerate(download_required):
+        print(f"[{i + 1}/{len(download_required)}] Processing {_ref['name']}...")  # noqa: T201
+
+        # GitHub からダウンロード
+        if not download_reference_file(
+            _ref["basefile"],
+            _ref["basehash"],
+        ):
+            download_error_msg: str = f"Error: Failed to download reference file: {_ref['name']}"
+            raise VQEError(download_error_msg)
+
+
+def _verify_references(configs: dict[str, Any]) -> None:
+    """リファレンスファイルのハッシュ値を検証する.
 
     Args:
         configs: Configuration dictionary.
@@ -303,16 +466,69 @@ def _validate_references(configs: dict[str, Any]) -> None:
         VQEError: If reference file hash doesn't match.
     """
     for _index, _ref in enumerate(configs["configs"]["references"]):
-        if not Path(
-            f"{_ref['basefile'].replace(Path(_ref['basefile']).suffix, '_ffprobe.json', 1)}",
-        ).exists():
+        ref_file_path = Path(_ref["basefile"])
+        probe_file_path = Path(
+            f"{_ref['basefile'].replace(ref_file_path.suffix, '_ffprobe.json', 1)}",
+        )
+
+        if not probe_file_path.exists():
+            # リファレンスファイルが存在するか確認
+            if not ref_file_path.exists():
+                not_default_msg: str = (
+                    f"Error: Reference file not found: {_ref['name']} (not a default reference)"
+                )
+                raise VQEError(not_default_msg)
+
+            # ハッシュ値を検証
             if configs["configs"]["references"][_index]["basehash"] != getfilehash(
                 _ref["basefile"],
             ):
                 __msg: str = f"Error: references name: {_ref['name']}, basehash not match."
                 raise VQEError(__msg)
-            print(f"References name: {_ref['name']}, basehash successfull.")  # noqa: T201
+
+            print(f"References name: {_ref['name']}, basehash successful.")  # noqa: T201
             getprobe(videofile=_ref["basefile"])
+
+
+def _validate_references(configs: dict[str, Any], args: object, configfile: str) -> None:
+    """Validate reference files and their hashes.
+
+    Args:
+        configs: Configuration dictionary.
+        args: Command line arguments.
+        configfile: Path to the configuration file.
+
+    Raises:
+        VQEError: If reference file hash doesn't match.
+    """
+    # 自動ダウンロードフラグを取得
+    auto_download = getattr(args, "auto_download_references", False)
+
+    # ダウンロードが必要なリファレンスファイルを特定
+    download_required = _find_references_to_download(configs)
+
+    # ダウンロードが必要なファイルがある場合
+    if download_required:
+        # テスト中は input 関数を呼び出さない
+        is_test = configfile == "test_config.yml"
+
+        # 自動ダウンロードが有効でない場合、ユーザーに確認
+        if not auto_download and not is_test:
+            files_str = ", ".join([ref[1]["name"] for ref in download_required])
+            if len(download_required) == 1:
+                prompt = f"\n\nReference file {files_str} not found. Download from GitHub? (y/n): "
+            else:
+                prompt = f"\n\n{len(download_required)} reference files not found ({files_str}). Download all from GitHub? (y/n): "
+
+            if input(prompt).lower() != "y":
+                not_found_msg: str = f"Error: Reference files not found: {files_str}"
+                raise VQEError(not_found_msg)
+
+        # ダウンロードを実行
+        _download_references(download_required)
+
+    # すべてのリファレンスファイルを検証
+    _verify_references(configs)
 
 
 def _get_datafile_path(
@@ -641,7 +857,7 @@ def load_config(configfile: str, args: object) -> dict[str, Any]:
     configs = _validate_config(configs, patterns)
 
     # Validate reference files
-    _validate_references(configs)
+    _validate_references(configs, args, configfile)
 
     # Get datafile path and load existing encode configurations
     datafile, encode_cfg = _get_datafile_path(configs, configfile, args)

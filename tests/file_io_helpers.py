@@ -104,8 +104,8 @@ def create_dummy_open(original_open: Callable[..., Any]) -> Callable[..., String
         # Since we can't know the exact type at runtime, we use a cast to tell
         # mypy that we're returning the correct type.
         if "b" in mode:
-            return cast(BytesIO, original_open.__get__(self, type(self))(mode, *args, **kwargs))
-        return cast(StringIO, original_open.__get__(self, type(self))(mode, *args, **kwargs))
+            return cast("BytesIO", original_open.__get__(self, type(self))(mode, *args, **kwargs))
+        return cast("StringIO", original_open.__get__(self, type(self))(mode, *args, **kwargs))
 
     return dummy_open
 
