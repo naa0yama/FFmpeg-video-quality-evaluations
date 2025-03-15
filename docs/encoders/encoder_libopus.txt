@@ -1,0 +1,19 @@
+Encoder libopus []:
+    General capabilities: dr1 delay small
+    Threading capabilities: none
+    Supported sample rates: 48000 24000 16000 12000 8000
+    Supported sample formats: s16 flt
+libopus AVOptions:
+  -application       <int>        E...A...... Intended application type (from 2048 to 2051) (default audio)
+     voip            2048         E...A...... Favor improved speech intelligibility
+     audio           2049         E...A...... Favor faithfulness to the input
+     lowdelay        2051         E...A...... Restrict to only the lowest delay modes, disable voice-optimized modes
+  -frame_duration    <float>      E...A...... Duration of a frame in milliseconds (from 2.5 to 120) (default 20)
+  -packet_loss       <int>        E...A...... Expected packet loss percentage (from 0 to 100) (default 0)
+  -fec               <boolean>    E...A...... Enable inband FEC. Expected packet loss must be non-zero (default false)
+  -vbr               <int>        E...A...... Variable bit rate mode (from 0 to 2) (default on)
+     off             0            E...A...... Use constant bit rate
+     on              1            E...A...... Use variable bit rate
+     constrained     2            E...A...... Use constrained VBR
+  -mapping_family    <int>        E...A...... Channel Mapping Family (from -1 to 255) (default -1)
+  -apply_phase_inv   <boolean>    E...A...... Apply intensity stereo phase inversion (default true)

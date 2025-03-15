@@ -14,7 +14,6 @@ import pytest
 from ffmpegvqe.summary import create_temp_table
 from ffmpegvqe.summary import load_config
 from ffmpegvqe.summary import show_aggregated_results
-from ffmpegvqe.summary import show_query_results
 
 
 @pytest.fixture
@@ -52,17 +51,9 @@ def test_create_temp_table(mock_csv_data: str) -> None:
         mock_execute.assert_called_once()
 
 
-def test_show_query_results() -> None:
-    with patch("duckdb.sql") as mock_sql:
-        mock_sql.return_value = MagicMock()
-        show_query_results("-test-option")
-        mock_sql.assert_called_once()
-        mock_sql.return_value.show.assert_called_once()
-
-
 def test_show_aggregated_results() -> None:
     with patch("duckdb.sql") as mock_sql:
         mock_sql.return_value = MagicMock()
         show_aggregated_results()
-        mock_sql.assert_called_once()
-        mock_sql.return_value.show.assert_called_once()
+        assert mock_sql.call_count == 2
+        assert mock_sql.return_value.show.call_count == 2

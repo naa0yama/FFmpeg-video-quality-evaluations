@@ -6,7 +6,7 @@
 
 from typing import Any
 
-import ruamel.yaml
+from ruamel.yaml import YAML  # 明示的にYAMLクラスをインポート
 
 # Import RoundTripRepresenter with proper type annotation
 from ruamel.yaml.representer import RoundTripRepresenter
@@ -31,13 +31,13 @@ class NoAliasDumper(RoundTripRepresenter):
         return True
 
 
-def create_yaml_handler() -> ruamel.yaml.YAML:
+def create_yaml_handler() -> YAML:
     """Create a configured YAML handler.
 
     Returns:
-        A configured ruamel.yaml.YAML instance with custom settings.
+        A configured YAML instance with custom settings.
     """
-    yaml = ruamel.yaml.YAML(typ="safe", pure=True)
+    yaml = YAML(typ="safe", pure=True)  # インポートしたYAMLクラスを使用
     yaml.indent(mapping=2, sequence=4, offset=2)
     yaml.default_flow_style = False
     yaml.explicit_start = True

@@ -19,7 +19,6 @@ from ffmpegvqe.utils import create_yaml_handler
 from ffmpegvqe.utils import format_seconds
 from ffmpegvqe.utils import format_time_hms
 from ffmpegvqe.utils import getfilehash
-from ffmpegvqe.visualization import run_graph
 
 __all__ = [
     "VQEError",
@@ -37,5 +36,4 @@ __all__ = [
     "getvmaf",
     "load_config",
     "main",
-    "run_graph",
 ]

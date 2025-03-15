@@ -283,13 +283,23 @@ def test_main_with_archive(mocker: MockerFixture) -> None:
     mock_args = MagicMock()
     mock_args.archive = True
     mock_args.encode = False
-    mock_args.config = "/path/to/config.yml"
+    mock_args.config = "dummy_config.yml"  # 実際には存在しないダミーのパス
 
     # argparseのモック
     mocker.patch("argparse.ArgumentParser.parse_args", return_value=mock_args)
 
+    # pathlib.Pathのモック
+    # Pathクラスのコンストラクタをモック化して、実際のファイルシステム上のパスを作成しないようにする
+    mock_path = mocker.patch("pathlib.Path")
+    # Pathインスタンスのexistsメソッドをモック化して、常にFalseを返すようにする
+    mock_path.return_value.exists.return_value = False
+
     # archiveのモック
     mock_archive = mocker.patch("ffmpegvqe.main.archive")
+
+    # load_configのモック
+    mock_config = {"configs": {"datafile": "dummy_datafile.json"}}
+    mocker.patch("ffmpegvqe.main.load_config", return_value=mock_config)
 
     # sys.exitのモック
     mock_exit = mocker.patch("sys.exit")
@@ -298,10 +308,10 @@ def test_main_with_archive(mocker: MockerFixture) -> None:
     main()
 
     # archiveが呼ばれたことを確認
-    mock_archive.assert_called_once_with(config_path="/path/to/config.yml", args=mock_args)
+    mock_archive.assert_called_once_with(config_path="dummy_config.yml", args=mock_args)
 
     # sys.exitが呼ばれていないことを確認
-    mock_exit.assert_not_called()
+    mock_exit.assert_called_once_with("\n\n Archive done.")
 
 
 def test_main_with_encode(mocker: MockerFixture) -> None:

@@ -1,0 +1,124 @@
+---
+configs:
+  references:
+    - name: ABBB
+      type: Anime
+      basefile: ./videos/source/ABBB_MPEG-2_1920x1080_30p.m2ts
+      basehash: f005791ab9cabdc4468317d5d58becf3eb6228a49c6fad09e0923685712af769
+    - name: ASintel
+      type: Anime
+      basefile: ./videos/source/ASintel_MPEG-2_1920x1080_30p.m2ts
+      basehash: 8554804c935a382384eed9196ff88bd561767b6be1786aa4921087f265d92f3a
+    - name: AToS
+      type: Anime
+      basefile: ./videos/source/AToS_MPEG-2_1920x1080_30p.m2ts
+      basehash: ff6a0c366a3c631cf76d20c205cf505f964c9126551bf5bf10e8d99f9d04df52
+    - name: NAir
+      type: Nature
+      basefile: ./videos/source/NAir_MPEG-2_1920x1080_30p.m2ts
+      basehash: aec5612c556567df8cc3b37010c2850f709054293f1d5d0b96c68b349c2a97a2
+    - name: NArmy
+      type: Nature
+      basefile: ./videos/source/NArmy_MPEG-2_1920x1080_30p.m2ts
+      basehash: aef3503a79fcacf0e65e368416b0b0b85e54b8eb77e2613a4b750b59fb2b50d5
+    - name: NNavy
+      type: Nature
+      basefile: ./videos/source/NNavy_MPEG-2_1920x1080_30p.m2ts
+      basehash: 52409e9400315916bb191dfafe4edd415204671ae00e2ddb447671f4850876cb
+  datafile: assets/av1_qsv-custom-gop-bf-refs/datac5def9927ab0.json
+  patterns:
+    - codec: av1_qsv
+      type: ICQ
+      comments: ''
+      presets:
+        - veryslow
+      infile:
+        option: -hwaccel qsv -c:v mpeg2_qsv
+      outfile:
+        options:
+          - -global_quality 24
+          - -global_quality 24 -g 248 -bf 15 -refs 8
+          - -global_quality 24 -g 256 -bf 15 -refs 8
+      hwaccels: -hwaccel_output_format qsv
+  environment:
+    ffmpege:
+      program_version:
+        version: n7.1
+        copyright: Copyright (c) 2007-2024 the FFmpeg developers
+        compiler_ident: gcc 13 (Ubuntu 13.3.0-6ubuntu2~24.04)
+        configuration: --enable-avisynth --enable-libaribb24 --enable-libass --enable-libdav1d --enable-libfreetype --enable-libmp3lame --enable-libopus --enable-libsvtav1 --enable-libvmaf --enable-libvpl
+          --enable-libvpx --enable-libx264 --enable-libx265 --enable-vaapi --enable-gpl --enable-nonfree --enable-version3 --disable-debug --disable-doc --disable-ffplay --disable-shared --enable-small
+          --enable-static --enable-stripping --extra-libs='-lpthread -lm' --pkg-config-flags=--static --extra-cflags=-fopenmp --extra-ldflags='-fopenmp -Wl,--allow-multiple-definition -Wl,-z,stack-size=2097152'
+          --toolchain=hardened
+      library_versions:
+        - name: libavutil
+          major: 59
+          minor: 39
+          micro: 100
+          version: 3876708
+          ident: Lavu59.39.100
+        - name: libavcodec
+          major: 61
+          minor: 19
+          micro: 100
+          version: 4002660
+          ident: Lavc61.19.100
+        - name: libavformat
+          major: 61
+          minor: 7
+          micro: 100
+          version: 3999588
+          ident: Lavf61.7.100
+        - name: libavdevice
+          major: 61
+          minor: 3
+          micro: 100
+          version: 3998564
+          ident: Lavd61.3.100
+        - name: libavfilter
+          major: 10
+          minor: 4
+          micro: 100
+          version: 656484
+          ident: Lavfi10.4.100
+        - name: libswscale
+          major: 8
+          minor: 3
+          micro: 100
+          version: 525156
+          ident: SwS8.3.100
+        - name: libswresample
+          major: 5
+          minor: 3
+          micro: 100
+          version: 328548
+          ident: SwR5.3.100
+        - name: libpostproc
+          major: 58
+          minor: 3
+          micro: 100
+          version: 3801956
+          ident: postproc58.3.100
+    packages:
+      avisynth: v3.7.3
+      ffmpeg: n7.1
+      fontconfig: 2.15.0
+      igdgmm: intel-gmmlib-22.6.0
+      igfxcmrt: intel-media-24.3.4
+      libaribb24: 1.0.3
+      libass: 0.17.1
+      libdav1d: 1.5.1
+      libfreetype: 26.1.20
+      libfribidi: 1.0.13
+      liblsmash: 315b4747d759e336ef30b18e93f2e676810e5a73
+      liblsmashsource: fa20c138f7dfe6c28115529c5723ffd1c45c340b
+      libmfx-gen: intel-onevpl-24.3.4
+      libopus: v1.5.2
+      libsvtav1: v2.3.0
+      libva: 2.22.0
+      libvmaf: v3.0.0
+      libvpl: v2.14.0
+      libvpx: v1.15.0
+      libx264: 31e19f92f00c7003fa115047ce50978bc98c3a0d
+      libx265: '4.0'
+      obuparse: 918524abdc19b6582d853c03373d8e2e0b9f11ee

@@ -35,7 +35,7 @@ Video encoding quality evaluation project using VMAF and SSIM
   * `--args --config videos/h264_default-qq13-14.yml` を設定する事で config を読み込ませる
 
   ```bash
-  bokeh serve src/ffmpegvqe/graph.py --show --args --config videos/h264_default-qq13-14.yml
+  bokeh serve src/ffmpegvqe/visualization/graph.py --show --args --config videos/h264_default-qq13-14.yml
 
   ```
 
@@ -201,7 +201,7 @@ do
   ffmpeg -hide_banner -h decoder=${decoder}    > ./videos/source/decoders/decoder_${decoder}.txt
 done
 
-for encoder in libaom-av1 libsvtav1 av1_qsv libx264 h264_qsv libx265 hevc_qsv mpeg2_qsv vp9_qsv
+for encoder in libaom-av1 libsvtav1 av1_qsv libx264 h264_qsv libx265 hevc_qsv mpeg2_qsv vp9_qsv libopus
 do
   ffmpeg -hide_banner -h encoder=${encoder}    > ./videos/source/encoders/encoder_${encoder}.txt
 done
