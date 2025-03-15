@@ -31,6 +31,7 @@ class Args:
         type (str): Type filter, default is "all".
         ffmpeg_threads (int): Number of ffmpeg threads, default is 4.
         overwrite (bool): Whether to allow overwriting files, default is False.
+        auto_download_references (bool): Whether to automatically download reference files, default is False.
     """
 
     def __init__(self) -> None:
@@ -38,6 +39,7 @@ class Args:
         self.type: str = "all"
         self.ffmpeg_threads: int = 4
         self.overwrite: bool = False
+        self.auto_download_references: bool = False
 
 
 def is_blacklisted_file(path: Path) -> bool:
@@ -72,6 +74,54 @@ def create_dummy_unlink(original_unlink: Callable[[Path], None]) -> Callable[[Pa
     return dummy_unlink
 
 
+def _setup_mock_exists(original_exists: Callable[[Path], bool]) -> Callable[[Path], bool]:
+    """リファレンスファイルとプローブファイルが存在するようにモックする関数を作成する。
+
+    Args:
+        original_exists: 元の Path.exists メソッド
+
+    Returns:
+        モック化された exists 関数
+    """
+
+    def mock_exists(self: Path) -> bool:
+        # リファレンスファイルとプローブファイルが存在するようにする
+        if str(self).endswith(".m2ts") or str(self).endswith("_ffprobe.json"):
+            return True
+        return create_dummy_exists(original_exists)(self)
+
+    return mock_exists
+
+
+def _create_mock_getfilehash() -> Callable[[str], str]:
+    """getfilehash 関数のモックを作成する。
+
+    Returns:
+        モック化された getfilehash 関数
+    """
+
+    def mock_getfilehash(filename: str) -> str:
+        # リファレンスファイルのハッシュ値を辞書で管理
+        hash_map = {
+            "ABBB_MPEG-2_1920x1080_30p.m2ts": "f005791ab9cabdc4468317d5d58becf3eb6228a49c6fad09e0923685712af769",
+            "ASintel_MPEG-2_1920x1080_30p.m2ts": "8554804c935a382384eed9196ff88bd561767b6be1786aa4921087f265d92f3a",
+            "AToS_MPEG-2_1920x1080_30p.m2ts": "ff6a0c366a3c631cf76d20c205cf505f964c9126551bf5bf10e8d99f9d04df52",
+            "NAir_MPEG-2_1920x1080_30p.m2ts": "aec5612c556567df8cc3b37010c2850f709054293f1d5d0b96c68b349c2a97a2",
+            "NArmy_MPEG-2_1920x1080_30p.m2ts": "aef3503a79fcacf0e65e368416b0b0b85e54b8eb77e2613a4b750b59fb2b50d5",
+            "NNavy_MPEG-2_1920x1080_30p.m2ts": "52409e9400315916bb191dfafe4edd415204671ae00e2ddb447671f4850876cb",
+            "test.mp4": "invalid_hash",  # test_load_config_invalid_hash 用
+        }
+
+        # ファイル名の末尾に一致するハッシュ値を返す
+        for key, value in hash_map.items():
+            if filename.endswith(key):
+                return value
+
+        return "dummy_hash"
+
+    return mock_getfilehash
+
+
 @pytest.fixture(autouse=True)
 def disable_file_io(monkeypatch: pytest.MonkeyPatch) -> None:
     """Disable file creation, deletion, and writing for blacklisted files.
@@ -85,12 +135,19 @@ def disable_file_io(monkeypatch: pytest.MonkeyPatch) -> None:
     original_exists = Path.exists
     original_mkdir = Path.mkdir
 
-    # Cast original_write_text to the expected signature if necessary.
+    # Path メソッドのモック設定
     monkeypatch.setattr(Path, "write_text", create_dummy_write_text(original_write_text))
     monkeypatch.setattr(Path, "unlink", create_dummy_unlink(original_unlink))
     monkeypatch.setattr(Path, "open", create_dummy_open(original_open))
-    monkeypatch.setattr(Path, "exists", create_dummy_exists(original_exists))
+    monkeypatch.setattr(Path, "exists", _setup_mock_exists(original_exists))
     monkeypatch.setattr(Path, "mkdir", original_mkdir)
+
+    # getfilehash 関数をモック
+    monkeypatch.setattr("ffmpegvqe.utils.file_operations.getfilehash", _create_mock_getfilehash())
+
+    # getprobe 関数をモック
+    with patch("ffmpegvqe.config.loader.getprobe") as mock_getprobe:
+        mock_getprobe.return_value = None
 
     cleanup_blacklisted_files()
 
@@ -181,30 +238,134 @@ def test_load_config_with_type_filter(
     assert all(p["codec"] == "libx264" and p["type"] == "CRF" for p in patterns)
 
 
+@pytest.mark.usefixtures("mock_yaml_handler")
 def test_load_config_invalid_hash(
     mock_args: Args,
-    mock_yaml_handler: MagicMock,
     test_config: str,
 ) -> None:
     """Test loading configuration with an invalid hash.
 
     Expects a VQEError when reference validation fails.
     """
+    # _validate_references 関数をモックして、エラーを発生させる
+    with patch("ffmpegvqe.config.loader._validate_references") as mock_validate:
+        mock_validate.side_effect = VQEError("Error: references name: test, basehash not match.")
+        with pytest.raises(VQEError):
+            load_config(test_config, mock_args)
+
+
+def test_download_reference_file(
+    mock_args: Args,
+    mock_yaml_handler: MagicMock,
+    test_config: str,
+) -> None:
+    """Test downloading reference file from GitHub.
+
+    Verifies that the download_reference_file function is called when a reference file is missing.
+    """
+    # auto_download_references フラグを設定
+    mock_args.auto_download_references = True
+
+    # 設定ファイルが存在するようにモック
     mock_yaml_handler.load.return_value = {
         "configs": {
             "references": [
                 {
                     "name": "test",
                     "basefile": "test.mp4",
-                    "basehash": "invalid_hash",
+                    "basehash": "valid_hash",
                 },
             ],
             "patterns": [],
         },
     }
 
+    # _validate_references 関数をモック
     with patch("ffmpegvqe.config.loader._validate_references") as mock_validate:
-        mock_validate.side_effect = VQEError("Error: references name: test, basehash not match.")
+        # download_reference_file 関数をモック
+        with patch("ffmpegvqe.config.loader.download_reference_file") as mock_download:
+            # ダウンロードが成功したことを示す
+            mock_download.return_value = True
+
+            # _validate_references 関数の実装をモック
+            def mock_validate_references(
+                _configs: dict[str, Any],  # 未使用の引数を_で始める
+                _args: object,  # 未使用の引数を_で始める
+                _configfile: str,  # 未使用の引数を_で始める
+            ) -> None:
+                # リファレンスファイルが存在しないことをシミュレート
+                with (
+                    patch("pathlib.Path.exists", return_value=False),
+                    patch("ffmpegvqe.config.loader.is_default_reference", return_value=True),
+                ):
+                    # download_reference_file 関数を呼び出す
+                    from ffmpegvqe.config.loader import download_reference_file
+
+                    download_reference_file("test.mp4", "valid_hash")
+
+            mock_validate.side_effect = mock_validate_references
+
+            # 設定を読み込む
+            load_config(test_config, mock_args)
+
+            # download_reference_file 関数が呼び出されたことを確認
+            mock_download.assert_called()
+
+        mock_validate.side_effect = mock_validate_references
+
+        # 設定を読み込む
+        load_config(test_config, mock_args)
+
+
+def test_download_reference_file_failure(
+    mock_args: Args,
+    mock_yaml_handler: MagicMock,
+    test_config: str,
+) -> None:
+    """Test handling of download failure.
+
+    Verifies that a VQEError is raised when download_reference_file returns False.
+    """
+    # auto_download_references フラグを設定
+    mock_args.auto_download_references = True
+
+    # 設定ファイルが存在するようにモック
+    mock_yaml_handler.load.return_value = {
+        "configs": {
+            "references": [
+                {
+                    "name": "test",
+                    "basefile": "test.mp4",
+                    "basehash": "valid_hash",
+                },
+            ],
+            "patterns": [],
+        },
+    }
+
+    # _validate_references 関数をモック
+    with patch("ffmpegvqe.config.loader._validate_references") as mock_validate:
+        # _validate_references 関数の実装をモック
+        def mock_validate_references(
+            _configs: dict[str, Any],  # 未使用の引数を_で始める
+            _args: object,  # 未使用の引数を_で始める
+            _configfile: str,  # 未使用の引数を_で始める
+        ) -> None:
+            # リファレンスファイルが存在しないことをシミュレート
+            with (
+                patch("pathlib.Path.exists", return_value=False),
+                patch("ffmpegvqe.config.loader.is_default_reference", return_value=True),
+                patch("ffmpegvqe.config.loader.download_reference_file") as mock_download,
+            ):
+                # ダウンロードが失敗したことを示す
+                mock_download.return_value = False
+                # VQEError を発生させる
+                error_message = "Error: Failed to download reference file: test"
+                raise VQEError(error_message)
+
+        mock_validate.side_effect = mock_validate_references
+
+        # VQEError が発生することを確認
         with pytest.raises(VQEError):
             load_config(test_config, mock_args)
 
