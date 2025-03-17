@@ -250,6 +250,7 @@ $RECYCLE.BIN/
 functions/
 
 **/*tmp/
+src/ffvqe/_version.py
 videos/
 videos/dist/
 videos/source/
