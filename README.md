@@ -1,6 +1,8 @@
-# ffvqe
+# ffvqe (FFmpeg video quality evaluations)
 
 [![codecov](https://codecov.io/gh/naa0yama/ffvqe/graph/badge.svg?token=kaZrusokic)](https://codecov.io/gh/naa0yama/ffvqe)
+![GitHub repo size](https://img.shields.io/github/repo-size/naa0yama/ffvqe)
+![GitHub License](https://img.shields.io/github/license/naa0yama/ffvqe)
 
 Video encoding quality evaluation project using VMAF and SSIM
 
