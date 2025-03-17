@@ -4,53 +4,22 @@
 # %%
 """duckdb."""
 
-import argparse
 from logging import INFO
+from logging import StreamHandler
 from logging import getLogger
 from pathlib import Path
+from typing import Any
 
 import duckdb
-import ruamel.yaml
-from ruamel.yaml.representer import RoundTripRepresenter
 
-
-class NoAliasDumper(RoundTripRepresenter):
-    """ruamel.yaml custom class."""
-
-    def ignore_aliases(self, data: object) -> bool:
-        """Disabled alias."""
-        return bool(data is not None)
-
+from ffvqe.config.loader import load_config
 
 logger = getLogger(__name__)
 logger.setLevel(INFO)
-yaml = ruamel.yaml.YAML(typ="safe", pure=True)
-yaml.indent(mapping=2, sequence=4, offset=2)
-yaml.default_flow_style = False
-yaml.explicit_start = True
-yaml.width = 200
-yaml.Representer = NoAliasDumper
 
-parser = argparse.ArgumentParser(description="FFmpeg video quality encoding quality evaluation.")
-parser.add_argument(
-    "--config",
-    help="config file path. (e.g): ./videos/h264_qsv-custom-la_icq.yml",
-    required=True,
-    type=str,
-)
-
-
-def load_config(config_path: str) -> str:
-    """Load the configuration file and return the datafile path.
-
-    Args:
-        config_path (str): Path to the configuration file.
-
-    Returns:
-        str: Path to the datafile.
-    """
-    with Path(config_path).open("r") as file:
-        return str(yaml.load(file)["configs"]["datafile"])
+handler = StreamHandler()
+handler.setLevel(INFO)
+logger.addHandler(handler)
 
 
 def create_temp_table(csvfile_type: str) -> None:
@@ -124,14 +93,10 @@ def show_aggregated_results() -> None:
     ).show()
 
 
-def main() -> None:
+def main(config_path: str, args: object) -> None:
     """Main function to parse arguments and execute the workflow."""
-    args = parser.parse_args()
-    datafile = load_config(args.config)
-    csvfile_type = datafile.replace(".json", "_gby_type.csv", 1)
+    __configs: dict[str, Any] = load_config(configfile=config_path, args=args)
+    __datafile: Path = Path(f"{__configs['configs']['datafile']}")
+    csvfile_type: str = f"{__datafile}".replace(".json", "_gby_type.csv")
     create_temp_table(csvfile_type)
     show_aggregated_results()
-
-
-if __name__ == "__main__":
-    main()

@@ -6,13 +6,11 @@
 
 from pathlib import Path
 from unittest.mock import MagicMock
-from unittest.mock import mock_open
 from unittest.mock import patch
 
 import pytest
 
 from ffvqe.summary import create_temp_table
-from ffvqe.summary import load_config
 from ffvqe.summary import show_aggregated_results
 
 
@@ -33,16 +31,6 @@ type2,1500,3000,15,60,0.98,92,96,-other-option"""
     csv_file = tmp_path / "test.csv"
     csv_file.write_text(csv_content)
     return str(csv_file)
-
-
-def test_load_config(mock_yaml_data: dict) -> None:
-    mock_file = mock_open(read_data="dummy content")
-    with (
-        patch("pathlib.Path.open", mock_file),
-        patch("ruamel.yaml.YAML.load", return_value=mock_yaml_data),
-    ):
-        result = load_config("dummy_path")
-        assert result == "test_data.json"
 
 
 def test_create_temp_table(mock_csv_data: str) -> None:

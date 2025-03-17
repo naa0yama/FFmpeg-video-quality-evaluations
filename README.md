@@ -9,6 +9,10 @@ Video encoding quality evaluation project using VMAF and SSIM
 FFmpeg を利用して ソフトウェア、 Intel QSV エンコーダーで動画をエンコードし SSIM, VMAF min/mean など映像品質の指標になるデータを計算し、 CSV と JSON で出力します。  
 また、 yaml ファイルで outfile option を定義できるためパラメーターを複数試す時に楽ができ、グラフとして確認することも可能です。
 
+## 環境及び実際の数値
+
+[bast-parameter-hunting.md](docs/bast-parameter-hunting/bast-parameter-hunting.md) に記載しています。
+
 ## 利用方法
 
 レポジトリーを clone して VSCode Dev Containers で起動する
@@ -28,7 +32,7 @@ FFmpeg を利用して ソフトウェア、 Intel QSV エンコーダーで動�
   `h264_qsv` で `ICQ` の設定をベースにする場合
 
   ```bash
-  python src/ffvqe/entrypoint.py --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml --codec av1_qsv --type ICQ
+  ffvqe --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml --codec av1_qsv --type ICQ
 
   ```
 
@@ -36,7 +40,7 @@ FFmpeg を利用して ソフトウェア、 Intel QSV エンコーダーで動�
   * `--encode` をつける事で設定ファイルの pattern 分エンコードし、 VMAF を計測後、 datafile に書き込む
 
   ```bash
-  python src/ffvqe/entrypoint.py --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml --encode
+  ffvqe --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml --encode
 
   ```
 
@@ -45,15 +49,7 @@ FFmpeg を利用して ソフトウェア、 Intel QSV エンコーダーで動�
   * この時、 `--config` のファイルも更新することでグラフ表示などは問題なく可能です
 
   ```bash
-  python src/ffvqe/entrypoint.py --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml --archive
-
-  ```
-
-* グラフを表示
-  * `--args --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml` を設定する事で config を読み込ませる
-
-  ```bash
-  bokeh serve src/ffvqe/visualization/graph.py --show --args --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml
+  ffvqe --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml --archive
 
   ```
 
@@ -66,7 +62,7 @@ FFmpeg を利用して ソフトウェア、 Intel QSV エンコーダーで動�
     * VMAF mean 93.00 以上 100.00 以下
 
   ```bash
-  $ python src/ffvqe/summary.py --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml
+  $ ffvqe --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml --summary
   ┌──────────┬────────────────────┬──────────────────────┬─────────┬────────────────────┬───────────┬──────────┬───────────┬────────────────────┐
   │ ref_type │ outfile_size_kbyte │ outfile_bit_rate_kbs │ enc_sec │ comp_ratio_persent │ ssim_mean │ vmaf_min │ vmaf_mean │  outfile_options   │
   │ varchar  │       double       │        double        │ double  │       double       │  double   │  double  │  double   │      varchar       │
@@ -92,6 +88,14 @@ FFmpeg を利用して ソフトウェア、 Intel QSV エンコーダーで動�
   │ av1_qsv │          80065.828 │             5337.601 │  12.515 │              0.687 │     0.998 │   84.387 │    96.529 │   19.4 │  248.0 │    0.0 │    1.0 │ 15.0 / 3582.0 / 0.0 │ -global_quality 23 │
   │ av1_qsv │          91253.544 │             6083.476 │  12.568 │              0.643 │     0.998 │   85.674 │    96.941 │ 17.744 │  248.0 │    0.0 │    1.0 │ 15.0 / 3582.0 / 0.0 │ -global_quality 22 │
   └─────────┴────────────────────┴──────────────────────┴─────────┴────────────────────┴───────────┴──────────┴───────────┴────────┴────────┴────────┴────────┴─────────────────────┴────────────────────┘
+  ```
+
+* グラフを表示
+  * `--args --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml` を設定する事で config を読み込ませる
+
+  ```bash
+  bokeh serve src/ffvqe/visualization/graph.py --show --args --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml
+
   ```
 
 ## 準備

@@ -282,6 +282,7 @@ def test_main_with_archive(mocker: MockerFixture) -> None:
     # コマンドライン引数のモック
     mock_args = MagicMock()
     mock_args.archive = True
+    mock_args.summary = False
     mock_args.encode = False
     mock_args.config = "dummy_config.yml"  # 実際には存在しないダミーのパス
 
@@ -297,6 +298,9 @@ def test_main_with_archive(mocker: MockerFixture) -> None:
     # archiveのモック
     mock_archive = mocker.patch("ffvqe.main.archive")
 
+    # summaryのモック
+    mocker.patch("ffvqe.main.summary_main")
+
     # load_configのモック
     mock_config = {"configs": {"datafile": "dummy_datafile.json"}}
     mocker.patch("ffvqe.main.load_config", return_value=mock_config)
@@ -309,8 +313,6 @@ def test_main_with_archive(mocker: MockerFixture) -> None:
 
     # archiveが呼ばれたことを確認
     mock_archive.assert_called_once_with(config_path="dummy_config.yml", args=mock_args)
-
-    # sys.exitが呼ばれていないことを確認
     mock_exit.assert_called_once_with("\n\n Archive done.")
 
 
@@ -320,10 +322,21 @@ def test_main_with_encode(mocker: MockerFixture) -> None:
     mock_args = MagicMock()
     mock_args.archive = False
     mock_args.encode = True
+    mock_args.summary = False
     mock_args.config = "/path/to/config.yml"
 
     # argparseのモック
     mocker.patch("argparse.ArgumentParser.parse_args", return_value=mock_args)
+
+    # pathlib.Pathのモック
+    # Pathクラスのコンストラクタをモック化して、実際のファイルシステム上のパスを作成しないようにする
+    mock_path = mocker.patch("pathlib.Path")
+    # Pathインスタンスのexistsメソッドをモック化して、常にFalseを返すようにする
+    mock_path.return_value.exists.return_value = False
+    # Pathインスタンスのparentプロパティをモック化して、親ディレクトリのパスを返すようにする
+    mock_path.return_value.parent = mock_path.return_value
+    # Pathインスタンスのmkdirメソッドをモック化して、ディレクトリ作成操作をシミュレートする
+    mock_path.return_value.mkdir = MagicMock()
 
     # load_configのモック
     mock_config = {"configs": {"datafile": "/path/to/datafile.json"}}

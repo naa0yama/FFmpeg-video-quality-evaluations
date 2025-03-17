@@ -4,6 +4,26 @@ h264_qsv, hevc_qsv, av1_qsv のエンコードパラメータで容量が小さ�
 
 ## Environment
 
+|        |                                           |
+| :----- | :---------------------------------------- |
+| CPU    | 64 x AMD EPYC 7551P 32-Core Processor     |
+| M/B    | Supermicro H11SSL-i                       |
+| Memory | 8 x 32GB DDR4-2133                        |
+| SSD    | 2x Intel 2.5inch 480GB D3-S4510 ZFS Miror |
+| GPU    | Sparkle Intel Arc A310 ELF 4GB SA310E-4G  |
+
+### VM
+
+Proxmox VE の仮想マシンに PCIE パススルーし、計測している VMAF の算出は CPU で処理するため 60 Core 割り当てているので注意
+
+|                 |             |
+| :-------------- | :---------- |
+| CPU             | 60 Core     |
+| Memory          | 32GB        |
+| BIOS            | OVMF        |
+| Machine         | q35         |
+| SCSI Controller | VirtIO SCSI |
+
 ## 現状のベスト
 
 |                 |  File size |   bitrate | encode time | compress_rate | MSSIM |   VMAF min/mean | GOP   | bf   | refs | I/P/B frames           | options                                                     |

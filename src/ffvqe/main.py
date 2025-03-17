@@ -22,6 +22,7 @@ from ffvqe.data.archive import archive
 from ffvqe.data.csv_generator import getcsv
 from ffvqe.encoding.encoder import encoding
 from ffvqe.encoding.encoder import getvmaf
+from ffvqe.summary import main as summary_main
 from ffvqe.utils.file_operations import getfilehash
 from ffvqe.utils.time_format import format_seconds
 
@@ -67,6 +68,12 @@ def create_argument_parser() -> argparse.ArgumentParser:
         help="config file path. (e.g): ./videos/settings.yml",
         required=True,
         type=str,
+    )
+    parser.add_argument(
+        "-s",
+        "--summary",
+        help="Shows a summary table.",
+        action="store_true",
     )
     parser.add_argument(
         "--overwrite",
@@ -276,6 +283,10 @@ def main() -> None:
     if args.archive:
         archive(config_path=args.config, args=args)
         sys.exit("\n\n Archive done.")
+
+    if args.summary:
+        summary_main(config_path=args.config, args=args)
+        sys.exit("\n\n Summary done.")
 
     __configs: dict[str, Any] = load_config(configfile=args.config, args=args)
     if args.encode:
