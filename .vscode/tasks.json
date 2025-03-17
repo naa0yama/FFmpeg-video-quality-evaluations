@@ -6,7 +6,7 @@
 		{
 			"label": "bokeh serve",
 			"type": "shell",
-			"command": "poetry run bokeh serve src/ffmpegvqe/graph.py",
+			"command": "poetry run bokeh serve src/ffvqe/graph.py",
 			"group": {
 				"kind": "test",
 				"isDefault": true

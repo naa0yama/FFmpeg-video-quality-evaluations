@@ -11,9 +11,9 @@ from unittest.mock import mock_open
 import pytest
 from pytest_mock import MockerFixture
 
-from ffmpegvqe.main import create_argument_parser
-from ffmpegvqe.main import main
-from ffmpegvqe.main import main_encode
+from ffvqe.main import create_argument_parser
+from ffvqe.main import main
+from ffvqe.main import main_encode
 
 
 def test_create_argument_parser() -> None:
@@ -194,14 +194,14 @@ def test_main_encode(  # noqa: PLR0913
     mock_unlink = mocker.patch("pathlib.Path.unlink")
 
     # encodingとgetvmafのモック
-    mock_encoding = mocker.patch("ffmpegvqe.main.encoding", return_value=mock_encode_response)
-    mock_getvmaf = mocker.patch("ffmpegvqe.main.getvmaf", return_value=mock_vmaf_response)
+    mock_encoding = mocker.patch("ffvqe.main.encoding", return_value=mock_encode_response)
+    mock_getvmaf = mocker.patch("ffvqe.main.getvmaf", return_value=mock_vmaf_response)
 
     # getfilehashのモック
-    mock_getfilehash = mocker.patch("ffmpegvqe.main.getfilehash", return_value="new_hash")
+    mock_getfilehash = mocker.patch("ffvqe.main.getfilehash", return_value="new_hash")
 
     # fsyncのモック (使用されていないが、将来的に使用される可能性があるため残す)
-    mocker.patch("ffmpegvqe.main.fsync")
+    mocker.patch("ffvqe.main.fsync")
 
     # 引数の準備
     args = MagicMock()
@@ -257,12 +257,12 @@ def test_main_encode_with_exception(
 
     # encodingが例外を発生させるようにモック (変数は使用されていないが、モックは必要)
     mocker.patch(
-        "ffmpegvqe.main.encoding",
+        "ffvqe.main.encoding",
         side_effect=Exception("Test exception"),
     )
 
     # fsyncのモック
-    mock_fsync = mocker.patch("ffmpegvqe.main.fsync")
+    mock_fsync = mocker.patch("ffvqe.main.fsync")
 
     # 引数の準備
     args = MagicMock()
@@ -295,11 +295,11 @@ def test_main_with_archive(mocker: MockerFixture) -> None:
     mock_path.return_value.exists.return_value = False
 
     # archiveのモック
-    mock_archive = mocker.patch("ffmpegvqe.main.archive")
+    mock_archive = mocker.patch("ffvqe.main.archive")
 
     # load_configのモック
     mock_config = {"configs": {"datafile": "dummy_datafile.json"}}
-    mocker.patch("ffmpegvqe.main.load_config", return_value=mock_config)
+    mocker.patch("ffvqe.main.load_config", return_value=mock_config)
 
     # sys.exitのモック
     mock_exit = mocker.patch("sys.exit")
@@ -327,13 +327,13 @@ def test_main_with_encode(mocker: MockerFixture) -> None:
 
     # load_configのモック
     mock_config = {"configs": {"datafile": "/path/to/datafile.json"}}
-    mocker.patch("ffmpegvqe.main.load_config", return_value=mock_config)
+    mocker.patch("ffvqe.main.load_config", return_value=mock_config)
 
     # main_encodeのモック
-    mock_main_encode = mocker.patch("ffmpegvqe.main.main_encode")
+    mock_main_encode = mocker.patch("ffvqe.main.main_encode")
 
     # getcsvのモック
-    mock_getcsv = mocker.patch("ffmpegvqe.main.getcsv")
+    mock_getcsv = mocker.patch("ffvqe.main.getcsv")
 
     # 関数の実行
     main()
@@ -357,7 +357,7 @@ def test_main_with_both_flags(mocker: MockerFixture) -> None:
     mocker.patch("argparse.ArgumentParser.parse_args", return_value=mock_args)
 
     # archiveのモック
-    mock_archive = mocker.patch("ffmpegvqe.main.archive")
+    mock_archive = mocker.patch("ffvqe.main.archive")
 
     # sys.exitのモック
     mock_exit = mocker.patch("sys.exit", side_effect=SystemExit)

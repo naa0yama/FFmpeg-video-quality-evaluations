@@ -15,8 +15,8 @@ from typing import Any
 from ffmpeg_progress_yield import FfmpegProgress
 from tqdm import tqdm as std_tqdm
 
-from ffmpegvqe.encoding.frame_info import getframeinfo
-from ffmpegvqe.utils.time_format import format_seconds
+from ffvqe.encoding.frame_info import getframeinfo
+from ffvqe.utils.time_format import format_seconds
 
 # tqdmのカスタム設定
 tqdm = partial(
@@ -341,7 +341,7 @@ def get_versions(configfile: str) -> dict[str, Any]:
     if Path(f"{__versions_build_file}").exists():
         print(f"[GET   ] {__versions_build_file} file found.")  # noqa: T201
         with Path(f"{__versions_build_file}").open("r") as file:
-            from ffmpegvqe.utils.yaml_handler import create_yaml_handler
+            from ffvqe.utils.yaml_handler import create_yaml_handler
 
             yaml = create_yaml_handler()
             __versions_build = yaml.load(file)

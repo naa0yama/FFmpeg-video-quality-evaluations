@@ -10,11 +10,11 @@ from unittest.mock import patch
 
 import pytest
 
-from ffmpegvqe.encoding.encoder import encoding
-from ffmpegvqe.encoding.encoder import get_versions
-from ffmpegvqe.encoding.encoder import getprobe
-from ffmpegvqe.encoding.encoder import getvmaf
-from ffmpegvqe.encoding.frame_info import getframeinfo
+from ffvqe.encoding.encoder import encoding
+from ffvqe.encoding.encoder import get_versions
+from ffvqe.encoding.encoder import getprobe
+from ffvqe.encoding.encoder import getvmaf
+from ffvqe.encoding.frame_info import getframeinfo
 
 
 @pytest.fixture

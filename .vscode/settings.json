@@ -179,7 +179,7 @@
 	"python.analysis.completeFunctionParens": true,
 	"python.analysis.extraPaths": [
 		"${workspaceFolder}/.venv/lib/**/site-packages/",
-		"${workspaceFolder}/src/ffmpegvqe/"
+		"${workspaceFolder}/src/ffvqe/"
 	],
 	"python.analysis.importFormat": "absolute",
 	"python.analysis.typeCheckingMode": "off",

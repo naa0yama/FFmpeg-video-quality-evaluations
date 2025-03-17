@@ -29,7 +29,8 @@ RUN set -eux && \
     sudo \
     tzdata \
     vainfo \
-    wget && \
+    wget \
+    && \
     \
     # Cleanup \
     apt -y autoremove && \
@@ -92,9 +93,11 @@ RUN set -eux && \
     libssl-dev \
     libxml2-dev \
     libxmlsec1-dev \
+    patchelf \
     tk-dev \
     xz-utils \
-    zlib1g-dev && \
+    zlib1g-dev \
+    && \
     \
     # Cleanup \
     apt-get -y autoremove && \

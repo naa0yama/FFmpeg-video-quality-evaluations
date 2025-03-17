@@ -25,7 +25,7 @@ from bokeh.models.widgets import MultiChoice
 from bokeh.plotting import figure
 import duckdb
 
-from ffmpegvqe.utils.yaml_handler import create_yaml_handler
+from ffvqe.utils.yaml_handler import create_yaml_handler
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

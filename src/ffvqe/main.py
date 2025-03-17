@@ -16,13 +16,14 @@ from typing import Any
 
 from tqdm import tqdm as std_tqdm
 
-from ffmpegvqe.config.loader import load_config
-from ffmpegvqe.data.archive import archive
-from ffmpegvqe.data.csv_generator import getcsv
-from ffmpegvqe.encoding.encoder import encoding
-from ffmpegvqe.encoding.encoder import getvmaf
-from ffmpegvqe.utils.file_operations import getfilehash
-from ffmpegvqe.utils.time_format import format_seconds
+from ffvqe._version import __version__
+from ffvqe.config.loader import load_config
+from ffvqe.data.archive import archive
+from ffvqe.data.csv_generator import getcsv
+from ffvqe.encoding.encoder import encoding
+from ffvqe.encoding.encoder import getvmaf
+from ffvqe.utils.file_operations import getfilehash
+from ffvqe.utils.time_format import format_seconds
 
 # tqdmのカスタム設定
 tqdm = partial(
@@ -268,6 +269,7 @@ def main() -> None:
     parser = create_argument_parser()
     args = parser.parse_args()
 
+    print(f"version: {__version__}")  # noqa: T201
     if args.archive is True and args.encode is True:
         sys.exit("\n\nCannot be specified together with '--encode' and '--archive'.")
 

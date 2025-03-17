@@ -9,9 +9,9 @@ from pathlib import Path
 import shutil
 from typing import Any
 
-from ffmpegvqe.config.loader import load_config
-from ffmpegvqe.utils.file_operations import compress_files
-from ffmpegvqe.utils.yaml_handler import create_yaml_handler
+from ffvqe.config.loader import load_config
+from ffvqe.utils.file_operations import compress_files
+from ffvqe.utils.yaml_handler import create_yaml_handler
 
 
 def archive(config_path: str, args: object) -> None:

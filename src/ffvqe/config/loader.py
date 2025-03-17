@@ -13,11 +13,11 @@ from uuid import uuid4
 import requests
 from tqdm import tqdm
 
-from ffmpegvqe.encoding.encoder import get_versions
-from ffmpegvqe.encoding.encoder import getprobe
-from ffmpegvqe.utils.exceptions import VQEError
-from ffmpegvqe.utils.file_operations import getfilehash
-from ffmpegvqe.utils.yaml_handler import create_yaml_handler
+from ffvqe.encoding.encoder import get_versions
+from ffvqe.encoding.encoder import getprobe
+from ffvqe.utils.exceptions import VQEError
+from ffvqe.utils.file_operations import getfilehash
+from ffvqe.utils.yaml_handler import create_yaml_handler
 
 
 def _get_default_patterns() -> list[dict[str, Any]]:
@@ -266,9 +266,7 @@ def download_reference_file(ref_file: str, ref_hash: str) -> bool:
     Returns:
         bool: ダウンロードが成功したかどうか
     """
-    api_url = (
-        "https://api.github.com/repos/naa0yama/FFmpeg-video-quality-evaluations/releases/latest"
-    )
+    api_url = "https://api.github.com/repos/naa0yama/ffvqe/releases/latest"
 
     try:
         # リリース情報を取得

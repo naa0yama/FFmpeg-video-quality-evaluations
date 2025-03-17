@@ -12,7 +12,7 @@ from unittest.mock import patch
 from _pytest.capture import CaptureFixture
 import pytest
 
-from ffmpegvqe.data.csv_generator import getcsv
+from ffvqe.data.csv_generator import getcsv
 
 
 @pytest.fixture
@@ -24,14 +24,14 @@ def sample_json() -> str:
 @pytest.fixture
 def mock_json_data() -> Generator[MagicMock, None, None]:
     """Mock JSON data check."""
-    with patch("ffmpegvqe.data.csv_generator.check_json_data", return_value=True) as mock:
+    with patch("ffvqe.data.csv_generator.check_json_data", return_value=True) as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_duckdb() -> Generator[MagicMock, None, None]:
     """Mock duckdb functionality."""
-    with patch("ffmpegvqe.data.csv_generator.duckdb") as mock:
+    with patch("ffvqe.data.csv_generator.duckdb") as mock:
         # Setup mock connection and return values
         mock_connection = mock.connect.return_value
         mock_sql_result = mock_connection.sql.return_value

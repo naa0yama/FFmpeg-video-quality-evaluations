@@ -11,9 +11,9 @@ from unittest.mock import patch
 
 import pytest
 
-from ffmpegvqe.summary import create_temp_table
-from ffmpegvqe.summary import load_config
-from ffmpegvqe.summary import show_aggregated_results
+from ffvqe.summary import create_temp_table
+from ffvqe.summary import load_config
+from ffvqe.summary import show_aggregated_results
 
 
 @pytest.fixture

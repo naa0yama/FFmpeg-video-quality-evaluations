@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Tests for the configuration loader module in ffmpegvqe.
+Tests for the configuration loader module in ffvqe.
 This module verifies correct behavior of load_config under various scenarios.
 """
 
@@ -15,8 +15,8 @@ from unittest.mock import patch
 
 import pytest
 
-from ffmpegvqe.config.loader import load_config
-from ffmpegvqe.utils.exceptions import VQEError
+from ffvqe.config.loader import load_config
+from ffvqe.utils.exceptions import VQEError
 from tests.file_io_helpers import cleanup_blacklisted_files
 from tests.file_io_helpers import create_dummy_exists
 from tests.file_io_helpers import create_dummy_open
@@ -143,10 +143,10 @@ def disable_file_io(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(Path, "mkdir", original_mkdir)
 
     # getfilehash 関数をモック
-    monkeypatch.setattr("ffmpegvqe.utils.file_operations.getfilehash", _create_mock_getfilehash())
+    monkeypatch.setattr("ffvqe.utils.file_operations.getfilehash", _create_mock_getfilehash())
 
     # getprobe 関数をモック
-    with patch("ffmpegvqe.config.loader.getprobe") as mock_getprobe:
+    with patch("ffvqe.config.loader.getprobe") as mock_getprobe:
         mock_getprobe.return_value = None
 
     cleanup_blacklisted_files()
@@ -167,7 +167,7 @@ def mock_yaml() -> MagicMock:
 @pytest.fixture
 def mock_yaml_handler(mock_yaml: MagicMock) -> Generator[MagicMock, None, None]:
     """Patch the YAML handler creation in load_config to use a mock."""
-    with patch("ffmpegvqe.config.loader.create_yaml_handler", return_value=mock_yaml):
+    with patch("ffvqe.config.loader.create_yaml_handler", return_value=mock_yaml):
         yield mock_yaml
 
 
@@ -248,7 +248,7 @@ def test_load_config_invalid_hash(
     Expects a VQEError when reference validation fails.
     """
     # _validate_references 関数をモックして、エラーを発生させる
-    with patch("ffmpegvqe.config.loader._validate_references") as mock_validate:
+    with patch("ffvqe.config.loader._validate_references") as mock_validate:
         mock_validate.side_effect = VQEError("Error: references name: test, basehash not match.")
         with pytest.raises(VQEError):
             load_config(test_config, mock_args)
@@ -281,9 +281,9 @@ def test_download_reference_file(
     }
 
     # _validate_references 関数をモック
-    with patch("ffmpegvqe.config.loader._validate_references") as mock_validate:
+    with patch("ffvqe.config.loader._validate_references") as mock_validate:
         # download_reference_file 関数をモック
-        with patch("ffmpegvqe.config.loader.download_reference_file") as mock_download:
+        with patch("ffvqe.config.loader.download_reference_file") as mock_download:
             # ダウンロードが成功したことを示す
             mock_download.return_value = True
 
@@ -296,10 +296,10 @@ def test_download_reference_file(
                 # リファレンスファイルが存在しないことをシミュレート
                 with (
                     patch("pathlib.Path.exists", return_value=False),
-                    patch("ffmpegvqe.config.loader.is_default_reference", return_value=True),
+                    patch("ffvqe.config.loader.is_default_reference", return_value=True),
                 ):
                     # download_reference_file 関数を呼び出す
-                    from ffmpegvqe.config.loader import download_reference_file
+                    from ffvqe.config.loader import download_reference_file
 
                     download_reference_file("test.mp4", "valid_hash")
 
@@ -344,7 +344,7 @@ def test_download_reference_file_failure(
     }
 
     # _validate_references 関数をモック
-    with patch("ffmpegvqe.config.loader._validate_references") as mock_validate:
+    with patch("ffvqe.config.loader._validate_references") as mock_validate:
         # _validate_references 関数の実装をモック
         def mock_validate_references(
             _configs: dict[str, Any],  # 未使用の引数を_で始める
@@ -354,8 +354,8 @@ def test_download_reference_file_failure(
             # リファレンスファイルが存在しないことをシミュレート
             with (
                 patch("pathlib.Path.exists", return_value=False),
-                patch("ffmpegvqe.config.loader.is_default_reference", return_value=True),
-                patch("ffmpegvqe.config.loader.download_reference_file") as mock_download,
+                patch("ffvqe.config.loader.is_default_reference", return_value=True),
+                patch("ffvqe.config.loader.download_reference_file") as mock_download,
             ):
                 # ダウンロードが失敗したことを示す
                 mock_download.return_value = False
@@ -392,7 +392,7 @@ def test_load_config_existing_datafile(
     test_data = [{"id": "test_id"}]
     datafile.write_text(json.dumps(test_data))
 
-    with patch("ffmpegvqe.config.loader._get_datafile_path", return_value=(str(datafile), [])):
+    with patch("ffvqe.config.loader._get_datafile_path", return_value=(str(datafile), [])):
         result = load_config(test_config, mock_args)
         assert result["datafile"] == str(datafile)
 
@@ -414,7 +414,7 @@ def test_load_config_with_empty_patterns(
         },
     }
 
-    with patch("ffmpegvqe.config.loader._get_default_patterns", return_value=[]):
+    with patch("ffvqe.config.loader._get_default_patterns", return_value=[]):
         result = load_config(test_config, mock_args)
         assert len(result["configs"]["patterns"]) == 0
         assert all(isinstance(p, dict) for p in result["configs"]["patterns"])

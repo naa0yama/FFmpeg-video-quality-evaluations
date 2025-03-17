@@ -1,4 +1,6 @@
-# FFmpeg-video-quality-evaluations
+# ffvqe
+
+[![codecov](https://codecov.io/gh/naa0yama/ffvqe/graph/badge.svg?token=kaZrusokic)](https://codecov.io/gh/naa0yama/ffvqe)
 
 Video encoding quality evaluation project using VMAF and SSIM
 
@@ -24,7 +26,7 @@ FFmpeg を利用して ソフトウェア、 Intel QSV エンコーダーで動�
   `h264_qsv` で `ICQ` の設定をベースにする場合
 
   ```bash
-  python src/ffmpegvqe/entrypoint.py --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml --codec av1_qsv --type ICQ
+  python src/ffvqe/entrypoint.py --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml --codec av1_qsv --type ICQ
 
   ```
 
@@ -32,7 +34,7 @@ FFmpeg を利用して ソフトウェア、 Intel QSV エンコーダーで動�
   * `--encode` をつける事で設定ファイルの pattern 分エンコードし、 VMAF を計測後、 datafile に書き込む
 
   ```bash
-  python src/ffmpegvqe/entrypoint.py --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml --encode
+  python src/ffvqe/entrypoint.py --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml --encode
 
   ```
 
@@ -41,7 +43,7 @@ FFmpeg を利用して ソフトウェア、 Intel QSV エンコーダーで動�
   * この時、 `--config` のファイルも更新することでグラフ表示などは問題なく可能です
 
   ```bash
-  python src/ffmpegvqe/entrypoint.py --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml --archive
+  python src/ffvqe/entrypoint.py --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml --archive
 
   ```
 
@@ -49,7 +51,7 @@ FFmpeg を利用して ソフトウェア、 Intel QSV エンコーダーで動�
   * `--args --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml` を設定する事で config を読み込ませる
 
   ```bash
-  bokeh serve src/ffmpegvqe/visualization/graph.py --show --args --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml
+  bokeh serve src/ffvqe/visualization/graph.py --show --args --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml
 
   ```
 
@@ -62,7 +64,7 @@ FFmpeg を利用して ソフトウェア、 Intel QSV エンコーダーで動�
     * VMAF mean 93.00 以上 100.00 以下
 
   ```bash
-  $ python src/ffmpegvqe/summary.py --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml
+  $ python src/ffvqe/summary.py --config assets/av1_qsv-default-icq/av1_qsv-default-icq.yml
   ┌──────────┬────────────────────┬──────────────────────┬─────────┬────────────────────┬───────────┬──────────┬───────────┬────────────────────┐
   │ ref_type │ outfile_size_kbyte │ outfile_bit_rate_kbs │ enc_sec │ comp_ratio_persent │ ssim_mean │ vmaf_min │ vmaf_mean │  outfile_options   │
   │ varchar  │       double       │        double        │ double  │       double       │  double   │  double  │  double   │      varchar       │
@@ -246,7 +248,7 @@ curl https://get.docker.com | sh \
 本プロジェクトでは長期的にリファレンス映像を利用する可能性が高そうに思えたため CC-BY 4.0 で配布されている [Big Buck Bunny](http://www.bigbuckbunny.org) をベースに Release に保管することで永続化しています。  
 
 地上デジタル放送の映像に近づけるため、エンコードオプションは実際のデータに近づけています。  
-映像設定の詳細は [Releases · naa0yama/FFmpeg-video-quality-evaluations](https://github.com/naa0yama/FFmpeg-video-quality-evaluations/releases) の Asset にある encode*.ps1 で確認できます。  
+映像設定の詳細は [Releases · naa0yama/ffvqe](https://github.com/naa0yama/ffvqe/releases) の Asset にある encode*.ps1 で確認できます。  
 
 ## エンコードとテスト
 

@@ -11,10 +11,10 @@ from unittest.mock import PropertyMock
 from unittest.mock import mock_open
 from unittest.mock import patch
 
-from ffmpegvqe.utils.file_operations import compress_files
-from ffmpegvqe.utils.file_operations import getfilehash
-from ffmpegvqe.utils.file_operations import split_large_file
-from ffmpegvqe.utils.time_format import format_seconds
+from ffvqe.utils.file_operations import compress_files
+from ffvqe.utils.file_operations import getfilehash
+from ffvqe.utils.file_operations import split_large_file
+from ffvqe.utils.time_format import format_seconds
 
 
 def test_getfilehash() -> None:
@@ -96,7 +96,7 @@ def test_compress_files_large_files() -> None:
         patch("pathlib.Path.rmdir") as mock_rmdir,
         patch("pathlib.Path.exists", return_value=True),
         patch("pathlib.Path.stat") as mock_stat,
-        patch("ffmpegvqe.utils.file_operations.split_large_file") as mock_split,
+        patch("ffvqe.utils.file_operations.split_large_file") as mock_split,
     ):
         # 圧縮後のファイルサイズを160MBに設定, 制限80MBの2倍
         mock_stat.return_value.st_size = 160 * 1024 * 1024
