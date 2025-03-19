@@ -331,8 +331,7 @@ tar -Jcvf logs_archive.tar.xz logs/
 今回は CC-BY で配布されている [Films - Blender Studio](https://studio.blender.org/films/) を利用する。  
 ミラーとして [Xiph.org :: Test Media](https://media.xiph.org/) で配布されているのでこちらから元 png 画像をダウンロードした。
 
-スクリプトにまとめてあるため `videos/source/bbb_download.sh` を参照。  
-エンコードした、Reference 動画のダウンロードは `videos/source/reference_downloads.sh` を参照。
+スクリプトにまとめてあるため `videos/source/xiph_downloads.sh` を参照。
 
 | Name                                          |           aspect | License                                                                 | Description    |
 | :-------------------------------------------- | ---------------: | :---------------------------------------------------------------------- | :------------- |
